@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.pid
+*.sock
+*.db
+*.pem
+*.swp
+*.sqlite3
+
+# Ortam
+.env
+.DS_Store
+.vscode/
+venv/
+
+# Node / React
+node_modules/
+build/
+.npm/
+.npm-cache/
+*.tsbuildinfo
+
+# Django statik ve medya
+backend_static/
+media/
+static/
+
+# zNotlar dönüşüm çıktıları
+zNotlar/convet_to_md/
+
+
+# Git meta
+.git/
+.gitignore

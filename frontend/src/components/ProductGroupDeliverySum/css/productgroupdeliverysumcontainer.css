@@ -1,0 +1,140 @@
+/* frontend/src/components/ProductGroupDeliverySum/css/productgroupdeliverysumcontainer.css */
+
+/* Genel Konteyner Stili */
+.product-group-delivery-container {
+  background-color: #f5f5f5; /* TotalRisk ile aynı arka plan rengi */
+  padding: 10px; /* Sabit padding */
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: 'Roboto', sans-serif; /* TotalRisk ile aynı font */
+  color: #333;
+  margin-left: 20px; /* Sol boşluk */
+  margin-right: 20px; /* Sağ tarafta küçük bir boşluk */
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: calc(70% - 20px); /* Toplam genişlikten marjinleri çıkar */
+  max-width: 1000px; /* Maksimum genişlik */
+  overflow-x: auto;
+}
+
+/* Header Bölümü */
+.product-group-delivery-container__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #2C4E6C; /* SAP mavisi ile aynı alt sınır */
+}
+
+/* Başlık Stili */
+.product-group-delivery-container__title {
+  font-size: 24px;
+  color: #2C4E6C; /* SAP mavisi */
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  min-width: 100px;
+}
+
+/* Eylem Butonları */
+.product-group-delivery-container__actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Buton Stili */
+.product-group-delivery-container__button {
+  padding: 8px 16px;
+  background-color: #2C4E6C; /* SAP mavisi */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.product-group-delivery-container__button:hover {
+  background-color: #fcbf1e; /* SAP sarısı */
+  transform: scale(1.05);
+}
+
+/* Yükleme ve Hata Mesajları */
+.product-group-delivery-container__loading,
+.product-group-delivery-container__error {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.9rem;
+}
+
+.product-group-delivery-container__error {
+  color: #dc3545;
+  background-color: #fff;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+/* Tablo Bölümleri */
+.product-group-delivery-container__tables {
+  display: grid;
+  gap: 20px;
+  width: 100%;
+}
+
+.product-group-delivery-container__table-section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Alt Başlık */
+.product-group-delivery-container__subtitle {
+  font-size: 18px;
+  margin-bottom: 12px;
+  color: #2C4E6C;
+  font-weight: 600;
+}
+
+/* Responsive Tasarım */
+@media (max-width: 1024px) {
+  .product-group-delivery-container {
+    margin: 0 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-group-delivery-container__header {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    border-bottom: none;
+  }
+
+  .product-group-delivery-container__actions {
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .product-group-delivery-container__title {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-group-delivery-container {
+    margin: 0 5px;
+    padding: 10px;
+  }
+
+  .product-group-delivery-container__button {
+    width: 100%;
+  }
+
+  .product-group-delivery-container__actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+}

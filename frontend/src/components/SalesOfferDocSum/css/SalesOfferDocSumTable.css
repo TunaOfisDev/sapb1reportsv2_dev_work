@@ -1,0 +1,195 @@
+/* frontend/src/components/SalesOfferDocSum/css/SalesOfferDocSumTable.css */
+.sales-offer-doc-sum__table {
+  /* Component-specific variables */
+  --sof-sap-blue: #2C4E6C;
+  --sof-sap-yellow: #fcbf1e;
+  --sof-border-color: #dee2e6;
+
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
+  font-family: 'Arial', sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Tablo Başlıkları */
+.sales-offer-doc-sum__thead--header th {
+  background-color: var(--sof-sap-blue);
+  color: white;
+  font-weight: bold;
+  text-align: left;
+  padding: 0.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Her hücre çevresinde ince bir çerçeve olacak */
+.sales-offer-doc-sum__table td,
+.sales-offer-doc-sum__table th {
+  border: 1px solid var(--sof-border-color);
+  padding: 0.5rem;
+}
+
+/* Satır renk geçişleri ve hover efekti */
+.sales-offer-doc-sum__table tbody tr {
+  background-color: #ffffff;
+  transition: background-color 0.3s ease;
+}
+
+.sales-offer-doc-sum__table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.sales-offer-doc-sum__table tbody tr:hover {
+  background-color: var(--sof-sap-yellow) !important;
+}
+
+/* Taşan metin için genel stil */
+.sales-offer-doc-sum__ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+/* Belge no sütunu için taşan metin ayarları */
+.sales-offer-doc-sum__td--belge-no,
+.sales-offer-doc-sum__th--belge-no {
+  max-width: 100px;
+}
+
+/* Satıcı adı sütunu için taşan metin ayarları */
+.sales-offer-doc-sum__td--satici,
+.sales-offer-doc-sum__th--satici {
+  max-width: 100px;
+}
+
+/* Müşteri adı sütunu için taşan metin ayarları */
+.sales-offer-doc-sum__td--musteri-ad,
+.sales-offer-doc-sum__th--musteri-ad {
+  max-width: 250px;
+}
+
+/* Belge açıklaması sütunu için ayarlar */
+.sales-offer-doc-sum__td--belge-aciklamasi,
+.sales-offer-doc-sum__th--belge-aciklamasi {
+  max-width: 200px;
+  font-size: 0.8rem;
+}
+
+/* Sayısal veriler için hizalama */
+.sales-offer-doc-sum__td--numeric,
+.sales-offer-doc-sum__th--numeric-header {
+  text-align: right;
+}
+
+/* Dinamik Alt Toplam Satırı Stilleri */
+.footer-cell {
+  text-align: right !important;
+  font-weight: bold;
+  padding: 0.5rem;
+  background-color: #e9ecef;
+}
+
+/* İlk hücre için özel stil */
+.footer-cell:first-child {
+  text-align: left;
+  padding-left: 1rem;
+}
+
+/* Son hücre için özel stil */
+.footer-cell:last-child {
+  background-color: var(--sof-sap-blue);
+  color: white;
+}
+
+/* Filtre inputları için stil */
+.sales-offer-doc-sum__filter {
+  width: 100%;
+  padding: 0.3rem;
+  margin-top: 0.2rem;
+  border: 1px solid var(--sof-border-color);
+  border-radius: 3px;
+}
+
+.sales-offer-doc-sum__filter--sap-yellow {
+  background-color: var(--sof-sap-yellow);
+}
+
+/* Sıralama simgesi */
+.sales-offer-doc-sum__sort-icon {
+  margin-left: 0.5rem;
+}
+
+/* Sayfalama bölümü */
+.sales-offer-doc-sum__pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+  border-top: 2px solid var(--sof-border-color);
+}
+
+
+
+/* Responsive tasarım için medya sorguları */
+@media screen and (max-width: 1024px) {
+  .sales-offer-doc-sum__table {
+    font-size: 0.8rem;
+  }
+  
+  .sales-offer-doc-sum__table td,
+  .sales-offer-doc-sum__table th {
+    padding: 0.4rem;
+  }
+  
+  .sales-offer-doc-sum__td--musteri-ad,
+  .sales-offer-doc-sum__th--musteri-ad {
+    max-width: 200px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .sales-offer-doc-sum__table {
+    font-size: 0.75rem;
+  }
+  
+  .sales-offer-doc-sum__table td,
+  .sales-offer-doc-sum__table th {
+    padding: 0.3rem;
+  }
+  
+  .sales-offer-doc-sum__td--musteri-ad,
+  .sales-offer-doc-sum__th--musteri-ad {
+    max-width: 150px;
+  }
+  
+  .sales-offer-doc-sum__td--belge-aciklamasi,
+  .sales-offer-doc-sum__th--belge-aciklamasi {
+    max-width: 150px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .sales-offer-doc-sum__table {
+    font-size: 0.7rem;
+  }
+  
+  .sales-offer-doc-sum__table td,
+  .sales-offer-doc-sum__table th {
+    padding: 0.2rem;
+  }
+  
+  .sales-offer-doc-sum__td--musteri-ad,
+  .sales-offer-doc-sum__th--musteri-ad {
+    max-width: 100px;
+  }
+  
+  .sales-offer-doc-sum__td--belge-aciklamasi,
+  .sales-offer-doc-sum__th--belge-aciklamasi {
+    max-width: 100px;
+  }
+}

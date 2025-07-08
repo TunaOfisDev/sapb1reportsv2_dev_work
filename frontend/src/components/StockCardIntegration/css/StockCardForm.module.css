@@ -1,0 +1,126 @@
+/* path: frontend/src/components/StockCardIntegration/css/StockCardForm.module.css */
+
+.stock-card-form {
+  background-color: #f4f6f9;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Başlık */
+.stock-card-form__title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #0b5394; /* SAP Mavi */
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Grid yapı */
+.stock-card-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 2rem;
+}
+
+/* Form alanı */
+.stock-card-form__field {
+  display: flex;
+  flex-direction: column;
+}
+
+.stock-card-form__label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #333;
+}
+
+.stock-card-form__input {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #bcc2c7;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.stock-card-form__input:focus {
+  border-color: #f9c00c; /* SAP Sarı */
+  outline: none;
+}
+
+/* Hata mesajı */
+.stock-card-form__error {
+  font-size: 0.85rem;
+  color: #d32f2f;
+  margin-top: 0.25rem;
+}
+
+/* Gönder butonu */
+.stock-card-form__submit {
+  grid-column: span 2;
+  background-color: #f9c00c;
+  color: #000;
+  font-weight: bold;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  margin-top: 2rem;
+  transition: background-color 0.3s;
+}
+
+.stock-card-form__submit:hover {
+  background-color: #e0ac00;
+}
+
+/* StockCardForm.module.css */
+.stock-card-form__help {
+  font-size: 0.75rem;
+  color: #777;
+  margin-bottom: 4px;
+  display: block;
+}
+
+
+.stock-card-form__input.item-code {
+  width: 100%;
+  font-family: monospace;
+  letter-spacing: 0.6px;
+}
+
+.stock-card-form__input.item-name {
+  width: 100%;
+  resize: none;
+  min-height: 3.5rem;
+  font-family: inherit;
+}
+
+.stock-card-form__input[type="text"][style*="text-align: right"] {
+  caret-color: #3b82f6; /* İmleci belirgin yap */
+  padding-right: 1rem; /* Sağda daha fazla boşluk */
+  font-size: 1.1rem; /* Yaşlı kullanıcılar için biraz daha büyük font */
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stock-card-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stock-card-form__submit {
+    width: 100%;
+  }
+
+  .stock-card-form {
+    padding: 1rem;
+  }
+
+  .stock-card-form__title {
+    font-size: 1.3rem;
+  }
+}

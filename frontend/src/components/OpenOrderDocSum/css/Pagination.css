@@ -1,0 +1,72 @@
+/* frontend/src/components/OpenOrderDocSum/css/Pagination.css */
+.pagination-controls {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding: 1px 0;
+
+
+}
+
+.pagination-controls button {
+    margin:  2px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.pagination-controls button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination-size-selector {
+    margin-right: 0px;
+    display: flex;
+    align-items: left;
+    margin-left: 0px;
+}
+
+.pagination-size-selector label {
+    margin-right: 0px;
+    margin-left: 0px;
+    font-size: 14px;
+}
+
+.pagination-select {
+    padding: 8px 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    appearance: none;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-size: 14px;
+}
+
+.pagination-select:hover {
+    border-color: #007bff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-info {
+    margin-left: 0px;
+    font-size: 14px;
+    color: #333;
+}
+
+@media (max-width: 768px) {
+    .pagination-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .pagination-size-selector {
+        margin-bottom: 14px;
+    }
+}

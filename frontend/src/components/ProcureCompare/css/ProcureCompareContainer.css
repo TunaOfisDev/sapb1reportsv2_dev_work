@@ -1,0 +1,123 @@
+/* frontend/src/components/ProcureCompare/css/ProcureCompareContainer.css */
+/* Container Ana Blok */
+/* Ana container */
+.procure-compare-container {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Header alanı */
+.procure-compare-container__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* BAŞLIK + GÜNCELLEME + BUTONLAR yatay dağıtılıyor */
+  flex-wrap: wrap; /* küçük ekranlarda kırılabilsin */
+  margin-bottom: 16px;
+}
+
+/* Başlık */
+.procure-compare-container__title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2c4e6c;
+  margin-right: 16px;
+}
+
+/* Son güncelleme tarihi */
+.procure-compare-container__last-updated {
+  margin-right: 0;
+  margin-bottom: 14px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #555;
+}
+
+/* Aksiyon butonlarının grubu */
+.procure-compare-container__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Ortak buton stilleri */
+.procure-compare-container__button {
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #1976d2;
+  color: white;
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* Buton hover efekti */
+.procure-compare-container__button:hover {
+  background-color: #125ea6;
+}
+
+/* Excel, PDF, Notlar için özel varyasyonlar */
+.procure-compare-container__button--excel,
+.procure-compare-container__button--pdf {
+  background-color: #28a745;
+}
+
+.procure-compare-container__button--excel:hover,
+.procure-compare-container__button--pdf:hover {
+  background-color: #218838;
+}
+
+.procure-compare-container__button--notes {
+  background-color: #f3f3f3;
+  color: #333;
+}
+
+.procure-compare-container__button--notes:hover {
+  background-color: #e0e0e0;
+}
+
+/* Hata mesajı */
+.procure-compare-container__error {
+  color: #dc3545;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+/* Yükleniyor mesajı */
+.procure-compare-container__loading {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: #555;
+}
+/* Responsive düzenlemeler */
+@media (max-width: 768px) {
+  .procure-compare-container__header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .procure-compare-container__title {
+    margin-right: 0;
+    margin-bottom: 8px;
+  }
+
+
+
+  .procure-compare-container__actions {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .procure-compare-container__button {
+    width: 100%;
+    max-width: 280px;
+  }
+}

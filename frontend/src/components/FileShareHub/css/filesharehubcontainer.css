@@ -1,0 +1,219 @@
+/* frontend/src/components/FileShareHub/css/filesharehubcontainer.css */
+
+.filesharehub {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+.filesharehub__title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.filesharehub__loading {
+  font-size: 16px;
+  color: #ff9800;
+  text-align: center;
+  padding: 10px;
+}
+
+.filesharehub__error {
+  font-size: 16px;
+  color: #f44336;
+  text-align: center;
+  padding: 10px;
+  background-color: #ffebee;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.filesharehub__navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #e3f2fd;
+  border-radius: 4px;
+}
+
+.filesharehub__current-path {
+  font-size: 16px;
+  flex-grow: 1;
+  margin-right: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filesharehub__navigation-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.filesharehub__root-button,
+.filesharehub__back-button {
+  padding: 8px 12px;
+  font-size: 14px;
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.filesharehub__root-button:hover,
+.filesharehub__back-button:hover {
+  background-color: #1565c0;
+}
+
+.filesharehub__root-button:disabled,
+.filesharehub__back-button:disabled {
+  background-color: #b0bec5;
+  cursor: not-allowed;
+}
+
+.filesharehub__content {
+  display: flex;
+  margin-top: 20px;
+  gap: 20px;
+}
+
+.filesharehub__left-panel,
+.filesharehub__right-panel {
+  flex: 1;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+}
+
+.filesharehub__section-title {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #333;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 5px;
+}
+
+.filesharehub__directory-list,
+.filesharehub__file-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.filesharehub__directory-item,
+.filesharehub__file-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 5px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.filesharehub__directory-item:hover,
+.filesharehub__file-item:hover {
+  background-color: #f1f1f1;
+}
+
+.filesharehub__icon {
+  font-size: 1.5em;
+  margin-right: 10px;
+  color: #757575;
+}
+
+.filesharehub__thumbnail {
+  width: 100px; /* Küçük resmin genişliği */
+  height: auto; /* Orantılı şekilde yükseklik */
+  margin-right: 10px;
+}
+
+
+
+.filesharehub__item-size {
+  margin-right: 10px;
+  color: #666;
+  font-size: 12px;
+  min-width: 70px;
+  text-align: right;
+}
+
+.filesharehub__download-button {
+  padding: 5px 10px;
+  font-size: 14px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.filesharehub__download-button:hover {
+  background-color: #45a049;
+}
+
+.filesharehub__no-item {
+  padding: 10px;
+  color: #666;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Scroll bar stilleri */
+.filesharehub__directory-list::-webkit-scrollbar,
+.filesharehub__file-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.filesharehub__directory-list::-webkit-scrollbar-track,
+.filesharehub__file-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.filesharehub__directory-list::-webkit-scrollbar-thumb,
+.filesharehub__file-list::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.filesharehub__directory-list::-webkit-scrollbar-thumb:hover,
+.filesharehub__file-list::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.filesharehub__item-name {
+  flex-grow: 1;
+  margin-right: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.filesharehub__home-button {
+  padding: 8px 12px;
+  font-size: 14px;
+  background-color: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.filesharehub__home-button:hover {
+  background-color: #1565c0;
+}

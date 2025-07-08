@@ -1,0 +1,80 @@
+/* frontend/src/components/SupplierPayment/css/Pagination.css */
+.pagination-supplierpayment__controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0; /* Boyutun korunmasını sağlar */
+  }
+  
+  .pagination-supplierpayment__button {
+    margin: 0;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #2C4E6C; /* SAP mavisi */
+    color: white;
+    cursor: pointer;
+    font-size: 0.85rem; /* Daha ince font boyutu */
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  
+  .pagination-supplierpayment__button:hover {
+    background-color: #fcbf1e; /* SAP sarısı */
+    transform: scale(1.05); /* Hover'da küçük bir büyüme efekti */
+  }
+  
+  .pagination-supplierpayment__button:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+  }
+  
+  .pagination-supplierpayment__size-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Label ve select arasında boşluk */
+  }
+  
+  .pagination-supplierpayment__size-selector-label {
+    font-size: 0.85rem;
+    color: #333;
+  }
+  
+  .pagination-supplierpayment__select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    appearance: none;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  
+  .pagination-supplierpayment__select:hover {
+    border-color: #fcbf1e; /* SAP sarısı */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .pagination-supplierpayment__info {
+    font-size: 0.85rem;
+    color: #333;
+  }
+  
+  @media (max-width: 768px) {
+    .pagination-supplierpayment__controls {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px; /* Mobilde butonlar arasında daha fazla boşluk */
+    }
+  
+    .pagination-supplierpayment__size-selector {
+      margin-bottom: 8px;
+    }
+  
+    .pagination-supplierpayment__button {
+      width: 100%; /* Mobilde buton genişliği tam olur */
+    }
+  }
+  
+    

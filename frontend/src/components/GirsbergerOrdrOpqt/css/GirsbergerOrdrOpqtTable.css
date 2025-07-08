@@ -1,0 +1,125 @@
+/* frontend/src/components/GirsbergerOrdrOpqt/css/GirsbergerOrdrOpqtTable.css */
+
+.girsberger-ordr-opqt__table-container {
+  overflow-x: auto;
+  margin-top: 0px;
+}
+
+.girsberger-ordr-opqt__table {
+  width: 100%;
+  border-collapse: collapse; /* updated from separate to collapse */
+  border-spacing: 0;
+  font-size: 12px;
+  border: 1px solid #ddd; /* updated border color */
+}
+
+/* Sticky header with SAP blue color */
+.girsberger-ordr-opqt__thead--header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: #2C4E6C; /* SAP mavisi */
+}
+
+.girsberger-ordr-opqt__table th,
+.girsberger-ordr-opqt__table td {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+}
+
+.girsberger-ordr-opqt__table th {
+  background-color: #2C4E6C; /* SAP mavisi */
+  color: white;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.girsberger-ordr-opqt__header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.girsberger-ordr-opqt__filter-container {
+  margin-top: 5px;
+}
+
+.girsberger-ordr-opqt__th--hover:hover {
+  background-color: #2C4E6C; /* SAP mavisi */
+}
+
+.girsberger-ordr-opqt__td--numeric,
+.girsberger-ordr-opqt__th--numeric-header {
+  text-align: right;
+}
+
+.girsberger-ordr-opqt__td--total {
+  font-weight: bold;
+}
+
+.girsberger-ordr-opqt__td--hidden {
+  display: none;
+}
+
+.girsberger-ordr-opqt__td--belge-no,
+.girsberger-ordr-opqt__td--satici,
+.girsberger-ordr-opqt__td--musteri-ad {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+.girsberger-ordr-opqt__td--belge-aciklamasi {
+  font-size: 8px;
+}
+
+/* Satır hover efekti - Her satır için bağımsız çalışır */
+.girsberger-ordr-opqt__table tbody tr {
+  transition: background-color 0.3s ease;
+}
+
+.girsberger-ordr-opqt__table tbody tr:hover {
+  background-color: #fcbf1e !important; /* SAP sarısı */
+}
+
+/* Çift satırlar için arka plan rengi */
+.girsberger-ordr-opqt__table tbody tr:nth-child(odd) {
+  background-color: #f9f9f9; /* Hafif gri */
+}
+
+.girsberger-ordr-opqt__table tbody tr:nth-child(even) {
+  background-color: #e9e9e9; /* Daha koyu gri */
+}
+
+/* Responsive Tasarım */
+@media (max-width: 1024px) {
+  .girsberger-ordr-opqt__table {
+    font-size: 0.9rem;
+  }
+  
+  .girsberger-ordr-opqt__table th,
+  .girsberger-ordr-opqt__table td {
+    padding: 0.4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .girsberger-ordr-opqt__table th,
+  .girsberger-ordr-opqt__table td {
+    padding: 0.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .girsberger-ordr-opqt__table {
+    font-size: 0.75rem;
+  }
+  
+  .girsberger-ordr-opqt__table th,
+  .girsberger-ordr-opqt__table td {
+    padding: 0.2rem;
+  }
+}

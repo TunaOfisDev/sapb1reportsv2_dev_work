@@ -1,0 +1,93 @@
+/* frontend/src/components/SalesInvoiceSum/css/SalesInvoiceSumContainer.css */
+.sales-invoice-sum-container {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+}
+
+.sales-invoice-sum-container__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #2C4E6C; /* SAP mavisi */
+}
+
+.sales-invoice-sum-container__title {
+  font-size: 24px;
+  color: #2C4E6C; /* SAP mavisi */
+  margin: 0;
+  padding: 0;
+}
+
+.sales-invoice-sum-container__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.sales-invoice-sum-container__button {
+  padding: 8px 16px;
+  background-color: #2C4E6C; /* SAP mavisi */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+.sales-invoice-sum-container__button-wrapper {
+  display: flex;
+  gap: 15px; /* İki buton arasında 15px boşluk */
+  align-items: center; /* Dikey hizalama */
+}
+
+
+.sales-invoice-sum-container__button:hover {
+  background-color: #fcbf1e; /* SAP sarısı */
+  transform: scale(1.05);
+}
+
+.sales-invoice-sum-container__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sales-invoice-sum-container__table th, 
+.sales-invoice-sum-container__table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.sales-invoice-sum-container__table th {
+  background-color: #2C4E6C; /* SAP mavisi */
+  color: white;
+}
+
+.sales-invoice-sum-container__table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.sales-invoice-sum-container__table tr:hover {
+  background-color: #fcbf1e; /* Hover etkisi için SAP sarısı */
+}
+
+.sales-invoice-sum-container__table td {
+  color: #333;
+}
+
+.sales-invoice-sum-container__last-updated-time {
+  margin: 0;
+  padding: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.sales-invoice-sum-container__button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}

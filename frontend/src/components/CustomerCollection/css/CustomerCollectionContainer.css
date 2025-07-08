@@ -1,0 +1,82 @@
+/* frontend/src/components/CustomerCollection/css/CustomerCollectionContainer.css */
+.customer-collection-container {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+  }
+  
+  .customer-collection-container__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #2C4E6C; /* SAP mavisi */
+  }
+  
+  .customer-collection-container__title {
+    font-size: 24px;
+    color: #2C4E6C; /* SAP mavisi */
+    margin: 0;
+    padding: 0;
+  }
+  
+  .customer-collection-container__actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .customer-collection-container__button {
+    padding: 8px 16px;
+    background-color: #2C4E6C; /* SAP mavisi */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  .customer-collection-container__button:hover {
+    background-color: #fcbf1e; /* SAP sarısı */
+    transform: scale(1.05);
+  }
+  
+  .customer-collection-container__table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .customer-collection-container__table th, 
+  .customer-collection-container__table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .customer-collection-container__table th {
+    background-color: #2C4E6C; /* SAP mavisi */
+    color: white;
+  }
+  
+  .customer-collection-container__table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .customer-collection-container__table tr:hover {
+    background-color: #fcbf1e; /* Hover etkisi için SAP sarısı */
+  }
+  
+  .customer-collection-container__table td {
+    color: #333;
+  }
+  
+  .customer-collection-container__last-updated {
+    margin: 0;
+    padding: 0;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  

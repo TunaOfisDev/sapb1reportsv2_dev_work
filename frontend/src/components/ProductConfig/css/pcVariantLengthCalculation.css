@@ -1,0 +1,82 @@
+/* frontend/src/components/ProductConfig/css/pcVariantLengthCalculation.css */
+.variant-length-calculator {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.length-info-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.length-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background-color: white;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.length-label {
+    font-weight: 500;
+    color: #495057;
+    min-width: 140px;
+}
+
+.length-count {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: monospace;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.length-count.valid {
+    color: #28a745;
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+.length-count.exceeded {
+    color: #dc3545;
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+.remaining-chars {
+    font-size: 0.9em;
+    color: #6c757d;
+    margin-left: 8px;
+}
+
+.warnings {
+    margin-top: 12px;
+}
+
+.warning-message {
+    color: #dc3545;
+    font-size: 0.9em;
+    padding: 8px;
+    background-color: rgba(220, 53, 69, 0.1);
+    border-radius: 4px;
+    margin-top: 8px;
+}
+
+/* Responsive tasarım için */
+@media (max-width: 768px) {
+    .length-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .length-count {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

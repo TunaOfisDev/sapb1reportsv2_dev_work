@@ -1,0 +1,52 @@
+/* frontend/src/components/ProductConfigv2/styles/OptionButton.css */
+
+/* Temel buton stili (ERP havası) */
+.option-button {
+  display: inline-block;
+  min-width: 140px;  /* ERP benzeri sabit minimum genişlik */
+  padding: 0.45rem 0.75rem;
+  margin: 0;         /* Dış boşluk container'da kontrol edilir */
+  font-size: 0.95rem;
+  color: #333;
+  background-color: #fafafa;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+/* Hover: ERP benzeri hafif parlama */
+.option-button:hover {
+  background-color: #f2f2f2;
+  border-color: #c8c8c8;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+}
+
+/* Focus: klavye odak durumunda net çerçeve */
+.option-button:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+  background-color: #fff;
+}
+
+/* Aktif (seçili) durum: Kurumsal mavi zemin, beyaz yazı */
+.option-button--active {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #fff;
+  box-shadow: none;
+}
+
+/* Disabled (opsiyonel), eğer ileride kullanılırsa */
+.option-button:disabled,
+.option-button[disabled] {
+  background-color: #eaeaea;
+  color: #b8b8b8;
+  border-color: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.7;
+}

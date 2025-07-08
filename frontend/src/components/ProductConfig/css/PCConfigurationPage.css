@@ -1,0 +1,90 @@
+/* frontend/src/components/ProductConfig/css/PCConfigurationPage.css */
+.pc-configuration-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.pc-configuration-page__header {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pc-configuration-page__title {
+    flex: 1;
+}
+
+.pc-configuration-page__title h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: #333;
+}
+
+.pc-configuration-page__current-variant {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    color: #666;
+}
+
+.pc-configuration-page__actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.pc-configuration-page__main {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.pc-configuration-page__button-group {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.pc-configuration-page__footer {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+}
+
+.pc-configuration-page__modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .pc-configuration-page__header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .pc-configuration-page__actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .pc-configuration-page__button-group {
+        flex-direction: column;
+    }
+
+    .pc-configuration-page__button-group button {
+        width: 100%;
+    }
+
+    .pc-configuration-page__modal-actions {
+        flex-direction: column;
+    }
+}

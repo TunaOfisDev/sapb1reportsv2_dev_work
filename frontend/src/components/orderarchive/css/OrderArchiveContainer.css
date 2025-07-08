@@ -1,0 +1,167 @@
+/* frontend/src/components/orderarchive/css/OrderArchiveContainer.css */
+
+/* Genel Container Stili */
+.orderarchive-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+}
+
+/* Üst Bölüm - Başlık ve Filtreler */
+.orderarchive-container__top {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 1rem;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+/* Başlık Stili */
+.orderarchive-container__title {
+    font-size: 1.25rem;
+    color: #2C4E6C;
+    margin: 0;
+    white-space: nowrap;
+    min-width: max-content;
+    font-weight: 600;
+}
+
+/* Filtre Bölümü */
+.orderarchive-container__filters {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* Filtre Input ve Select Stilleri */
+.orderarchive-container__filter-input,
+.orderarchive-container__filter-select {
+    padding: 0.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    min-width: 200px;
+}
+
+/* Filtre Butonları */
+.orderarchive-container__filter-button {
+    padding: 0.5rem 1rem;
+    background-color: #2C4E6C;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.orderarchive-container__filter-button:hover {
+    background-color: #1a3346;
+}
+
+/* Hata Mesajı */
+.orderarchive-container__error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    padding: 1rem;
+    font-size: 0.9rem;
+}
+
+/* Yükleme Spinner */
+.orderarchive-container__loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #2C4E6C;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 2rem auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Tablo Bölümü */
+.orderarchive-container__table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    overflow: hidden;
+    font-size: 0.85rem;
+}
+
+/* Sayfalama */
+.orderarchive-container__pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+.orderarchive-container__pagination-info {
+    font-size: 0.85rem;
+}
+
+.orderarchive-container__pagination-button {
+    padding: 0.5rem 1rem;
+    background-color: #2C4E6C;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.orderarchive-container__pagination-button:hover {
+    background-color: #1a3346;
+}
+
+.orderarchive-container__pagination-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Responsive Tasarım */
+@media screen and (max-width: 768px) {
+    .orderarchive-container__top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .orderarchive-container__title {
+        width: 100%;
+        text-align: center;
+        white-space: normal;
+    }
+
+    .orderarchive-container__filters {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .orderarchive-container__filter-input,
+    .orderarchive-container__filter-select {
+        min-width: 100%;
+    }
+
+    .orderarchive-container__table {
+        font-size: 0.75rem;
+    }
+}

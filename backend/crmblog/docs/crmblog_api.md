@@ -1,0 +1,1 @@
+crmblog adında yeni bir django rest uygulaması yapacağım model yapımı incele lütfen ve varsa güncelleme tavsiyen güncelle crmblog api amacım sap business one erp sistemini kullanmaya diğer kullanıcılar için basit günlük iş kayıtlarını tutabilmeleri

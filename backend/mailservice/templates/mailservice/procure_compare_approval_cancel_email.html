@@ -1,0 +1,74 @@
+{# Satınalma Onay İptal Bildirimi - HTML #}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f8d7da;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 5px solid #dc3545;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+        }
+        .field { margin-bottom: 10px; }
+        .field-label { font-weight: bold; color: #555; }
+        .teklif-listesi {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #6c757d;
+            text-align: center;
+            border-top: 1px solid #dee2e6;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Satınalma Onay İptal Bildirimi</h2>
+        <p>{{ approval.kullanici.email }} tarafından bir satınalma onayı iptal edilmiştir.</p>
+    </div>
+
+    {% with detay=approval.satir_detay_json %}
+    <div class="section">
+        <h3>İptal Edilen Kalem Bilgileri</h3>
+        <div class="field"><span class="field-label">Belge No:</span> {{ approval.belge_no }}</div>
+        <div class="field"><span class="field-label">Kalem Tanımı:</span> {{ detay.kalem_tanimi|default:"-" }}</div>
+        <div class="field"><span class="field-label">Tedarikçi:</span> {{ detay.tedarikci|default:"-" }}</div>
+        <div class="field"><span class="field-label">Miktar:</span> {{ detay.sip_miktar }}</div>
+        <div class="field"><span class="field-label">Net Tutar (YPB):</span> {{ detay.net_tutar_ypb }}</div>
+    </div>
+    {% endwith %}
+
+    <div class="section">
+        <h3>İptal Bilgisi</h3>
+        <div class="field"><span class="field-label">Durum:</span> Onay İptal</div>
+        <div class="field"><span class="field-label">Açıklama:</span> {{ approval.aciklama|default:"-" }}</div>
+        <div class="field"><span class="field-label">İptal Eden:</span> {{ approval.kullanici.email }}</div>
+        <div class="field"><span class="field-label">Tarih:</span> {{ approval.created_at|date:"d.m.Y H:i" }}</div>
+    </div>
+
+    <div class="footer">
+        Bu e-posta sistem tarafından otomatik olarak gönderilmiştir. Lütfen cevaplamayınız.
+    </div>
+</body>
+</html>

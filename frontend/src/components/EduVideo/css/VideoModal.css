@@ -1,0 +1,54 @@
+/* frontend/src/components/EduVideo/css/VideoModal.css */
+.video-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  /* İçerik bloğu stilini ayarlayın */
+  .video-modal-content {
+    position: relative;
+    width: 100%;
+    max-width: 1040px;
+    height: auto;
+    background: #fff;
+    padding: 1rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+  }
+  
+  /* İç içe iframe element stilini ayarlayın */
+  .video-modal-content iframe {
+    width: 100%;
+    height: 672px; /* Bu yükseklik değeri sizin içeriğinize göre değişebilir. */
+  }
+  
+  /* Opsiyonel: İçerik bloğu için modifikatör stilini ayarlayın */
+  .video-modal-content--large {
+    max-width: 960px;
+  }
+  
+  /* Kapat butonu stilini ayarlayın (Eğer kapat butonu eklemek isterseniz) */
+  .video-modal__close-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: #333;
+    cursor: pointer;
+  }
+  
+  /* Kapat butonu üzerine gelindiğinde yapılacak stil değişikliği */
+  .video-modal__close-btn:hover {
+    color: #666;
+  }
+  

@@ -1,0 +1,86 @@
+/* frontend/src/components/Home/css/Home.css */
+:root {
+  --sap-blue: #2C4E6C;
+  --sap-yellow: #fcbf1e;
+  --sap-input: #f7d67def;
+  --background-color: #f0f4f8;
+  --card-background: #ffffff;
+  --text-color: #333333;
+}
+
+.Home {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: 'Arial', sans-serif;
+  height: 90vh; /* min-height yerine height kullanıyoruz */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Dikey kaydırmayı engeller */
+  perspective: 1000px; /* 3D efekt derinliği için eklendi */
+}
+
+.Home-header {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  flex-grow: 1;
+  overflow-y: auto; /* İçerik çok uzunsa, sadece bu kısımda kaydırma olur */
+}
+
+.Home-section {
+  background: var(--card-background);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  transform-style: preserve-3d; /* 3D dönüşümler için eklendi */
+}
+.Home-section:hover {
+  transform: rotateY(15deg) translateY(-5px); /* 3D dönüşüm ve yukarı kaldırma efekti */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+.Home-section-title {
+  color: var(--sap-blue);
+  font-size: 20px;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.Home-link-button {
+  background-color: var(--sap-blue);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 4px;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Güncellendi */
+  text-align: left; /* Değiştirildi: center'dan left'e */
+}
+.Home-link-button:hover {
+  background-color: var(--sap-yellow);
+  color: var(--text-color);
+  box-shadow: 0 0 10px var(--sap-yellow); /* Işık efekti eklendi */
+}
+
+.Home-footer {
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  padding: 15px 0;
+  background: var(--sap-blue);
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .Home-header {
+    grid-template-columns: 1fr;
+  }
+  .Home-section {
+    width: 100%;
+    margin: 10px 0;
+  }
+}

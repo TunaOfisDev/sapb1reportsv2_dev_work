@@ -1,0 +1,153 @@
+/* frontend/src/components/SalesOfferDocSum/css/CustomerMonthlySummaryTable.css */
+:root {
+  --sap-blue: #2C4E6C;
+  --sap-yellow: #fcbf1e;
+  --border-color: #ddd;
+}
+
+.customer-monthly-summary-table {
+  width: 65%;
+  border-collapse: collapse;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Başlık satırı */
+.customer-monthly-summary-table__header {
+  background-color: var(--sap-blue);
+  color: white;
+  font-weight: bold;
+}
+
+/* Satır ve hücreler */
+.customer-monthly-summary-table__row {
+  transition: background-color 0.3s ease;
+}
+
+.customer-monthly-summary-table__row:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.customer-monthly-summary-table__row:hover {
+  background-color: var(--sap-yellow);
+}
+
+.customer-monthly-summary-table__cell {
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  text-align: left;
+}
+
+/* Sayısal hücreler */
+.customer-monthly-summary-table__cell--numeric,
+.customer-monthly-summary-table__header-cell--numeric {
+  text-align: right;
+}
+
+/* Başlık hücreleri */
+.customer-monthly-summary-table__header-cell {
+  padding: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.customer-monthly-summary-table__header-cell--left {
+  text-align: left;
+}
+
+.customer-monthly-summary-table__header-cell--right {
+  text-align: right;
+}
+
+/* Pagination */
+.customer-monthly-summary-table__pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5px;
+  flex-wrap: wrap;
+}
+
+.customer-monthly-summary-table__pagination-item {
+  padding: 6px 10px;
+  margin: 0 4px;
+  background-color: #f2f2f2;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.customer-monthly-summary-table__pagination-item:hover {
+  background-color: var(--sap-yellow);
+}
+
+.customer-monthly-summary-table__pagination-item--active {
+  background-color: var(--sap-blue);
+  color: white;
+}
+
+/* Responsive tasarım */
+@media screen and (max-width: 1024px) {
+  .customer-monthly-summary-table {
+    font-size: 13px;
+  }
+  .customer-monthly-summary-table__cell,
+  .customer-monthly-summary-table__header-cell {
+    padding: 10px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .customer-monthly-summary-table {
+    font-size: 12px;
+  }
+  .customer-monthly-summary-table__cell,
+  .customer-monthly-summary-table__header-cell {
+    padding: 8px;
+  }
+  .customer-monthly-summary-table__pagination-item {
+    padding: 6px 10px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .customer-monthly-summary-table {
+    font-size: 11px;
+  }
+  .customer-monthly-summary-table__cell,
+  .customer-monthly-summary-table__header-cell {
+    padding: 6px;
+  }
+  .customer-monthly-summary-table__pagination-item {
+    padding: 4px 8px;
+    margin: 0 2px;
+  }
+  .customer-monthly-summary-table__pagination {
+    justify-content: space-between;
+  }
+}
+
+/* Ek özellikler */
+.customer-monthly-summary-table__total-row {
+  font-weight: bold;
+  background-color: #e9ecef;
+}
+
+.customer-monthly-summary-table__total-row:hover {
+  background-color: #d1d5d8;
+}
+
+.customer-monthly-summary-table__refresh-button {
+  padding: 10px 15px;
+  background-color: var(--sap-blue);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 10px;
+}
+
+.customer-monthly-summary-table__refresh-button:hover {
+  background-color: #1c3f5a;
+}

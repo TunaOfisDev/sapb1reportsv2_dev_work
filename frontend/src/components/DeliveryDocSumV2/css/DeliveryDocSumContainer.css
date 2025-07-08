@@ -1,0 +1,60 @@
+/* frontend/src/components/DeliveryDocSum/css/DeliveryDocSumContainer.css */
+/* Ana konteyner stilini güncelle */
+.delivery-doc-sum-container {
+    background-color: #ffffff; /* Arka planı beyaz yap */
+    padding: 1rem; /* İç boşluğu azalt */
+    border-radius: 4px; /* Kenar yuvarlaklığını azalt */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06); /* Gölgeyi hafiflet */
+    font-family: 'Open Sans', sans-serif; /* Font stilini güncelle */
+    color: #333; /* Metin rengini koru */
+    border: 1px solid #eaeaea; /* Kenar çizgisini hafif bir gri yap */
+}
+
+/* Üst bilgi stilini güncelle */
+.delivery-doc-sum-container__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem; /* Alt boşluğu azalt */
+    border-bottom: 1px solid #eaeaea; /* Alt çizgiyi ince ve gri yap */
+}
+
+/* Başlık stilini güncelle */
+.delivery-doc-sum-container__title {
+    font-size: 1.25rem; /* Başlık boyutunu azalt */
+    margin: 0; /* Marjı koru */
+    color: #333; /* Başlık metin rengini koyu gri yap */
+}
+
+/* Düğme kapsayıcı stilini güncelle */
+.delivery-doc-sum-container__button-wrapper {
+    display: flex;
+    gap: 8px; /* Düğmeler arasındaki boşluğu azalt */
+}
+
+/* Düğme stilini güncelle */
+.delivery-doc-sum-container__button {
+    background-color: #0056b3; /* Düğme rengini koyu mavi yap */
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem; /* Düğme padding'ini azalt */
+    border-radius: 4px; /* Düğme kenar yuvarlaklığını azalt */
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: 600; /* Yazı kalınlığını artır */
+}
+
+/* Düğme üzerine gelindiğinde stilini güncelle */
+.delivery-doc-sum-container__button:hover {
+    background-color: #003366; /* Düğme üzerine gelindiğinde daha koyu bir renk yap */
+}
+
+/* Yükleme ve hata mesaj stilini güncelle */
+.loading-message,
+.error-message {
+  padding: 1rem;
+  text-align: center;
+  color: #d9534f; /* Hata mesajı için kırmızı rengi belirle */
+  background-color: #f9f9f9; /* Mesaj arka planını hafif gri yap */
+  border: 1px solid #eaeaea; /* Çevresine hafif gri bir çerçeve ekle */
+}

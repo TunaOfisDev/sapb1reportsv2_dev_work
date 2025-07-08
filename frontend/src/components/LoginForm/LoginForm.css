@@ -1,0 +1,106 @@
+/* frontend/src/components/LoginForm/css/LoginForm.css */
+.login-page-container {
+  overflow-y: hidden; /* Sadece dikey kaydırma çubuğunu kaldır */
+  overflow-x: visible; /* Yatay kaydırmayı etkinleştir */
+}
+
+.login-container {
+  background: url('/var/www/sapb1reportsv2/frontend/public/sapb1_icon.jpg') center/100% no-repeat, white;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100vh; /* Ekran boyutunu dolduracak şekilde yükseklik */
+  padding-left: 25%;
+}
+
+.login-area {
+  width: calc(25% - 10px); /* Sağ taraftaki beyaz alana padding ekleyerek genişlik ayarla */
+  margin-right: 50px; /* Sağ taraftan 10px boşluk bırak */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-form {
+  width: calc(100% - 20px); /* İç padding düşüldükten sonra genişlik */
+  padding: 20px;
+  background: transparent; /* Arka planı kaldır */
+  border-radius: 4px;
+  box-shadow: none; /* Gölgeyi kaldır */
+}
+
+.login-form__group {
+  margin-bottom: 15px;
+}
+
+.login-form__label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.login-form__input,
+.login-form__button {
+  box-sizing: border-box; /* Padding ve border'ı genişliğe dahil et */
+  width: 100%; /* Elemanların genişliğini %100 yap */
+  padding: 10px; /* İç boşluk */
+  margin-bottom: 10px; /* Alt boşluk */
+  background-color: #FFC72C; 
+}
+
+.login-form__input {
+  background-color: #FFC72C !important;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  color: #000;
+}
+
+
+.login-form__button {
+  background-color: #2C4E6C; /* Butonun border'ını giriş alanlarıyla aynı genişlikte yap */
+  background-color: #2C4E6C;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+
+.login-form__button:hover {
+  background-color: #406d94;
+}
+
+.login-footer {
+  position: absolute;
+  bottom: 20px;
+  left: 20px; /* right yerine left kullanıldı */
+  font-size: 12px;
+  color: #333;
+  text-align: left; /* sağdan sola çevrildi */
+  max-width: 280px; /* 400px'in %70'i (400 * 0.7 = 280) */
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  line-height: 1.5;
+  transition: all 0.3s ease;
+}
+
+.login-footer:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 768px) {
+  .login-footer {
+    font-size: 10px;
+    max-width: 210px; /* 300px'in %70'i (300 * 0.7 = 210) */
+    bottom: 10px;
+    left: 10px; /* right yerine left kullanıldı */
+    padding: 8px 12px;
+  }
+}

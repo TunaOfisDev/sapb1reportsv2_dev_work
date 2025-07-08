@@ -1,0 +1,115 @@
+
+<!-- SUBJECT: Günlük Sofitel Müşteri Bakiye Raporu -->
+{% load get_item %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+        th {
+            background-color: #f0f0f0;
+            border: 1px solid #999;
+            padding: 8px;
+            text-align: left;
+        }
+        td {
+            border: 1px solid #ccc;
+            padding: 8px;
+        }
+        td.numeric {
+            text-align: right;
+        }
+        tfoot td {
+            font-weight: bold;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h2>{{ report_title }}</h2>
+    <p><strong>Rapor Tarihi:</strong> {{ report_date }}</p>
+    <p><em>Bu tabloyu kopyalayarak Excel’e yapıştırabilirsiniz.</em></p>
+
+    <table>
+        <thead>
+            <tr>
+                {% for col in columns %}
+                    <th>{{ col }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+                <tr>
+                    {% for col in columns %}
+                        {% with value=row|get_item:col %}
+                            {% if value is None or value == "" %}
+                                <td class="numeric">0</td>
+                            {% elif value|floatformat:0 %}
+                                <td class="numeric">{{ value|floatformat:0|intcomma }}</td>
+                            {% else %}
+                                <td>{{ value }}</td>
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="{{ columns|length }}">Veri bulunamadı.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                {% for col in columns %}
+                    {% if forloop.first %}
+                        <td><strong>Ara Toplam</strong></td>
+                    {% else %}
+                        {% with val=subtotal|get_item:col %}
+                            {% if val %}
+                                <td class="numeric"><strong>{{ val|floatformat:0|intcomma }}</strong></td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            <tr>
+                {% for col in columns %}
+                    {% if forloop.first %}
+                        <td><strong>Kümülatif Toplam</strong></td>
+                    {% else %}
+                        {% with val=cumulative_total|get_item:col %}
+                            {% if val %}
+                                <td class="numeric"><strong>{{ val|floatformat:0|intcomma }}</strong></td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                        {% endwith %}
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        </tfoot>
+    </table>
+</body>
+</html>

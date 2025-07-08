@@ -1,0 +1,38 @@
+/* frontend/src/components/NewCustomerForm/css/NewCustomerFormMain.css */
+
+.new-customer-form-main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .new-customer-form-main__tabs {
+    display: flex;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 20px;
+  }
+  
+  .new-customer-form-main__tab {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .new-customer-form-main__tab:hover {
+    color: #007bff;
+  }
+  
+  .new-customer-form-main__tab--active {
+    font-weight: bold;
+    color: #007bff;
+    border-color: #007bff;
+  }
+  
+  .new-customer-form-main__content {
+    padding: 10px;
+  }
+  

@@ -1,0 +1,70 @@
+/* frontend\src\components\ProductConfig\pages\PCVariantPage.css */
+.pc-variant-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.pc-variant-page__title {
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.pc-variant-page__subtitle {
+    font-size: 24px;
+    color: #333;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.pc-variant-page__details {
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.pc-variant-page__details p {
+    margin-bottom: 10px;
+}
+
+.pc-variant-page__options-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.pc-variant-page__option-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f1f3f5;
+    border-radius: 4px;
+}
+
+.pc-variant-page__actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+}
+
+.pc-variant-page__loading,
+.pc-variant-page__error {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+}
+
+.pc-variant-page__error {
+    color: #dc3545;
+}
+
+@media (max-width: 768px) {
+    .pc-variant-page__actions {
+        flex-direction: column;
+    }
+
+    .pc-variant-page__actions button {
+        margin-bottom: 10px;
+    }
+}

@@ -1,0 +1,117 @@
+/* frontend/src/components/CustomerCollection/css/CustomerCollectionTable.css */
+.customer-collection__table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
+  font-family: 'Arial', sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.customer-collection__thead--header th {
+  background-color: #2C4E6C; /* SAP mavisi */
+  color: white;
+  font-weight: bold;
+  text-align: left;
+  padding: 0.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.customer-collection__table th,
+.customer-collection__table td {
+  border: 1px solid #dee2e6;
+  padding: 0.5rem;
+}
+
+.customer-collection__table tbody tr {
+  background-color: #ffffff;
+  transition: background-color 0.3s ease;
+}
+
+.customer-collection__table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.customer-collection__table tbody tr:hover {
+  background-color: #fcbf1e; /* SAP sarısı */
+}
+
+.customer-collection__td--numeric {
+  text-align: right;
+}
+
+.customer-collection__thead--numeric-header {
+  text-align: right;
+}
+
+.customer-collection__tfoot--dynamic-subtotal {
+  font-weight: bold;
+  text-align: right;
+  color: #2C4E6C; /* SAP mavisi */
+  background-color: #f8f9fa; /* Hafif gri arka plan */
+  padding: 10px;
+  border-top: 2px solid #dee2e6; /* Ayırıcı çizgi */
+}
+
+.footer-cell:last-child {
+  background-color: #2C4E6C; /* SAP mavisi */
+  color: white;
+}
+
+.customer-collection__controls-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 16px;
+}
+
+.customer-collection__table tfoot td {
+  background-color: #f8f9fa;
+  border-top: 2px solid #dee2e6;
+}
+
+.customer-collection__table tfoot tr:last-child td {
+  border-bottom: 2px solid #dee2e6;
+}
+
+/* Hover efekti için */
+.customer-collection__table tfoot tr:hover td {
+  background-color: #e9ecef;
+}
+
+.customer-collection__td--footer-bold {
+  font-weight: bold !important;
+  background-color: #f8f9fa;  /* Opsiyonel: alt toplam satırı için hafif gri arka plan */
+}
+
+.customer-collection__tfoot td {
+  border-top: 2px solid #dee2e6;  /* Üst çizgi ekleyerek ayırıcı */
+  padding: 10px;
+}
+
+
+
+/* Mobil responsive için */
+@media (max-width: 768px) {
+  .customer-collection__controls-wrapper {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .customer-collection__table {
+    font-size: 0.75rem;
+  }
+
+  .customer-collection__table td,
+  .customer-collection__table th {
+    padding: 0.3rem;
+  }
+}
+
+

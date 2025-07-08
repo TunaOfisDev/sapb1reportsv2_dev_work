@@ -1,0 +1,92 @@
+/* frontend/src/components/SalesOrderDocSum/css/Pagination.css */
+:root {
+    --sap-blue: #2C4E6C;
+    --sap-yellow: #f9ca24;
+    --disabled-gray: #ccc;
+    --hover-yellow: #fad652;
+    --active-yellow: #f1c40f;
+  }
+  
+  .sales-order-doc-sum-pagination-controls {
+      display: flex;
+      justify-content: left;
+      align-items: center;
+      padding: 1px 0;
+  }
+  
+  .sales-order-doc-sum-pagination-controls button {
+      margin: 2px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      background-color: var(--sap-blue);
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  .sales-order-doc-sum-pagination-controls button:hover:not(:disabled) {
+      background-color: var(--hover-yellow);
+      color: var(--sap-blue);
+  }
+  
+  .sales-order-doc-sum-pagination-controls button:active:not(:disabled) {
+      background-color: var(--active-yellow);
+      transform: scale(0.95);
+  }
+  
+  .sales-order-doc-sum-pagination-controls button:disabled {
+      background-color: var(--disabled-gray);
+      color: #666;
+      cursor: not-allowed;
+  }
+  
+  .sales-order-doc-sum-pagination-size-selector {
+      margin-right: 10px;
+      display: flex;
+      align-items: center;
+  }
+  
+  .sales-order-doc-sum-pagination-size-selector label {
+      margin-right: 5px;
+      font-size: 14px;
+  }
+  
+  .sales-order-doc-sum-pagination-select {
+      padding: 8px 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: white;
+      appearance: none;
+      font-size: 14px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  
+  .sales-order-doc-sum-pagination-select:hover {
+      border-color: var(--sap-blue);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .sales-order-doc-sum-pagination-select:focus {
+      outline: none;
+      border-color: var(--sap-yellow);
+      box-shadow: 0 0 0 2px rgba(249, 202, 36, 0.2);
+  }
+  
+  .sales-order-doc-sum-pagination-info {
+      margin-left: 10px;
+      font-size: 14px;
+      color: #333;
+  }
+  
+  @media (max-width: 768px) {
+      .sales-order-doc-sum-pagination-controls {
+          flex-direction: column;
+          align-items: stretch;
+      }
+      .sales-order-doc-sum-pagination-size-selector {
+          margin-bottom: 10px;
+      }
+  }

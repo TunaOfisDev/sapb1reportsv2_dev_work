@@ -1,0 +1,37 @@
+/* path: frontend/src/components/StockCardIntegration/css/HelptextPanel.module.css */
+
+.panel {
+  background-color: #f9f9fc;
+  padding: 16px;
+  border-radius: 6px;
+  max-height: 500px;
+  overflow-y: auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.panel h3 {
+  font-size: 1.3rem;
+  margin-bottom: 12px;
+  color: #003366;
+  border-bottom: 1px solid #ccd;
+  padding-bottom: 6px;
+}
+
+.item {
+  margin-bottom: 16px;
+}
+
+.item strong {
+  font-size: 1.05rem;
+}
+
+.item p {
+  font-size: 1rem;
+  padding: 10px 14px;
+  background-color: #fff;
+  border-radius: 4px;
+
+  /* ŞU SATIRI KALDIRIYORUZ */
+  /* border-left: 3px solid #ccc; */
+}
+

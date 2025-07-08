@@ -1,0 +1,58 @@
+/* frontend/src/components/SalesOrderDocSum/css/MultiSelectComboboxFilter.css */
+.multi-select-combobox {
+  width: 100%;
+  max-width: 150px;
+  margin: 0 auto;
+}
+
+.multi-select-combobox__label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.multi-select-combobox__checkbox {
+  margin-right: 10px;
+}
+
+/* Select dropdown styles */
+.multi-select-combobox .react-select__control {
+  background-color: #ffffff;
+  border: 1px solid #ced4da;
+  font-size: 10px;
+}
+
+.multi-select-combobox .react-select__menu {
+  background-color: #ffffff;
+}
+
+.multi-select-combobox .react-select__option {
+  font-size: 10px;
+  color: #000000;
+}
+
+.multi-select-combobox .react-select__option--is-selected {
+  background-color: #2C4E6C;
+  color: #ffffff;
+}
+
+.multi-select-combobox .react-select__option--is-focused {
+  background-color: #e9ecef;
+  color: #000000;
+}
+
+.multi-select-combobox .react-select__multi-value {
+  background-color: #2C4E6C;
+  color: #ffffff;
+}
+
+.multi-select-combobox .react-select__multi-value__label {
+  color: #ffffff;
+  font-size: 10px;
+}
+
+.multi-select-combobox .react-select__multi-value__remove {
+  color: #ffffff;
+}
+
+  

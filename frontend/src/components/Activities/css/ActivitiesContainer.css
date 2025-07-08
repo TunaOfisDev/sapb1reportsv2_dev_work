@@ -1,0 +1,47 @@
+/* frontend/src/components/Activities/css/ActivitiesContainer.css */
+.activities-container {
+  background-color: #f5f5f5;
+  padding: 5px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Eski gölge efekti */
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+  border: 1px solid #dee2e6;
+}
+
+.activities-container__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #2C4E6C; /* SAP mavisi */
+}
+
+.activities-container__title {
+  font-size: 24px;
+  color: #2C4E6C; /* SAP mavisi */
+  margin: 0;
+  flex-grow: 1;
+}
+
+.activities-container__button-wrapper {
+  display: flex;
+  gap: 5px;
+  flex-grow: 0;
+  margin-left: auto;
+}
+
+.activities-container__button {
+  background-color: #2C4E6C; /* SAP mavisi */
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.activities-container__button:hover {
+  background-color: #fcbf1e; /* SAP sarısı */
+  transform: scale(1.05);
+}

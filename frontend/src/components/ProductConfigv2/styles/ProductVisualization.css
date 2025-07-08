@@ -1,0 +1,26 @@
+/* frontend/src/components/ProductConfigv2/styles/ProductVisualization.css */
+
+.product-visualization {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 1rem 0;
+  }
+  
+  .product-visualization__image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .product-visualization__image:hover {
+    transform: scale(1.05);
+  }
+  

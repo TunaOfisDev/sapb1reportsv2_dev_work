@@ -1,0 +1,82 @@
+/* frontend/src/components/ProductConfig/css/PCButton.css */
+.pc-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+
+.pc-button--primary { background-color: #007bff; color: white; }
+.pc-button--secondary { background-color: #6c757d; color: white; }
+.pc-button--success { background-color: #28a745; color: white; }
+.pc-button--warning { background-color: #ffc107; color: black; }
+.pc-button--danger { background-color: #dc3545; color: white; }
+
+.pc-button--outline {
+    background-color: transparent;
+    border: 2px solid currentColor;
+}
+
+.pc-button--small { padding: 5px 10px; font-size: 0.8em; }
+.pc-button--large { padding: 15px 30px; font-size: 1.2em; }
+
+.pc-button--full-width { width: 100%; }
+.pc-button--rounded { border-radius: 50px; }
+.pc-button--elevated { box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+
+.pc-button--animated:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.pc-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.pc-button__icon { margin-right: 8px; }
+.pc-button__icon--right { margin-right: 0; margin-left: 8px; }
+
+.pc-button--loading {
+    opacity: 0.8;
+    cursor: wait;
+}
+
+.pc-button__spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+/* Butonlar arası boşluk için yeni stil */
+.pc-button + .pc-button {
+    margin-left: 30px; /* Butonlar arası mesafe */
+}
+
+.pc-configuration-actions .pc-button {
+    min-width: 180px; /* Her buton için minimum genişlik */
+    padding: 12px 24px; /* İç boşluğu artır */
+}
+
+/* Buton container için stil */
+.pc-configuration-actions {
+    display: flex;
+    justify-content: center;
+    padding: 20px 40px; /* Dış boşluk */
+    margin: 20px 0;
+    gap: 30px; /* Butonlar arası boşluk alternatifi */
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}

@@ -1,0 +1,186 @@
+{# backend/mailservice/templates/mailservice/new_customer_form_pdf.html #}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 2px solid #333;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin: 0;
+            color: #2c3e50;
+        }
+        .header p {
+            margin: 5px 0;
+            color: #7f8c8d;
+        }
+        .section {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            page-break-inside: avoid;
+        }
+        .section h2 {
+            font-size: 18px;
+            color: #2c3e50;
+            margin: 0 0 15px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .field {
+            margin-bottom: 10px;
+        }
+        .field-label {
+            font-weight: bold;
+            color: #34495e;
+            min-width: 200px;
+            display: inline-block;
+        }
+        .field-value {
+            display: inline-block;
+        }
+        .yetkili-kisi {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .footer {
+            text-align: center;
+            padding-top: 20px;
+            font-size: 12px;
+            color: #7f8c8d;
+            border-top: 1px solid #e0e0e0;
+            position: running(footer);
+        }
+        .page-number:before {
+            content: counter(page);
+        }
+        .attachment-list {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .attachment-item {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>YENİ MÜŞTERİ FORMU</h1>
+        <p>Oluşturulma Tarihi: {{ form.created_at|date:"d.m.Y H:i" }}</p>
+    </div>
+
+    <div class="section">
+        <h2>FİRMA BİLGİLERİ</h2>
+        <div class="field">
+            <span class="field-label">Firma Ünvanı:</span>
+            <span class="field-value">{{ form.firma_unvani }}</span>
+        </div>
+        <div class="field">
+            <span class="field-label">Vergi Kimlik Numarası:</span>
+            <span class="field-value">{{ form.vergi_kimlik_numarasi }}</span>
+        </div>
+        <div class="field">
+            <span class="field-label">Vergi Dairesi:</span>
+            <span class="field-value">{{ form.vergi_dairesi }}</span>
+        </div>
+        <div class="field">
+            <span class="field-label">Firma Adresi:</span>
+            <span class="field-value">{{ form.firma_adresi }}</span>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>İLETİŞİM BİLGİLERİ</h2>
+        <div class="field">
+            <span class="field-label">Telefon Numarası:</span>
+            <span class="field-value">{{ form.telefon_numarasi }}</span>
+        </div>
+        <div class="field">
+            <span class="field-label">E-posta Adresi:</span>
+            <span class="field-value">{{ form.email }}</span>
+        </div>
+        <div class="field">
+            <span class="field-label">Muhasebe İrtibat Telefon:</span>
+            <span class="field-value">{{ form.muhasebe_irtibat_telefon }}</span>
+        </div>
+        <div class="field">
+            <span class="field-label">Muhasebe İrtibat E-posta:</span>
+            <span class="field-value">{{ form.muhasebe_irtibat_email }}</span>
+        </div>
+    </div>
+
+    {% if form.yetkili_kisiler.exists %}
+    <div class="section">
+        <h2>YETKİLİ KİŞİLER</h2>
+        {% for yetkili in form.yetkili_kisiler.all %}
+        <div class="yetkili-kisi">
+            <div class="field">
+                <span class="field-label">Ad Soyad:</span>
+                <span class="field-value">{{ yetkili.ad_soyad }}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">Telefon:</span>
+                <span class="field-value">{{ yetkili.telefon }}</span>
+            </div>
+            <div class="field">
+                <span class="field-label">E-posta:</span>
+                <span class="field-value">{{ yetkili.email }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="section">
+        <h2>ÖDEME BİLGİLERİ</h2>
+        <div class="field">
+            <span class="field-label">Ödeme Şartları ve Vadeleri:</span>
+            <span class="field-value">{{ form.odeme_sartlari }}</span>
+        </div>
+        {% if form.iskonto_anlasmasi %}
+        <div class="field">
+            <span class="field-label">İskonto Anlaşması:</span>
+            <span class="field-value">{{ form.iskonto_anlasmasi }}</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>EKLER</h2>
+        <ul class="attachment-list">
+            <li class="attachment-item">Vergi Levhası</li>
+            <li class="attachment-item">Faaliyet Belgesi</li>
+            <li class="attachment-item">Ticaret Sicil Gazetesi</li>
+            <li class="attachment-item">İmza Sirküleri</li>
+            <li class="attachment-item">Banka IBAN Bilgileri</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p>
+            Sayfa <span class="page-number"></span>
+            &nbsp;|&nbsp;
+            Oluşturan: {{ form.created_by.email }}
+            &nbsp;|&nbsp;
+            Tarih: {{ form.created_at|date:"d.m.Y H:i" }}
+        </p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,237 @@
+/* frontend/src/components/NewCustomerForm/css/NewCustomerForm.css */
+
+.new-customer-form {
+  max-width: 1200px; /* Genişletilmiş maksimum genişlik */
+  margin: 1.5rem auto;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.new-customer-form__title {
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eef2f7;
+}
+
+/* Form Bölümleri - 2 kolonlu grid yapısı */
+.new-customer-form__section {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 6px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.new-customer-form__section-title {
+  font-size: 1.1rem;
+  color: #3498db;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  grid-column: 1 / -1;
+}
+
+/* Form Grupları */
+.new-customer-form__group {
+  margin-bottom: 0.75rem;
+}
+
+/* Tam genişlik gerektiren alanlar için */
+.new-customer-form__group--full {
+  grid-column: 1 / -1;
+}
+
+/* Form Etiketleri */
+.new-customer-form__label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #34495e;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.new-customer-form__label--required::after {
+  content: '*';
+  color: #e74c3c;
+  margin-left: 4px;
+}
+
+/* Form Girişleri */
+.new-customer-form__input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #dde1e7;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  height: 36px; /* Sabit yükseklik */
+}
+
+.new-customer-form__input:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+  outline: none;
+}
+
+/* Textarea için özel yükseklik */
+textarea.new-customer-form__input {
+  height: auto;
+  min-height: 60px;
+}
+
+/* Dosya Yükleme Alanı - Daha kompakt */
+.new-customer-form__file-upload {
+  position: relative;
+  padding: 0.75rem;
+  border: 1px dashed #bdc3c7;
+  border-radius: 4px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.new-customer-form__file-upload:hover {
+  border-color: #3498db;
+  background: rgba(52, 152, 219, 0.05);
+}
+
+.new-customer-form__file-upload-text {
+  color: #7f8c8d;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Yetkili Kişiler Bölümü */
+.new-customer-form__authorized-persons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.new-customer-form__person-card {
+  padding: 0.75rem;
+  background: #ffffff;
+  border: 1px solid #eef2f7;
+  border-radius: 4px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+/* Butonlar */
+.new-customer-form__button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 36px;
+}
+
+.new-customer-form__button--primary {
+  background: #3498db;
+  color: #ffffff;
+}
+
+.new-customer-form__button--primary:hover {
+  background: #2980b9;
+}
+
+.new-customer-form__button--secondary {
+  background: #ecf0f1;
+  color: #34495e;
+}
+
+.new-customer-form__button--secondary:hover {
+  background: #bdc3c7;
+}
+
+/* Hata Mesajları - Daha kompakt */
+.new-customer-form__error {
+  color: #e74c3c;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+/* Durum mesajları için yeni stiller */
+.new-customer-form__message {
+  grid-column: 1 / -1;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.new-customer-form__message--success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.new-customer-form__message--warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+}
+
+.new-customer-form__message--error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+  .new-customer-form {
+      margin: 0.75rem;
+      padding: 0.75rem;
+  }
+
+  .new-customer-form__section {
+      grid-template-columns: 1fr;
+      padding: 0.75rem;
+  }
+
+  .new-customer-form__authorized-persons {
+      grid-template-columns: 1fr;
+  }
+
+  .new-customer-form__person-card {
+      grid-template-columns: 1fr;
+  }
+}
+
+/* Yardımcı Sınıflar */
+.new-customer-form__helper-text {
+  font-size: 0.8rem;
+  color: #7f8c8d;
+  margin-top: 0.25rem;
+}
+
+/* Form grupları arasındaki boşlukları azalt */
+.new-customer-form__group:last-child {
+  margin-bottom: 0;
+}
+
+/* Genel margin ve padding ayarlamaları */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}

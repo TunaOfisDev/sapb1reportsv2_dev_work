@@ -1,0 +1,18 @@
+/* frontend/src/components/NewCustomerForm/css/EditCustomerForm.css */
+.edit-customer-form {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .edit-customer-form__header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .edit-customer-form__header h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }

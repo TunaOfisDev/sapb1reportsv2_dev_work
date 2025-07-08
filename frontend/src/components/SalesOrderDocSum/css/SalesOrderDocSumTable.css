@@ -1,0 +1,202 @@
+/* frontend/src/components/SalesOrderDocSum/css/SalesOrderDocSumTable.css */
+.sales-order-doc-sum-table {
+  /* Component-specific variables */
+  --sods-table-border-color: rgba(0, 0, 0, 0.1);
+  --sods-header-bg-color: #2C4E6C;
+  --sods-header-text-color: white;
+  --sods-hover-bg-color: #fcbf1e;
+  --sods-even-row-bg-color: #f8f9fa;
+  --sods-odd-row-bg-color: #ffffff;
+  --sods-sap-yellow: #f9ca24;
+
+  width: 100%;
+  margin-top: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12px;
+  border: 1px solid var(--sods-table-border-color);
+  overflow-x: auto;
+}
+
+.sales-order-doc-sum-table th,
+.sales-order-doc-sum-table td {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+}
+
+.sales-order-doc-sum-table__thead--header {
+  background-color: var(--sods-header-bg-color);
+  color: var(--sods-header-text-color);
+  font-weight: bold;
+  text-align: left;
+  padding: 0.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.sales-order-doc-sum-table__th--hover:hover {
+  background-color: #4c79a1;
+}
+
+.sales-order-doc-sum-table__td--numeric,
+.sales-order-doc-sum-table__th--numeric-header {
+  text-align: right;
+}
+
+.sales-order-doc-sum-table__td--total,
+.sales-order-doc-sum-table__tfoot--dynamic-subtotal,
+.sales-order-doc-sum-table__tfoot--dynamic-subtotal-right,
+.sales-order-doc-sum-table__td--footer-bold {
+  font-weight: bold;
+  text-align: right;
+}
+
+.sales-order-doc-sum-table__td--hidden {
+  display: none;
+}
+
+.sales-order-doc-sum-table__th--belge-no,
+.sales-order-doc-sum-table__td--belge-no,
+.sales-order-doc-sum-table__th--satici,
+.sales-order-doc-sum-table__td--satici,
+.sales-order-doc-sum-table__td--musteri-ad,
+.sales-order-doc-sum-table__th--musteri-ad,
+.sales-order-doc-sum-table__th--statu,
+.sales-order-doc-sum-table__td--statu {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sales-order-doc-sum-table__th--belge-no,
+.sales-order-doc-sum-table__td--belge-no,
+.sales-order-doc-sum-table__filter--belge-no {
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
+}
+
+.sales-order-doc-sum-table__th--statu,
+.sales-order-doc-sum-table__td--statu,
+.sales-order-doc-sum-table__filter--statu {
+  width: 70px;
+  min-width: 70px;
+  max-width: 70px;
+}
+
+.sales-order-doc-sum-table__th--satici,
+.sales-order-doc-sum-table__td--satici {
+  max-width: 100px;
+  min-width: 50px;
+}
+
+.sales-order-doc-sum-table__td--musteri-ad,
+.sales-order-doc-sum-table__th--musteri-ad {
+  max-width: 250px;
+}
+
+.sales-order-doc-sum-table__td--belge-aciklamasi,
+.sales-order-doc-sum-table__th--belge-aciklamasi {
+  font-size: 8px;
+}
+
+.sales-order-doc-sum-table tbody tr {
+  background-color: var(--sods-odd-row-bg-color);
+  transition: background-color 0.3s ease;
+}
+
+.sales-order-doc-sum-table tbody tr:nth-child(even) {
+  background-color: var(--sods-even-row-bg-color);
+}
+
+.sales-order-doc-sum-table tbody tr:hover {
+  background-color: var(--sods-hover-bg-color) !important;
+}
+
+.sales-order-doc-sum-table__filter--sap-yellow input {
+  background-color: var(--sods-sap-yellow);
+}
+
+.sales-order-doc-sum-table__th--date,
+.sales-order-doc-sum-table__td--date,
+.sales-order-doc-sum-table__filter--date {
+  width: 90px;
+  min-width: 90px;
+  max-width: 90px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sales-order-doc-sum-table__filter--belge-no input,
+.sales-order-doc-sum-table__filter--statu input,
+.sales-order-doc-sum-table__filter--date input {
+  width: 100%;
+  padding: 0.3rem;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+
+.sales-order-doc-sum-table__filter--musteri-ad input,
+.sales-order-doc-sum-table__filter--belge-aciklamasi input {
+  background-color: var(--sods-sap-yellow);
+  width: 100%;
+  padding: 0.3rem;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+}
+
+/* Uzun metni tek satırda “…” ile kısaltmak için */
+.sales-order-doc-sum__ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+
+
+@media (max-width: 1024px) {
+  .sales-order-doc-sum-table {
+    font-size: 11px;
+  }
+  .sales-order-doc-sum-table th,
+  .sales-order-doc-sum-table td {
+    padding: 0.4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .sales-order-doc-sum-table {
+    font-size: 10px;
+  }
+  .sales-order-doc-sum-table th,
+  .sales-order-doc-sum-table td {
+    padding: 0.3rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .sales-order-doc-sum-table {
+    font-size: 9px;
+  }
+  .sales-order-doc-sum-table th,
+  .sales-order-doc-sum-table td {
+    padding: 0.2rem;
+  }
+  .sales-order-doc-sum-table__th--belge-no,
+  .sales-order-doc-sum-table__td--belge-no,
+  .sales-order-doc-sum-table__th--satici,
+  .sales-order-doc-sum-table__td--satici,
+  .sales-order-doc-sum-table__td--musteri-ad,
+  .sales-order-doc-sum-table__th--musteri-ad,
+  .sales-order-doc-sum-table__th--statu,
+  .sales-order-doc-sum-table__td--statu,
+  .sales-order-doc-sum-table__th--date,
+  .sales-order-doc-sum-table__td--date {
+    max-width: 100%;
+  }
+}

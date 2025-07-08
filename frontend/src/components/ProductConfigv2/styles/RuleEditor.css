@@ -1,0 +1,131 @@
+/* frontend/src/components/ProductConfigv2/styles/RuleEditor.css */
+
+.rule-editor {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    max-width: 600px;
+    margin: 1rem auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .rule-editor h2 {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    color: #333333;
+    text-align: center;
+  }
+  
+  .rule-editor__error {
+    background-color: #ffebee;
+    border: 1px solid #f44336;
+    color: #d32f2f;
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .rule-editor__success {
+    background-color: #e8f5e9;
+    border: 1px solid #43a047;
+    color: #388e3c;
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .rule-editor__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #555555;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+    color: #333333;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+  
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+  
+  /* Condition group stilleri */
+  .condition-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  
+  .condition-group input {
+    flex: 1;
+  }
+  
+  .condition-group__remove {
+    background-color: #f44336;
+    color: #ffffff;
+    border: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .condition-group__remove:hover {
+    background-color: #d32f2f;
+  }
+  
+  /* Koşul ekleme butonu */
+  .rule-editor__add-condition {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .rule-editor__add-condition:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Form submit butonu */
+  .rule-editor__submit {
+    background-color: #28a745;
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .rule-editor__submit:hover {
+    background-color: #218838;
+  }
+  

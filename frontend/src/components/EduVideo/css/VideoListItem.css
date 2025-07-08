@@ -1,0 +1,70 @@
+/* frontend/src/components/EduVideo/css/VideoListItem.css */
+
+/* Ana video liste öğesi konteyneri */
+.video-list-item {
+  display: flex;
+  flex-direction: column;
+  width: 85%; /* Tam genişlik */
+  padding: 1px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  cursor: pointer;
+  margin-bottom: 25px;
+  text-align: left;
+  
+}
+
+/* Hover efekti: üzerine geldiğinde büyütme */
+.video-list-item:hover {
+  transform: scale(1.05);
+  transition: transform 0.2s;
+}
+
+/* Video başlığı */
+.video-list-item h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+
+/* Sıra numarası */
+.video-list-item h3 span {
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin-right: 10px;
+}
+
+/* Video resmi */
+.video-list-item img {
+  width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+/* Video açıklaması */
+.video-list-item p {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+/* "Watch Video" bağlantısı */
+.video-list-item a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: color 0.3s;
+}
+
+/* "Watch Video" bağlantısı hover efekti */
+.video-list-item a:hover {
+  color: #0056b3;
+  transition: color 0.3s;
+}

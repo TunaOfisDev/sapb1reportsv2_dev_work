@@ -1,0 +1,62 @@
+/* frontend/src/components/DocArchiveV2/css/DocumentList.css */
+/* Base block component */
+.document-list__table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-family: 'Arial', sans-serif;
+    font-size: 0.9rem;
+}
+
+/* Element */
+.document-list__header,
+.document-list__cell {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+}
+
+/* Modifier for header */
+.document-list__header {
+    background-color: #f8f8f8;
+}
+
+/* BEM for row hover */
+.document-list__row--hover:hover {
+    background-color: #f0f0f0;
+}
+
+/* BEM for links */
+.document-list__link {
+    color: #337ab7;
+    text-decoration: none;
+}
+
+.document-list__link:hover {
+    text-decoration: underline;
+}
+
+/* BEM for buttons */
+.document-list__button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.document-list__button--hover:hover {
+    background-color: #45a049;
+}
+
+/* BEM for titles */
+.document-list__title {
+    color: #333;
+    font-family: 'Arial', sans-serif;
+}

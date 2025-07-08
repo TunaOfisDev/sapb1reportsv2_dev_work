@@ -1,0 +1,116 @@
+{# File: backend/mailservice/templates/mailservice/procure_compare_rejection_email.html #}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #ffcdd2;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 5px solid #c62828;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+        }
+        .field {
+            margin-bottom: 10px;
+        }
+        .field-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .teklif-listesi {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+        .status-label {
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background-color: #ffcdd2;
+            color: #c62828;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #6c757d;
+            text-align: center;
+            border-top: 1px solid #dee2e6;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Satınalma Red Bildirimi</h2>
+        <p>{{ approval.kullanici.email }} tarafından bir satınalma kalemi reddedilmiştir.</p>
+    </div>
+
+    {% with detay=approval.satir_detay_json %}
+    <div class="section">
+        <h3>Kalem Bilgileri</h3>
+        <div class="field"><span class="field-label">Belge Tarihi:</span> {{ detay.belge_tarih|default:"-" }}</div>
+        <div class="field"><span class="field-label">Belge No:</span> {{ approval.belge_no }}</div>
+        <div class="field"><span class="field-label">Kalem Tanımı:</span> {{ detay.kalem_tanimi|default:"-" }}</div>
+        <div class="field"><span class="field-label">Tedarikçi:</span> {{ detay.tedarikci|default:"-" }}</div>
+        <div class="field"><span class="field-label">Miktar:</span> {{ detay.sip_miktar|default:"-" }}</div>
+        <div class="field"><span class="field-label">Net Fiyat (DPB):</span> {{ detay.net_fiyat_dpb|default:"-" }}</div>
+        <div class="field"><span class="field-label">Döviz:</span> {{ detay.detay_doviz|default:"-" }}</div>
+        <div class="field"><span class="field-label">Net Tutar (YPB):</span> {{ detay.net_tutar_ypb|default:"-" }}</div>
+
+        <div class="field">
+            <span class="field-label">Referans Teklifler:</span>
+            {% if detay.referans_teklifler %}
+                {{ detay.referans_teklifler|join:", " }}
+            {% else %}
+                -
+            {% endif %}
+        </div>
+
+        <div class="field">
+            <span class="field-label">Teklif Fiyatları:</span>
+            <ul class="teklif-listesi">
+                {% if detay.teklif_fiyatlari %}
+                    {% for firma, fiyat in detay.teklif_fiyatlari.items %}
+                        <li>{{ firma }}: {{ fiyat }}</li>
+                    {% endfor %}
+                {% else %}
+                    <li>Veri bulunamadı.</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    {% endwith %}
+
+    <div class="section">
+        <h3>Red Bilgisi</h3>
+        <div class="field">
+            <span class="field-label">Durum:</span>
+            <span class="status-label">RED</span>
+        </div>
+        <div class="field"><span class="field-label">Açıklama:</span> {{ approval.aciklama|default:"-" }}</div>
+        <div class="field"><span class="field-label">Reddeden:</span> {{ approval.kullanici.email }}</div>
+        <div class="field"><span class="field-label">Tarih:</span> {{ approval.created_at|date:"d.m.Y H:i" }}</div>
+    </div>
+
+    <div class="footer">
+        Bu mail otomatik olarak gönderilmiştir. Lütfen cevaplamayınız.
+    </div>
+</body>
+</html>

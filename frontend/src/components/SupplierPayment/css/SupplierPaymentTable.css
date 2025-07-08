@@ -1,0 +1,111 @@
+/* frontend/src/components/SupplierPayment/css/SupplierPaymentTable.css */
+.supplier-payment__table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.85rem;
+    font-family: 'Arial', sans-serif;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .supplier-payment__thead--header th {
+    background-color: #2C4E6C; /* SAP mavisi */
+    color: white;
+    font-weight: bold;
+    text-align: left;
+    padding: 0.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  
+  .supplier-payment__table th,
+  .supplier-payment__table td {
+    border: 1px solid #dee2e6;
+    padding: 0.5rem;
+  }
+  
+  .supplier-payment__table tbody tr {
+    background-color: #ffffff;
+    transition: background-color 0.3s ease;
+  }
+  
+  .supplier-payment__table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+  }
+  
+  .supplier-payment__table tbody tr:hover {
+    background-color: #fcbf1e; /* SAP sarısı */
+  }
+  
+  .supplier-payment__td--numeric {
+    text-align: right;
+  }
+  
+  .supplier-payment__thead--numeric-header {
+    text-align: right;
+  }
+  
+  .supplier-payment__tfoot--dynamic-subtotal {
+    text-align: right;
+    font-weight: bold;
+    background-color: #e9ecef;
+  }
+  
+  .footer-cell:last-child {
+    background-color: #2C4E6C; /* SAP mavisi */
+    color: white;
+  }
+
+  .supplier-payment__controls-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    gap: 16px;
+  }
+
+  .supplier-payment__table tfoot td {
+    background-color: #f8f9fa;
+    border-top: 2px solid #dee2e6;
+  }
+  
+  .supplier-payment__table tfoot tr:last-child td {
+    border-bottom: 2px solid #dee2e6;
+  }
+  
+  /* Hover efekti için */
+  .supplier-payment__table tfoot tr:hover td {
+    background-color: #e9ecef;
+  }
+  
+  .supplier-payment__td--footer-bold {
+    font-weight: bold !important;
+    background-color: #f8f9fa;  /* Opsiyonel: alt toplam satırı için hafif gri arka plan */
+  }
+  
+  .supplier-payment__tfoot td {
+    border-top: 2px solid #dee2e6;  /* Üst çizgi ekleyerek ayırıcı */
+    padding: 10px;
+  }
+  
+  /* Mobil responsive için */
+  @media (max-width: 768px) {
+    .supplier-payment__controls-wrapper {
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+  
+  /* Responsive Design */
+  @media screen and (max-width: 768px) {
+    .supplier-payment__table {
+      font-size: 0.75rem;
+    }
+  
+    .supplier-payment__table td,
+    .supplier-payment__table th {
+      padding: 0.3rem;
+    }
+  }
+  

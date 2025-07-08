@@ -1,0 +1,18 @@
+/* path: frontend/src/components/StockCardIntegration/css/StockCardFormWrapper.module.css */
+
+.layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  align-items: start;
+  margin-top: 20px;
+}
+
+.form {
+  background-color: #fff;
+}
+
+.panel {
+  position: sticky;
+  top: 20px;
+}

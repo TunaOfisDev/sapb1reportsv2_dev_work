@@ -1,0 +1,134 @@
+/* frontend/src/components/TotalRisk/css/TotalRiskTable.css */
+
+/* Genel Tablo Stili */
+.total-risk-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
+  font-family: 'Arial', sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Tablo Başlıkları */
+.total-risk-table__head th {
+  background-color: #2C4E6C; /* SAP mavisi */
+  color: white;
+  font-weight: bold;
+  text-align: left;
+  padding: 0.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Her hücre çevresinde ince bir çerçeve olacak */
+.total-risk-table td,
+.total-risk-table th {
+  border: 1px solid #dee2e6;
+  padding: 0.5rem;
+}
+
+/* Satır renk geçişleri ve hover efekti */
+.total-risk-table tbody tr {
+  background-color: #ffffff;
+  transition: background-color 0.3s ease;
+}
+
+.total-risk-table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.total-risk-table tbody tr:hover {
+  background-color: #fcbf1e !important; /* SAP hover rengi */
+}
+
+/* Taşan metin için genel stil */
+.total-risk-table__ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+/* Muhatap Kod sütunu için taşan metin ayarları */
+.total-risk-table__td--muhatap-kod,
+.total-risk-table__th--muhatap-kod {
+  max-width: 100px;
+}
+
+/* Muhatap Adı sütunu için taşan metin ayarları */
+.total-risk-table__td--muhatap-ad,
+.total-risk-table__th--muhatap-ad {
+  max-width: 250px;
+}
+
+/* Hücreler için genel stil */
+.total-risk-table__cell {
+  padding: 0.5rem;
+  text-align: left;
+}
+
+/* Başlık hücreleri için özel stil */
+.total-risk-table__cell--header {
+  font-weight: bold;
+}
+
+/* Sayfalama bölümü */
+.total-risk-table__pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+  border-top: 2px solid #dee2e6;
+}
+
+/* Başlık içeriği */
+.total-risk-table__header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Sıralama simgesi */
+.total-risk-table__sort-icon {
+  margin-left: 0.5rem;
+}
+
+/* Dinamik Alt Toplam Satırı Stilleri */
+.footer-cell {
+  text-align: right !important;
+  font-weight: bold;
+  padding: 0.5rem;
+  background-color: #e9ecef;
+}
+
+/* İlk hücre için özel stil */
+.footer-cell:first-child {
+  text-align: left;
+  padding-left: 1rem;
+}
+
+/* Son hücre için özel stil */
+.footer-cell:last-child {
+  background-color: #2C4E6C; /* SAP mavisi */
+  color: white;
+}
+
+/* Responsive tasarım için medya sorguları */
+@media screen and (max-width: 768px) {
+  .total-risk-table {
+    font-size: 0.75rem;
+  }
+  
+  .total-risk-table td,
+  .total-risk-table th {
+    padding: 0.3rem;
+  }
+  
+  .total-risk-table__td--muhatap-ad,
+  .total-risk-table__th--muhatap-ad {
+    max-width: 150px;
+  }
+}

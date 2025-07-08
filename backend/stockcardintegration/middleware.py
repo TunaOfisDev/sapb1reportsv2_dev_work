@@ -1,0 +1,77 @@
+# backend/stockcardintegration/middleware.py
+
+import time
+import json
+from django.utils.deprecation import MiddlewareMixin
+from django.http import JsonResponse
+from .utils.logs import log_stockcard_request, log_stockcard_error
+from .utils.exceptions import StockCardIntegrationError
+
+class StockCardRequestMiddleware(MiddlewareMixin):
+    """
+    Stock Card API çağrılarını merkezi olarak yöneten middleware.
+    - API isteklerini ve yanıtlarını loglar.
+    - İstek süresini ölçerek performans takibi yapar.
+    - Hata yönetimi sağlar ve düzgün hata yanıtları döndürür.
+    """
+
+    def process_request(self, request):
+        """
+        Gelen isteği yakalayarak loglar ve süresini başlatır.
+        """
+        request.start_time = time.time()
+        log_stockcard_request(
+            request.method,
+            request.get_full_path(),
+            response_status="REQUESTED",
+            response_data={"headers": dict(request.headers), "body": self.get_request_body(request)}
+        )
+
+    def process_response(self, request, response):
+        """
+        Yanıtları loglar ve isteğin süresini hesaplar.
+        """
+        if hasattr(request, "start_time"):
+            duration = time.time() - request.start_time
+            log_stockcard_request(
+                request.method,
+                request.get_full_path(),
+                response_status=response.status_code,
+                response_data={"duration": f"{duration:.2f}s", "body": self.get_response_body(response)}
+            )
+
+        return response
+
+    def process_exception(self, request, exception):
+        """
+        Hata yönetimi sağlar ve hata loglarını kaydeder.
+        """
+        log_stockcard_error(f"StockCard API Hatası: {exception}")
+
+        if isinstance(exception, StockCardIntegrationError):
+            return JsonResponse(
+                {"error": str(exception)},
+                status=exception.status_code if hasattr(exception, "status_code") else 500
+            )
+
+        return JsonResponse({"error": "Bilinmeyen bir hata oluştu!"}, status=500)
+
+    def get_request_body(self, request):
+        """
+        İstek gövdesini güvenli bir şekilde alır.
+        """
+        try:
+            if request.body:
+                return json.loads(request.body.decode("utf-8"))
+        except json.JSONDecodeError:
+            return "Geçersiz JSON"
+        return None
+
+    def get_response_body(self, response):
+        """
+        Yanıt gövdesini güvenli bir şekilde alır.
+        """
+        try:
+            return json.loads(response.content.decode("utf-8"))
+        except (json.JSONDecodeError, AttributeError):
+            return "Yanıt gövdesi alınamadı"

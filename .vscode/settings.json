@@ -1,0 +1,14 @@
+{
+  "files.autoSave": "onFocusChange",
+  "files.defaultLanguage": "python",
+  "remote.SSH.remotePlatform": {
+    "sapb1-dev-srv": "linux"
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/logs/**": true
+  },
+  "remote.SSH.useLocalServer": false
+}

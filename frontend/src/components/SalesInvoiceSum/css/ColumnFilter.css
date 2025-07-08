@@ -1,0 +1,60 @@
+/* frontend/src/components/SalesInvoiceSum/css/ColumnFilter.css */
+/* ──────────────────────────────────────────────
+   ColumnFilter – Satış Faturası Özeti Tablosu
+   ------------------------------------------------
+   ▸ Hücre genişliğini zorlamaz. (min-width: 0)
+   ▸ Tüm tarayıcılarda kutu modeli tutarlı. (box-sizing)
+   ▸ Koyu başlık + sarı input uyumu korunur.
+   ▸ Mobil görünüm için daha ufak font/boşluk.
+   ------------------------------------------------ */
+   
+.sales-invoice-sum-columnfilter {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;                 /* 💥 Hücreyi taşırma */
+}
+
+.sales-invoice-sum-columnfilter__input {
+  width: 100%;
+  min-width: 0;                 /* 💥 Taşmayı tamamen engelle */
+  font-size: 0.85rem;
+  padding: 0.2rem 0.25rem;
+  margin: 0;
+  border: 1px solid #ced4da;
+  border-radius: 3px;
+  outline: none;
+  background-color: #f7d67def;  /* mevcut sarı tonu */
+  color: #000;
+  box-sizing: border-box;       /* padding + border dahil */
+}
+
+/* Filtre kutusunu saran <div> */
+.sales-invoice-sum__filter {
+  width: 100%;
+  min-width: 0;                 /* 💥 genişleme yok */
+  padding: 0.2rem 0;
+  box-sizing: border-box;
+}
+
+/* Hover & focus görsel iyileştirme */
+.sales-invoice-sum-columnfilter__input:focus {
+  border-color: #8795b3;
+  box-shadow: 0 0 2px rgba(44, 78, 108, 0.4);
+}
+
+/* ─── Responsive tweaks ───────────────────────── */
+
+@media (max-width: 1024px) {
+  .sales-invoice-sum-columnfilter__input {
+    font-size: 0.78rem;
+    padding: 0.15rem 0.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .sales-invoice-sum-columnfilter__input {
+    font-size: 0.7rem;
+    padding: 0.12rem 0.18rem;
+  }
+}

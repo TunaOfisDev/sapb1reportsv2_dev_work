@@ -1,0 +1,245 @@
+/* frontend/src/components/ShipWeekPlanner/css/ShipWeekPlanner.css */
+.ShipWeekPlanner {
+    /* Component-specific variables */
+    --swp-primary-color: #1976d2;
+    --swp-primary-color-hover: #1565c0;
+    --swp-secondary-color: #e3f2fd;
+    --swp-border-color: #e0e0e0;
+    --swp-header-bg-color: #f8f9fa;
+    --swp-text-color: #333;
+    --swp-table-padding: 8px;
+    --swp-transition-speed: 0.3s;
+    --swp-hover-bg: #f5f5f5;
+    --swp-cell-height: 32px;
+    --swp-non-editable-bg: #f8f9fa; /* Daha yumuşak bir gri ton */
+    --swp-non-editable-text: #6c757d; /* Daha yumuşak bir metin rengi */
+    --swp-non-editable-bg: #f5f5f5;
+    --swp-non-editable-text: #666;
+    --swp-non-editable-border: #e0e0e0;
+    
+    position: relative;
+    width: 100%;
+    max-width: 1750px;
+    margin: 0 auto;
+    padding: 10px;
+    box-sizing: border-box;
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+}
+
+/* Header ve Kontroller */
+.ShipWeekPlanner__header {
+    padding-top: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+    color: var(--swp-text-color);
+}
+
+.ShipWeekPlanner__controls {
+    margin-bottom: 10px;
+}
+
+.ShipWeekPlanner__buttons {
+    margin: 10px 0;
+}
+
+/* Tablo Container */
+.ShipWeekPlanner__tableContainer {
+    overflow-x: auto;
+    max-height: 80vh;
+    position: relative;
+    border: 1px solid var(--swp-border-color);
+    border-radius: 4px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Excel benzeri tablo stilleri */
+.ShipWeekPlanner__table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.875rem;
+    background: white;
+}
+
+/* Tablo başlıkları */
+.ShipWeekPlanner__table th {
+    background-color: var(--swp-header-bg-color);
+    border: 1px solid var(--swp-border-color);
+    border-bottom: 2px solid #dee2e6;
+    padding: 8px;
+    font-weight: 600;
+    color: #495057;
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    height: 40px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+/* Tablo hücreleri */
+.ShipWeekPlanner__table td {
+    border: 1px solid var(--swp-border-color);
+    padding: 0;
+    height: var(--swp-cell-height);
+    background: white;
+    transition: background-color 0.2s ease;
+}
+
+/* Satır hover efekti */
+.ShipWeekPlanner__table tr:hover td {
+    background-color: var(--swp-hover-bg);
+}
+
+/* Düzenlenebilir hücreler */
+.ShipWeekPlanner__table--editable .MuiInputBase-root {
+    height: var(--swp-cell-height);
+    padding: 0 8px;
+    background: transparent !important;
+}
+
+.ShipWeekPlanner__table--editable .MuiInputBase-input {
+    padding: 0 !important;
+    font-size: 0.875rem !important;
+    height: 100% !important;
+}
+
+
+
+/* Genişleyebilir hücreler (SevkAdres ve SevkNotlari için) */
+.expandable-cell {
+    height: 100%;
+    position: relative;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.expandable-cell:hover {
+    position: relative;
+}
+
+.expandable-cell .MuiInputBase-root {
+    height: 100%;
+}
+
+/* Tooltip içeriği */
+.cell-tooltip {
+    position: absolute;
+    background: white;
+    border: 1px solid var(--swp-border-color);
+    border-radius: 4px;
+    padding: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-width: 300px;
+    white-space: pre-wrap;
+}
+
+/* Butonlar */
+.ShipWeekPlanner__addRow,
+.ShipWeekPlanner__deleteButton {
+    padding: 6px 16px;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    transition: background-color 0.2s ease;
+}
+
+.ShipWeekPlanner__addRow {
+    background-color: var(--swp-primary-color);
+    color: white;
+}
+
+.ShipWeekPlanner__deleteButton {
+    background-color: #dc3545;
+    color: white;
+    margin-left: 8px;
+}
+
+
+/* Non-editable hücreler için düzeltmeler */
+.ShipWeekPlanner__table td.non-editable {
+    background-color: var(--swp-non-editable-bg) !important;
+    cursor: not-allowed;
+    overflow: hidden;  /* Taşmayı engelle */
+}
+
+/* DatePicker input container için düzeltmeler */
+.ShipWeekPlanner__table td .datepicker-root {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;  /* Taşmayı engelle */
+}
+
+.ShipWeekPlanner__table td.non-editable .react-datepicker-wrapper {
+    width: 100%;
+    height: 100%;
+}
+
+.ShipWeekPlanner__table td.non-editable .react-datepicker__input-container {
+    width: 100%;
+    height: 100%;
+}
+
+.ShipWeekPlanner__table td.non-editable .react-datepicker__input-container input {
+    width: 100%;
+    height: 100%;
+    padding: 0 4px !important;  /* Padding'i azalt */
+    border: none !important;
+    background-color: var(--swp-non-editable-bg) !important;
+    box-shadow: none !important;
+    text-align: center;  /* Metni ortala */
+    font-size: 0.875rem !important;
+    white-space: nowrap;  /* Tek satırda tut */
+    text-overflow: ellipsis;  /* Gerekirse ... ile kes */
+}
+
+/* Tüm hücreler için genel düzeltme */
+.ShipWeekPlanner__table td {
+    position: relative;
+    border: 1px solid var(--swp-border-color);
+    padding: 0;
+    height: var(--swp-cell-height);
+    background: white;
+    transition: background-color 0.2s ease;
+    overflow: hidden; /* Taşmayı engelle */
+}
+
+/* DatePicker popup pozisyonu için */
+.react-datepicker-popper {
+    z-index: 9999 !important;
+}
+
+/* Hücre içi input stilleri */
+.ShipWeekPlanner__table td input {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Responsive tasarım */
+@media (max-width: 768px) {
+    .ShipWeekPlanner__table {
+        font-size: 0.813rem;
+    }
+
+    .expandable-cell {
+        padding: 0 4px;
+    }
+}
+
+/* Animasyonlar */
+@keyframes tooltip-fade-in {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.cell-tooltip {
+    animation: tooltip-fade-in 0.2s ease-out;
+}

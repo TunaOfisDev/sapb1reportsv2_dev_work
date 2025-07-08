@@ -1,0 +1,220 @@
+/* frontend/src/components/ShipWeekPlanner/css/datePicker.css */
+
+.datepicker-root {
+    --datepicker-border-color: #e0e0e0;
+    --datepicker-bg-color: #ffffff;
+    --datepicker-text-color: #333333;
+    --datepicker-selected-color: #1976d2;
+    --datepicker-hover-bg: #f5f5f5;
+    --datepicker-disabled-bg: #f0f0f0;
+    --datepicker-header-bg: #f8f9fa;
+    --datepicker-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    --datepicker-zindex: 9999;  /* Yüksek z-index değeri */
+    position: relative;
+}
+
+/* React-DatePicker Temel Stiller */
+.react-datepicker-wrapper {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.react-datepicker__input-container {
+    height: 100%;
+    display: block;
+    width: 100%;
+    position: relative;
+}
+
+.react-datepicker__input-container input {
+    width: 100%;
+    height: 100%;
+    padding: 0 8px;
+    border: none;
+    background: transparent;
+    font-size: 0.875rem;
+    cursor: pointer;
+    outline: none;
+}
+
+.react-datepicker__input-container input:hover {
+    background-color: var(--datepicker-hover-bg);
+}
+
+.react-datepicker__input-container input:disabled {
+    background-color: var(--datepicker-disabled-bg);
+    cursor: not-allowed;
+}
+
+/* DatePicker Popup */
+.react-datepicker-popper {
+    z-index: 9999 !important;
+    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+}
+
+.react-datepicker {
+    border: 1px solid var(--datepicker-border-color) !important;
+    border-radius: 4px !important;
+    background-color: var(--datepicker-bg-color) !important;
+    box-shadow: var(--datepicker-shadow) !important;
+    font-size: 0.875rem !important;
+}
+
+/* Header */
+.react-datepicker__header {
+    background-color: var(--datepicker-header-bg) !important;
+    border-bottom: 1px solid var(--datepicker-border-color) !important;
+    padding: 8px !important;
+}
+
+.react-datepicker__current-month {
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    margin-bottom: 4px !important;
+    color: var(--datepicker-text-color);
+}
+
+/* Gün İsimleri */
+.react-datepicker__day-name {
+    width: 2rem !important;
+    line-height: 2rem !important;
+    color: var(--datepicker-text-color);
+    margin: 0 !important;
+}
+
+/* Günler */
+.react-datepicker__day {
+    width: 2rem !important;
+    line-height: 2rem !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    color: var(--datepicker-text-color);
+}
+
+.react-datepicker__day:hover {
+    background-color: var(--datepicker-hover-bg) !important;
+}
+
+.react-datepicker__day--selected {
+    background-color: var(--datepicker-selected-color) !important;
+    color: white !important;
+}
+
+.react-datepicker__day--keyboard-selected {
+    background-color: var(--datepicker-hover-bg) !important;
+    color: var(--datepicker-selected-color) !important;
+}
+
+.react-datepicker__day--disabled {
+    color: #ccc !important;
+    cursor: not-allowed !important;
+}
+
+/* Month Container */
+.react-datepicker__month {
+    margin: 0 !important;
+    padding: 0.4rem !important;
+}
+
+.react-datepicker__month-container {
+    float: none !important;
+}
+
+/* Navigasyon Butonları */
+.react-datepicker__navigation {
+    top: 8px !important;
+    border: none !important;
+    padding: 4px !important;
+}
+
+.react-datepicker__navigation--previous {
+    left: 8px !important;
+}
+
+.react-datepicker__navigation--next {
+    right: 8px !important;
+}
+
+/* Triangle Icon */
+.react-datepicker__triangle {
+    display: none !important;
+}
+
+/* Dropdown'lar */
+.react-datepicker__month-select,
+.react-datepicker__year-select {
+    padding: 2px !important;
+    font-size: 0.875rem !important;
+    border: 1px solid var(--datepicker-border-color) !important;
+    border-radius: 4px !important;
+    background-color: var(--datepicker-bg-color) !important;
+}
+
+/* Today Button */
+.react-datepicker__today-button {
+    background-color: var(--datepicker-header-bg) !important;
+    border-top: 1px solid var(--datepicker-border-color) !important;
+    padding: 8px !important;
+    text-align: center !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    color: var(--datepicker-selected-color) !important;
+}
+
+.react-datepicker__today-button:hover {
+    background-color: var(--datepicker-hover-bg) !important;
+}
+
+/* Hafta Başlıkları */
+.react-datepicker__day-names {
+    margin-bottom: 0 !important;
+    padding-top: 4px !important;
+    border-top: 1px solid var(--datepicker-border-color) !important;
+}
+
+/* Time Container */
+.react-datepicker__time-container {
+    border-left: 1px solid var(--datepicker-border-color) !important;
+}
+
+/* Özel Durumlar */
+.non-editable .react-datepicker__input-container input {
+    background-color: var(--datepicker-disabled-bg);
+    cursor: not-allowed;
+}
+
+/* Portal Stili */
+.react-datepicker-popper[data-placement^="bottom"] {
+    margin-top: 8px !important;
+}
+
+/* DatePicker Popup için yeni stiller */
+.react-datepicker-popper {
+    z-index: var(--datepicker-zindex) !important;
+    position: fixed !important; /* Fixed position ile her zaman viewport'a göre konumlanır */
+}
+
+/* Takvimin tablonun üzerinde görünmesi için portal kullanımı */
+.react-datepicker-portal {
+    z-index: var(--datepicker-zindex) !important;
+    position: fixed !important;
+}
+
+/* Input container'ın relative position'da olması için */
+.react-datepicker__input-container {
+    position: relative !important;
+    z-index: 1;
+}
+
+/* Takvim açıldığında input'un üstte kalması için */
+.react-datepicker__input-container:focus-within {
+    z-index: var(--datepicker-zindex);
+}
+
+/* Takvimin kendisi için */
+.react-datepicker {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid #ddd !important;
+}
+

@@ -1,0 +1,126 @@
+/* frontend/src/components/SystemNotebook/css/systemnotebook-table.css */
+
+.systemnotebook-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 0.95rem;
+  background-color: #ffffff;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.systemnotebook-table__head {
+  background-color: #f9fafb;
+  color: #333;
+  text-align: left;
+}
+
+.systemnotebook-table__row {
+  border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.2s;
+}
+
+.systemnotebook-table__row:hover {
+  background-color: #f5faff;
+  cursor: pointer;
+}
+
+.systemnotebook-table__cell {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+  word-break: break-word;
+}
+
+.systemnotebook-table__cell--header {
+  font-weight: 600;
+  background-color: #f1f1f1;
+  border-bottom: 2px solid #d0d0d0;
+  color: #222;
+}
+
+.systemnotebook-table__cell--source-admin {
+  color: #1565c0;
+  font-weight: 500;
+}
+
+.systemnotebook-table__cell--source-github {
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.systemnotebook-list__table-title {
+  font-weight: 500;
+  color: #0d47a1;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.systemnotebook-list__table-title:hover {
+  color: #1565c0;
+}
+
+.systemnotebook-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 1rem;
+}
+
+.systemnotebook-pagination__button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  background-color: #1976d2;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.systemnotebook-pagination__button:hover:not(:disabled) {
+  background-color: #1565c0;
+}
+
+.systemnotebook-pagination__button:disabled {
+  background-color: #90caf9;
+  cursor: not-allowed;
+}
+
+.systemnotebook-pagination__info {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.systemnotebook-list__topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.systemnotebook-list__actions--right {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+
+@media (max-width: 768px) {
+  .systemnotebook-table {
+    font-size: 0.85rem;
+  }
+
+  .systemnotebook-table__cell {
+    padding: 10px 8px;
+  }
+
+  .systemnotebook-pagination {
+    flex-direction: column;
+    gap: 6px;
+  }
+}

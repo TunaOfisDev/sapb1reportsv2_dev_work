@@ -1,0 +1,229 @@
+/* frontend/src/components/ProductConfig/css/PCConfigurationFlow.css */
+
+.pc-configuration-flow {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Skeleton İskelet Stilleri */
+.skeleton {
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150px;
+    height: 100%;
+    width: 150px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% {
+        left: -150px;
+    }
+    50% {
+        left: 100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+.pc-configuration-flow__loading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Tam ekran kaplama */
+}
+
+.pc-configuration-flow__updating-message {
+    margin-top: 20px;
+    font-size: 1.1rem;
+    color: #333;
+    text-align: center;
+}
+
+/* PCQuestionCard Skeleton */
+.pc-question-card--skeleton {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.pc-question-card__header {
+    margin-bottom: 20px;
+}
+
+.skeleton-title {
+    width: 60%;
+    height: 24px;
+    margin-bottom: 10px;
+}
+
+.skeleton-description {
+    width: 40%;
+    height: 16px;
+}
+
+.skeleton-input {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 20px;
+}
+
+.skeleton-button {
+    width: 150px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+/* PCConfigurationCompleted Skeleton */
+.pc-hana-loading .skeleton-hana-title {
+    width: 50%;
+    height: 20px;
+    margin-bottom: 15px;
+    margin: 0 auto 15px;
+}
+
+.pc-hana-loading .skeleton-hana-detail {
+    width: 80%;
+    height: 16px;
+    margin: 0 auto 10px;
+}
+
+/* Genel Yükleme ve Hata Mesajları */
+.pc-loading,
+.pc-error {
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.pc-error {
+    color: #ff0000;
+}
+
+/* Konfigürasyon aksiyon butonları için stiller */
+.pc-configuration-actions {
+    display: flex;
+    gap: 30px;  /* 10px'den 30px'e çıkardık */
+    justify-content: space-evenly; /* center yerine space-evenly kullandık */
+    margin-top: 20px;
+    padding: 0 20px; /* Yanlarda da boşluk bırakalım */
+}
+
+/* Butonlar için ek stil */
+.pc-button-group {
+    display: flex;
+    gap: 12px; /* Butonlar arasındaki boşluk */
+    margin-top: 16px;
+}
+
+.pc-configuration-completed-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+/* SAP Detayları */
+.pc-hana-details {
+    margin-top: 20px;
+}
+
+.pc-hana-details h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.pc-hana-info p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+/* Variant Summary */
+.pc-variant-summary {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #fafafa;
+}
+
+.pc-variant-summary h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.pc-variant-summary p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+    .pc-configuration-flow {
+        padding: 10px;
+    }
+
+    .pc-question-card--skeleton {
+        padding: 15px;
+    }
+
+    .skeleton-title {
+        width: 70%;
+        height: 20px;
+    }
+
+    .skeleton-description {
+        width: 50%;
+        height: 14px;
+    }
+
+    .skeleton-input {
+        height: 35px;
+    }
+
+    .skeleton-button {
+        width: 120px;
+        height: 35px;
+    }
+
+    .pc-button-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .pc-button-group .pc-button {
+        width: 100%;
+    }
+
+    .pc-hana-loading .skeleton-hana-title {
+        width: 60%;
+    }
+
+    .pc-hana-loading .skeleton-hana-detail {
+        width: 90%;
+    }
+
+    .pc-variant-summary h3 {
+        font-size: 18px;
+    }
+
+    .pc-variant-summary p {
+        font-size: 14px;
+    }
+}

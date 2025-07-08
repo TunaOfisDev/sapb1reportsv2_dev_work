@@ -1,0 +1,142 @@
+{# backend/mailservice/templates/mailservice/new_customer_form_email.html #}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .company-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+        }
+        .field {
+            margin-bottom: 10px;
+        }
+        .field-label {
+            font-weight: bold;
+            color: #495057;
+        }
+        .attachments {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f1f3f5;
+            border-radius: 5px;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Yeni Müşteri Formu Bildirimi</h2>
+        <p>{{ created_by.email }} tarafından yeni bir müşteri formu oluşturuldu.</p>
+    </div>
+
+    <div class="company-info">
+        <h3>Firma Bilgileri</h3>
+        <div class="field">
+            <span class="field-label">Firma Ünvanı:</span>
+            <span>{{ customer_form.firma_unvani }}</span>
+        </div>
+        <div class="field">
+            <span class="field-label">Vergi Kimlik Numarası:</span>
+            <span>{{ customer_form.vergi_kimlik_numarasi }}</span>
+        </div>
+        <div class="field">
+            <span class="field-label">Vergi Dairesi:</span>
+            <span>{{ customer_form.vergi_dairesi }}</span>
+        </div>
+        <div class="field">
+            <span class="field-label">Firma Adresi:</span>
+            <span>{{ customer_form.firma_adresi }}</span>
+        </div>
+    </div>
+
+    <div class="company-info">
+        <h3>İletişim Bilgileri</h3>
+        <div class="field">
+            <span class="field-label">Telefon:</span>
+            <span>{{ customer_form.telefon_numarasi }}</span>
+        </div>
+        <div class="field">
+            <span class="field-label">E-posta:</span>
+            <span>{{ customer_form.email }}</span>
+        </div>
+        <div class="field">
+            <span class="field-label">Muhasebe İrtibat Telefon:</span>
+            <span>{{ customer_form.muhasebe_irtibat_telefon }}</span>
+        </div>
+        <div class="field">
+            <span class="field-label">Muhasebe İrtibat E-posta:</span>
+            <span>{{ customer_form.muhasebe_irtibat_email }}</span>
+        </div>
+    </div>
+
+    {% if customer_form.yetkili_kisiler.exists %}
+    <div class="company-info">
+        <h3>Yetkili Kişiler</h3>
+        {% for yetkili in customer_form.yetkili_kisiler.all %}
+        <div class="field">
+            <p><strong>{{ yetkili.ad_soyad }}</strong></p>
+            <p>Telefon: {{ yetkili.telefon }}</p>
+            <p>E-posta: {{ yetkili.email }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="company-info">
+        <h3>Ödeme Bilgileri</h3>
+        <div class="field">
+            <span class="field-label">Ödeme Şartları ve Vadeleri:</span>
+            <p>{{ customer_form.odeme_sartlari }}</p>
+        </div>
+        {% if customer_form.iskonto_anlasmasi %}
+        <div class="field">
+            <span class="field-label">İskonto Anlaşması:</span>
+            <p>{{ customer_form.iskonto_anlasmasi }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="attachments">
+        <h3>Ek Dosyalar</h3>
+        <p>Aşağıdaki belgeler ZIP dosyası içerisinde ekte yer almaktadır:</p>
+        <ul>
+            <li>Vergi Levhası</li>
+            <li>Faaliyet Belgesi</li>
+            <li>Ticaret Sicil Gazetesi</li>
+            <li>İmza Sirküleri</li>
+            <li>Banka IBAN Bilgileri</li>
+        </ul>
+        <p>Ayrıca form detayları PDF dosyası olarak ekte sunulmuştur.</p>
+    </div>
+
+    <div class="footer">
+        <p>Bu mail otomatik olarak gönderilmiştir. Lütfen cevaplamayınız.</p>
+        <p>Form Oluşturulma Tarihi: {{ customer_form.created_at|date:"d.m.Y H:i" }}</p>
+    </div>
+</body>
+</html>

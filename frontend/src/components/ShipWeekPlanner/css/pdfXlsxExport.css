@@ -1,0 +1,108 @@
+/* frontend/src/components/ShipWeekPlanner/css/pdfXlsxExport.css */
+
+/* PDF Export Konteyner */
+.pdf-export-container {
+    width: 100%;
+    max-width: 210mm; /* A4 genişliği */
+    margin: 0 auto;
+    background-color: white;
+}
+
+/* PDF Preview Stili */
+.pdf-preview {
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin: 20px 0;
+}
+
+/* Tablo Stilleri */
+.pdf-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+}
+
+.pdf-table th {
+    background-color: #1976d2;
+    color: white;
+    font-weight: bold;
+    padding: 4px;
+    font-size: 8pt;
+    text-align: center;
+    border: 0.5px solid #ccc;
+}
+
+.pdf-table td {
+    padding: 3px 4px;
+    font-size: 7pt;
+    border: 0.5px solid #ccc;
+    line-height: 1.1;
+}
+
+/* Başlık Stili */
+.pdf-header {
+    font-size: 14pt;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Hücre İçeriği */
+.pdf-cell {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px; /* Maksimum hücre genişliği */
+}
+
+/* Export Butonları */
+.export-buttons {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.export-button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.export-button--pdf {
+    background-color: #1976d2;
+    color: white;
+}
+
+.export-button--excel {
+    background-color: #2e7d32;
+    color: white;
+}
+
+/* Yükleme Göstergesi */
+.export-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #666;
+}
+
+/* Responsive Tasarım */
+@media print {
+    .pdf-export-container {
+        width: 210mm; /* A4 genişliği */
+        height: 297mm; /* A4 yüksekliği */
+        margin: 0;
+        padding: 10mm;
+    }
+
+    .export-buttons {
+        display: none;
+    }
+}

@@ -1,0 +1,94 @@
+/* frontend/src/components/FileShareHub_V2/css/ThumbPreview.module.css */
+
+.thumb-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem;
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  min-width: 160px;
+  max-width: 180px;
+  transition: box-shadow 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.thumb-preview:hover {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+}
+
+.thumb-preview__image {
+  width: 128px;
+  height: auto;
+  object-fit: cover;
+}
+
+.thumb-preview__name {
+  font-size: 0.85rem;
+  color: #212529;
+  text-align: center;
+  word-break: break-word;
+  max-width: 150px;
+}
+
+.thumb-preview__loading {
+  width: 128px;
+  height: 100px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #f3f3f3,
+    #f3f3f3 10px,
+    #e9ecef 10px,
+    #e9ecef 20px
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #6c757d;
+  border: 1px dashed #ced4da;
+}
+
+.thumb-preview__error {
+  width: 128px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff3f3;
+  color: #dc3545;
+  font-size: 0.75rem;
+  text-align: center;
+  border: 1px solid #dc3545;
+}
+
+.thumb-preview__button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 600px) {
+  .thumb-preview {
+    max-width: 140px;
+    min-width: 120px;
+  }
+
+  .thumb-preview__image {
+    height: 100px;
+  }
+
+  .thumb-preview__name {
+    font-size: 0.75rem;
+    max-width: 120px;
+  }
+
+  .thumb-preview__loading,
+  .thumb-preview__error {
+    width: 100px;
+    height: 90px;
+    font-size: 0.7rem;
+  }
+}

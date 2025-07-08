@@ -1,0 +1,110 @@
+/* frontend/src/components/LogoCustomerBalance/css/LogoCustomerBalanceTable.css */
+/* Tablo genel stil ayarları */
+.logo-customer-balance__table {
+    width: 100%;
+    margin-top: 0px;  /* Tabloyu yukarı taşı */
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+    display: block;
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Tablo hücreleri ve başlıklar için ortak stiller */
+.logo-customer-balance__table th,
+.logo-customer-balance__table td {
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+}
+
+/* Başlık satırı stil ayarları */
+.logo-customer-balance__th {
+    background-color: #007bff; /* Mavi arka plan rengi */
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Sütun başlıklarına hover efekti */
+.logo-customer-balance__th--hover:hover {
+    background-color: #0056b3; /* Daha koyu mavi hover rengi */
+}
+
+/* Sayısal veriler için hizalama */
+.logo-customer-balance__td--numeric,
+.logo-customer-balance__th--numeric-header {
+    text-align: right;
+}
+
+/* Toplam değerler için kalın yazı stili */
+.logo-customer-balance__td--total {
+    font-weight: bold;
+}
+
+/* Alt toplam için sağa hizalama ve kalın yazı stil ayarları */
+.logo-customer-balance__tfoot--dynamic-subtotal,
+.logo-customer-balance__tfoot--dynamic-subtotal-right,
+.logo-customer-balance__td--footer-bold {
+    font-weight: bold;
+    text-align: right;
+}
+
+/* Gizli hücreler için stil */
+.logo-customer-balance__td--hidden {
+    display: none;
+}
+
+/* Cari kodu sütunu için taşan metni gösterme ayarları */
+.logo-customer-balance__th--cari-kodu,
+.logo-customer-balance__td--cari-kodu {
+    white-space: nowrap; /* Metni tek satırda tut */
+    overflow: hidden; /* Taşmayı engelle */
+    text-overflow: ellipsis; /* Taşan metni "..." ile göster */
+    max-width: 50px; /* Maksimum genişlik ayarı */
+    min-width: 25px; /* Minimum genişlik ayarı */
+    display: block; /* Block seviyesinde bir eleman olarak tanımla */
+}
+
+/* Cari açıklaması sütunu için taşan metni gösterme ayarları */
+.logo-customer-balance__th--cari-aciklamasi,
+.logo-customer-balance__td--cari-aciklamasi {
+    white-space: nowrap; /* Metni tek satırda tut */
+    overflow: hidden; /* Taşmayı engelle */
+    text-overflow: ellipsis; /* Taşan metni "..." ile göster */
+    max-width: 100px; /* Maksimum genişlik ayarı */
+    min-width: 50px; /* Minimum genişlik ayarı */
+    display: block; /* Block seviyesinde bir eleman olarak tanımla */
+}
+
+/* Responsive Tasarım */
+@media (max-width: 1024px) {
+    .logo-customer-balance__table {
+        font-size: 0.9rem; /* Font boyutunu azalt */
+    }
+    .logo-customer-balance__table th,
+    .logo-customer-balance__table td {
+        padding: 0.4rem; /* Padding azalt */
+    }
+}
+@media (max-width: 768px) {
+    .logo-customer-balance__table th,
+    .logo-customer-balance__table td {
+        padding: 0.3rem; /* Daha fazla padding azaltma */
+    }
+}
+@media (max-width: 480px) {
+    .logo-customer-balance__table {
+        font-size: 0.75rem; /* Mobil için font boyutunu daha da küçült */
+    }
+    .logo-customer-balance__table th,
+    .logo-customer-balance__table td {
+        padding: 0.2rem; /* Mobil için padding azalt */
+    }
+}

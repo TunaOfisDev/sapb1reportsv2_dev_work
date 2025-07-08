@@ -1,0 +1,19 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+  <div class="app-productconfigv2 module">
+    <h1>{{ title }}</h1>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <fieldset class="module aligned">
+        {{ form.as_p }}
+      </fieldset>
+
+      <div class="submit-row">
+        <input type="submit" name="apply" class="default" value="Toplu Atamayı Uygula">
+        <a href="{{ request.META.HTTP_REFERER|default:'/' }}" class="button cancel-link">İptal</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

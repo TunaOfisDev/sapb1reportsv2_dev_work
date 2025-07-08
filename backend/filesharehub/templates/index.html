@@ -1,0 +1,49 @@
+<!-- backend/filesharehub/templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Icons</title>
+
+    <!-- Django statik dosyaları yükleme -->
+    {% load static %}
+
+    <!-- FontAwesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <h1>Dosya ve Klasörler</h1>
+
+    <!-- Klasörler -->
+    <h2>Klasörler</h2>
+    {% if contents.directories %}
+        <ul>
+        {% for directory in contents.directories %}
+            <li>
+                <img src="{% static 'thumbnail/icons/folder_icon.png' %}" alt="Klasör İkonu" width="20">
+                {{ directory.name }}
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Klasör yok.</p>
+    {% endif %}
+
+    <!-- Dosyalar -->
+    <h2>Dosyalar</h2>
+    {% if contents.files %}
+        <ul>
+        {% for file in contents.files %}
+            <li>
+                <img src="{{ file.thumbnail }}" alt="Dosya İkonu" width="20">
+                {{ file.name }} - Boyut: {{ file.size }} MB
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>Dosya yok.</p>
+    {% endif %}
+</body>
+</html>

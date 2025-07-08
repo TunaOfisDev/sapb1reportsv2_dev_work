@@ -1,0 +1,126 @@
+/* frontend/src/components/DeliveryDocSum/css/DeliveryDocSumTable.css */
+/* Genel tablo stil ayarlamaları */
+.delivery-doc-sum__table {
+  width: 100%;
+  border-collapse: collapse; /* Kenar çizgilerini daha yakın yap */
+  font-size: 14px; /* Metin boyutunu azalt */
+}
+
+/* Tablo başlıkları için stil */
+.delivery-doc-sum__table thead th {
+  background-color: #007bff; /* Mavi arka plan rengi */
+  color: white; /* Beyaz yazı rengi */
+  font-weight: bold;
+  padding: 10px; /* Daha az padding */
+  text-align: left;
+  border-bottom: 2px solid #ffffff; /* Başlık altı çizgisi ekle */
+}
+
+/* Tablo hücreleri için stil */
+.delivery-doc-sum__table tbody td {
+  background-color: #ffffff; /* Beyaz arka plan rengi */
+  color: #333; /* Siyah tonu metin rengi */
+  padding: 8px; /* Daha az padding */
+  border-right: 1px solid #ddd;
+  border-top: 1px solid #ddd;
+}
+
+/* Hücrelerin alt çizgisini koyulaştır */
+.delivery-doc-sum__table tbody tr td {
+  border-bottom: 1px solid #ddd;
+}
+
+/* Dinamik ara toplam satırı için stil */
+.delivery-doc-sum__table tfoot td {
+  font-weight: bold;
+  background-color: #003366; /* Koyu mavi arka plan */
+  color: white; /* Beyaz yazı rengi */
+  padding: 10px; /* Daha az padding */
+}
+
+.delivery-doc-sum__table tfoot td {
+  padding: 15px;
+}
+
+/* Sayfalama için stil */
+.delivery-doc-sum__pagination {
+  display: flex;
+  justify-content: flex-end; /* Sağa yasla */
+  padding: 10px;
+  background-color: #f5f5f5; /* Açık gri arka plan */
+}
+
+/* Sayfa numarası butonları için stil */
+.delivery-doc-sum__pagination button {
+  background-color: #007bff; /* Mavi arka plan */
+  color: white; /* Beyaz yazı */
+  border: none;
+  padding: 5px 10px;
+  margin-left: 5px; /* Sol boşluk */
+  border-radius: 5px; /* Kenar yuvarlaklığı */
+  cursor: pointer;
+}
+
+.delivery-doc-sum__pagination button:hover {
+  background-color: #0056b3; /* Buton üzerindeyken koyu mavi */
+}
+
+/* Sayfa numarası aktif butonu için stil */
+.delivery-doc-sum__pagination .active {
+  font-weight: bold;
+  border: none;
+  background-color: #0056b3; /* Koyu mavi arka plan */
+}
+
+/* Sütun başlıkları ve hücreler için genel stil */
+.delivery-doc-sum__table-header,
+.delivery-doc-sum__table-cell {
+  padding: 0.5rem; /* Örnek padding, ihtiyaca göre ayarlayabilirsiniz */
+  text-align: left; /* Sol hizalama */
+}
+
+/* Right align header */
+.delivery-doc-sum__table-header--right {
+  text-align: right;
+}
+
+/* Right align cells */
+.delivery-doc-sum__table-cell--right {
+  text-align: right;
+}
+
+/* Sayısal sütun hücreleri için stil */
+.delivery-doc-sum__table-cell--numeric {
+  text-align: right; /* Sayısal değerler için sağ hizalama */
+  font-family: 'Consolas', 'Menlo', 'Monaco', 'Lucida Console', 'Courier New', monospace; /* Okunabilirlik için monospace font */
+}
+
+/* Filtre inputlarını içeren div için stil */
+.delivery-doc-sum__filter {
+  margin-top: 0.5rem; /* Başlık ve filtre arasında biraz boşluk */
+}
+
+/* Sıralama ikonları için stil, uygun bir font veya ikon kitaplığı kullanılmalıdır */
+.delivery-doc-sum__sort-icon {
+  display: inline-block;
+  margin-left: 0.5rem;
+}
+
+/* Filtre kutuları için genel stil */
+.delivery-doc-sum__filter-input {
+  width: 100%; /* Tüm genişliği kaplasın */
+  padding: 0.375rem; /* İç boşluk */
+  font-size: 0.875rem; /* Okunabilir font boyutu */
+  border: 1px solid #ddd; /* Kenarlık stilini tanımla */
+  border-radius: 0.25rem; /* Hafif yuvarlak köşeler */
+  margin-bottom: 0.5rem; /* Altında biraz boşluk bırak */
+}
+/* Hücrede ellipsis göstermek için */
+.ellipsis-cell {
+  display: inline-block;
+  max-width: 150px;          /* tabloya göre ayarla */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;    /* hizalama için */
+}

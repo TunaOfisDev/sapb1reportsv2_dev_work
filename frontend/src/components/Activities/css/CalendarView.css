@@ -1,0 +1,64 @@
+/* frontend/src/components/Activities/css/CalendarView.css*/
+/* Block */
+.calendar {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+/* Elements */
+.calendar__header {
+    color: #333;
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.calendar__event {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.calendar__button {
+    background-color: #f8f9fa;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.calendar__navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+/* Modifiers */
+.calendar__event--today {
+    background-color: #28a745;
+}
+
+.calendar__event--selected {
+    border: 2px solid #ffc107;
+}
+
+.calendar--week-view .calendar__event {
+    min-width: 120px;
+}
+
+.calendar--month-view .calendar__event {
+    min-width: 100px;
+}
+
+.calendar__button--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Ensure only Saturday and Sunday have yellow background */
+.rbc-month-view .rbc-day-bg.rbc-day-saturday,
+.rbc-month-view .rbc-day-bg.rbc-day-sunday {
+    background-color: #f5f595; /* Light yellow background */
+}

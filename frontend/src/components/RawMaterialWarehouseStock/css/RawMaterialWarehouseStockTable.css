@@ -1,0 +1,236 @@
+/* frontend/src/components/RawMaterialWarehouseStock/css/RawMaterialWarehouseStockTable.css */
+/* Genel Tablo Stili */
+.raw-material-warehouse-stock-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
+  font-family: 'Arial', sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Tablo Başlıkları */
+.raw-material-warehouse-stock-table__head th {
+  background-color: #2C4E6C; /* SAP mavisi */
+  color: white;
+  font-weight: bold;
+  text-align: left;
+  padding: 0.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Her hücre çevresinde ince bir çerçeve olacak */
+.raw-material-warehouse-stock-table td,
+.raw-material-warehouse-stock-table th {
+  border: 1px solid #dee2e6;
+  padding: 0.5rem;
+}
+
+/* Satır renk geçişleri ve hover efekti */
+.raw-material-warehouse-stock-table tbody tr {
+  background-color: #ffffff;
+  transition: background-color 0.3s ease;
+}
+
+.raw-material-warehouse-stock-table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.raw-material-warehouse-stock-table tbody tr:hover {
+  background-color: #fcbf1e !important; /* SAP hover rengi */
+}
+
+/* Taşan metin için genel stil */
+.raw-material-warehouse-stock-table__ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+/* Kalem Kod sütunu için taşan metin ayarları */
+.raw-material-warehouse-stock-table__td--kalem-kod,
+.raw-material-warehouse-stock-table__th--kalem-kod {
+  max-width: 150px;
+  width: 15%;
+}
+
+/* Kalem Tanım sütunu için genişletilmiş ayarlar */
+.raw-material-warehouse-stock-table__td--kalem-tanim,
+.raw-material-warehouse-stock-table__th--kalem-tanim {
+  max-width: 300px;
+  width: 25%;
+}
+
+/* ÖlçüBirim, DepoStok ve SiparişMiktar sütunları için daraltılmış ayarlar */
+.raw-material-warehouse-stock-table__cell[data-header="ÖlçüBirim"],
+.raw-material-warehouse-stock-table__cell[data-header="DepoStok"],
+.raw-material-warehouse-stock-table__cell[data-header="SiparişMiktar"] {
+  width: 8%;
+  max-width: 100px;
+}
+
+/* Diğer sütunlar için ayarlar */
+.raw-material-warehouse-stock-table__cell[data-header="KalemGrup"] {
+  width: 10%;
+}
+
+.raw-material-warehouse-stock-table__cell[data-header="SonFiyat"],
+.raw-material-warehouse-stock-table__cell[data-header="SonFatura"] {
+  width: 10%;
+}
+
+/* Hücreler için genel stil */
+.raw-material-warehouse-stock-table__cell {
+  padding: 0.5rem;
+  text-align: left;
+}
+
+/* Başlık hücreleri için özel stil */
+.raw-material-warehouse-stock-table__cell--header {
+  font-weight: bold;
+}
+
+/* Sayfalama bölümü */
+.raw-material-warehouse-stock-table__pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: #f8f9fa;
+  border-top: 2px solid #dee2e6;
+}
+
+/* Başlık içeriği */
+.raw-material-warehouse-stock-table__header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Sıralama simgesi */
+.raw-material-warehouse-stock-table__sort-icon {
+  margin-left: 0.5rem;
+}
+
+/* Dinamik Alt Toplam Satırı Stilleri */
+.footer-cell {
+  text-align: right !important;
+  font-weight: bold;
+  padding: 0.5rem;
+  background-color: #e9ecef;
+}
+
+/* İlk hücre için özel stil */
+.footer-cell:first-child {
+  text-align: left;
+  padding-left: 1rem;
+}
+
+/* Son hücre için özel stil */
+.footer-cell:last-child {
+  background-color: #2C4E6C; /* SAP mavisi */
+  color: white;
+}
+
+.raw-material-warehouse-stock-table__controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  background-color: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.rawmaterial-pagination__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination-button {
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+  color: #2C4E6C;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pagination-button:hover, .pagination-button:focus {
+  background-color: #e9ecef;
+}
+
+.pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.raw-material-warehouse-stock-table__export-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.export-button {
+  background-color: #2C4E6C;;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.export-button:hover {
+  background-color: #218838;
+}
+
+.export-button.filter {
+  background-color: #007bff;
+}
+
+.export-button.filter:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive tasarım için medya sorguları */
+@media screen and (max-width: 768px) {
+  .raw-material-warehouse-stock-table__controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .raw-material-warehouse-stock-table__export-buttons {
+    margin-top: 1rem;
+    justify-content: flex-end;
+  }
+  
+  .raw-material-warehouse-stock-table td,
+  .raw-material-warehouse-stock-table th {
+      padding: 0.3rem;
+  }
+  
+  .raw-material-warehouse-stock-table__td--kalem-tanim,
+  .raw-material-warehouse-stock-table__th--kalem-tanim {
+      max-width: 200px;
+      width: 20%;
+  }
+
+  .raw-material-warehouse-stock-table__cell[data-header="ÖlçüBirim"],
+  .raw-material-warehouse-stock-table__cell[data-header="DepoStok"],
+  .raw-material-warehouse-stock-table__cell[data-header="SiparişMiktar"] {
+      width: 10%;
+      max-width: 80px;
+  }
+}

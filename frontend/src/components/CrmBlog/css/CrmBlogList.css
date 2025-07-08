@@ -1,0 +1,127 @@
+/* frontend/src/components/CrmBlog/css/CrmBlogList.css */
+.crm-blog-list {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+}
+
+.crm-blog-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #2C4E6C;
+}
+
+.crm-blog-list__title {
+  font-size: 24px;
+  color: #2C4E6C;
+  margin: 0;
+  padding: 0;
+}
+
+.crm-blog-list__new-task-button {
+  padding: 8px 15px;
+  background-color: #2C4E6C;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.crm-blog-list__new-task-button:hover {
+  background-color: #496d8c;
+  transform: scale(1.05);
+}
+
+.crm-blog-list__table-container {
+  overflow-x: auto;
+}
+
+.crm-blog-list__table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 20px;
+}
+
+.crm-blog-list__table th, 
+.crm-blog-list__table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.crm-blog-list__table th {
+  background-color: #2C4E6C;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.crm-blog-list__table th:hover {
+  background-color: #496d8c;
+}
+
+.crm-blog-list__sort-icon {
+  margin-left: 5px;
+  font-size: 0.8rem;
+}
+
+.crm-blog-list__table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.crm-blog-list__table tr:hover {
+  background-color: #fcbf1e;
+}
+
+.crm-blog-list__table td {
+  color: #333;
+}
+
+.crm-blog-list__empty {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+  margin-top: 20px;
+}
+
+.crm-blog-list__button {
+  padding: 6px 10px;
+  background-color: #2C4E6C;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.crm-blog-list__button:hover {
+  background-color: #496d8c;
+  transform: scale(1.05);
+}
+
+@media screen and (max-width: 768px) {
+  .crm-blog-list__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .crm-blog-list__new-task-button {
+    margin-top: 10px;
+  }
+
+  .crm-blog-list__table th, 
+  .crm-blog-list__table td {
+    padding: 8px;
+    font-size: 14px;
+  }
+}

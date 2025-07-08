@@ -1,0 +1,158 @@
+/* frontend/src/components/ProductConfigv2/styles/configurator.css */
+
+/* Ana Konteyner */
+.product-config {
+  display: flex;
+  flex-direction: column;
+  background-color: #FFFFFF;
+  border: 1px solid #D1D5DE;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Başlık Alanı */
+.product-config__header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #0F6BB4;
+  color: #FFFFFF;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Üst sağ menü linki */
+.product-config__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.product-config__back-link {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.product-config__header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.product-config__header p {
+  font-size: 0.9rem;
+  margin: 0.5rem 0 0;
+  opacity: 0.9;
+}
+
+/* Ana İçerik Alanı */
+.product-config__body {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.product-config__body-left {
+  flex: 2;
+}
+
+.product-config__body-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Footer ve Butonlar */
+.product-config__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid #EAEDF2;
+}
+
+/* Sıfırla Butonu */
+.product-config__reset-btn {
+  background-color: #FFFFFF;
+  color: #0F6BB4;
+  border: 1px solid #0F6BB4;
+  border-radius: 4px;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.product-config__reset-btn:hover {
+  background-color: #F0F7FF;
+}
+
+.product-config__reset-btn:active {
+  background-color: #E0EFFF;
+}
+
+
+/* İki sütunluk yapıyı tutacak container */
+.features-dual-container {
+  display: flex;
+  gap: 2rem; /* Sütunlar arası boşluk */
+}
+
+/* Her sütun */
+.features-dual-column {
+  flex: 1;
+  background-color: #f9f9f9;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.features-dual-column h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  color: #333;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Responsive: Mobilde sütunları alt alta göster */
+@media (max-width: 768px) {
+  .features-dual-container {
+    flex-direction: column;
+  }
+}
+
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+  .product-config__body {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .product-config__footer {
+    flex-direction: column-reverse;
+    gap: 1rem;
+  }
+  
+  .product-config__reset-btn {
+    width: 100%;
+  }
+}

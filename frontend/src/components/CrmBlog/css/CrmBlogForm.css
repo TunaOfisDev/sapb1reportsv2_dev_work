@@ -1,0 +1,71 @@
+/* frontend/src/components/CrmBlog/css/CrmBlogForm.css */
+.crm-blog-form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .crm-blog-form__header {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #2C4E6C; /* SAP mavisi */
+  }
+  
+  .crm-blog-form__title {
+    font-size: 24px;
+    color: #2C4E6C; /* SAP mavisi */
+    margin: 0;
+    padding: 0;
+  }
+  
+  .crm-blog-form__group {
+    margin-bottom: 15px;
+  }
+  
+  .crm-blog-form__label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .crm-blog-form__input,
+  .crm-blog-form__textarea,
+  .crm-blog-form__select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .crm-blog-form__textarea {
+    resize: vertical;
+  }
+  
+  .crm-blog-form__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .crm-blog-form__button {
+    padding: 10px 20px;
+    background-color: #2C4E6C; /* SAP mavisi */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  .crm-blog-form__button:hover {
+    background-color: #fcbf1e; /* SAP sarısı */
+    transform: scale(1.05);
+  }
+  

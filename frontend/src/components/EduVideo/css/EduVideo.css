@@ -1,0 +1,64 @@
+/* frontend/src/components/EduVideo/css/EduVideo.css */
+
+/* Block component */
+.video-list-container {
+  padding: 20px;
+  width: 100%; /* Sayfa genişliğini tamamen kaplar */
+  display: flexbox;
+  grid-template-columns: repeat(4, 4fr);
+  gap: 5px; /* Video çerçeveleri arasındaki uzaklık */
+  margin-top: auto;
+}
+
+/* Element */
+.video-list-container__list {
+  /* Düzenleme: video çerçevelerini tamamen kaplayacak şekilde ayarla */
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 4fr);
+  gap: 0px; /* Video çerçeveleri arasındaki uzaklık */
+  padding: 1rem;
+  list-style: none;
+  margin: 0;
+}
+
+/* Düzenleme: Videoları sola hizala */
+.video-list-container__list li {
+  margin-left: 25px;
+}
+
+/* Element item */
+.video-list-container__item {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+/* Element item element */
+.video-list-container__item-title {
+  font-size: 1.2em;
+  color: #333;
+}
+
+/* Element item element for thumbnail */
+.video-list-container__item-thumbnail {
+  width: 100%;
+  height: auto;
+  margin-right: 15px;
+}
+
+/* Modifier for error message */
+.video-list-container__error-message {
+  color: red;
+  font-weight: bold;
+}
+
+/* Modifier for loading state */
+.video-list-container__loading {
+  color: #999;
+}
+
+/* Düzenleme: Sayfalama butonlarını en üste taşı */
+.pagination-controls {
+  margin-top: 0;
+}

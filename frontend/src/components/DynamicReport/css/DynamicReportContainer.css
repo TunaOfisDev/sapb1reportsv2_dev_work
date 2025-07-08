@@ -1,0 +1,167 @@
+/* frontend/src/components/DynamicReport/css/DynamicReportContainer.css */
+
+/* Block */
+.dynamic-report-container {
+  margin: 20px;
+  padding: 20px;
+  background-color: #ffffff; /* Beyaz arkaplan */
+  border: 1px solid #ddd; /* İnce gri kenarlık */
+  border-radius: 5px; /* Kenarları yuvarlat */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Hafif gölge efekti */
+  font-family: 'Roboto', sans-serif; /* Font ayarı */
+  color: #333; /* Yazı rengi */
+}
+
+/* Element */
+.dynamic-report-container__header {
+  font-size: 24px; /* Başlık font büyüklüğü */
+  font-weight: bold; /* Başlık kalın yazı */
+  margin-bottom: 20px; /* Başlık altındaki boşluk */
+  color: #2C4E6C; /* SAP mavisi */
+}
+
+/* Butonlar için stil */
+.dynamic-report-container__buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.dynamic-report-container__button {
+  padding: 8px 12px;
+  background-color: #2C4E6C; /* SAP mavisi */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.dynamic-report-container__button:hover {
+  background-color: #0056b3; /* Hover rengi */
+}
+
+/* Dynamic Report Page Styles */
+.dynamic-report-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.dynamic-report-page__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+/* Tablo Başlıkları */
+.dynamic-report-page__table thead th {
+  background-color: #2C4E6C; /* SAP mavisi */
+  color: white;
+  font-weight: bold;
+  text-align: left;
+  padding: 0.5rem;
+}
+
+/* Satır Renk Değişimi */
+.dynamic-report-page__table tbody tr:nth-child(odd) {
+  background-color: #f9f9f9; /* Hafif gri */
+}
+
+.dynamic-report-page__table tbody tr:nth-child(even) {
+  background-color: #ffffff; /* Beyaz */
+}
+
+/* Hover Efekti */
+.dynamic-report-page__table tbody tr:hover {
+  background-color: #fcbf1e; /* SAP hover rengi */
+}
+
+/* Hücre Stilleri */
+.dynamic-report-page__table td,
+.dynamic-report-page__table th {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+}
+
+/* Filtre Input Stili */
+.dynamic-report-page__filter-input {
+  width: 90%;
+  font-size: 0.85rem;
+  padding: 0.2rem;
+  margin: 0;
+  border: 0;
+  outline: none;
+  background-color: #fdd874dd; /* SAP input rengi */
+}
+
+/* Pagination Stili */
+.pagination-controls {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  padding: 1px 0;
+}
+
+.pagination-button {
+  margin: 2px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  background-color: #2C4E6C; /* SAP mavisi */
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.pagination-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination-size-selector {
+  margin-right: 0px;
+  display: flex;
+  align-items: left;
+  margin-left: 0px;
+}
+
+.pagination-size-selector-label {
+  margin-right: 0px;
+  margin-left: 0px;
+  font-size: 16px;
+}
+
+.pagination-select {
+  padding: 8px 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+  appearance: none;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-size: 16px;
+}
+
+.pagination-select:hover {
+  border-color: #2C4E6C;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-info {
+  margin-left: 0px;
+  font-size: 16px;
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .pagination-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .pagination-size-selector {
+    margin-bottom: 16px;
+  }
+}

@@ -1,0 +1,74 @@
+/* frontend/src/components/GirsbergerOrdrOpqt/css/GirsbergerOrdrOpqtContainer.css */
+/* Başlık Stili */
+.girsberger-ordr-opqt-container__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1px;  /* Negatif marj kullanarak başlık ve çizgiyi daha da yakınlaştır */
+    padding-bottom: -5px;  /* Başlık metninden çizgiye boşluk yok */
+    border-bottom: 2px solid #2C4E6C;  /* SAP mavisi çizgi */
+}
+
+.girsberger-ordr-opqt-container__button-wrapper {
+    display: flex;
+    gap: 5px;
+    margin-left: auto;  /* Butonları sağa hizala */
+}
+
+.girsberger-ordr-opqt-container__button {
+    padding: 8px 12px;
+    background-color: #2C4E6C;  /* SAP mavisi */
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.girsberger-ordr-opqt-container__button:hover {
+    background-color:  #fcbf1e; /* SAP hover rengi */
+}
+
+/* Genel Konteyner Stili */
+.girsberger-ordr-opqt-container {
+    background-color: #f5f5f5;
+    padding: 5px;  /* Konteynerin genel dolgusu */
+    border-radius: 5px;  /* Yumuşak köşe yuvarlaklığı */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);  /* Hafif gölge efekti */
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    border: 1px solid #ccc;  /* Çerçeve */
+}
+
+/* Son Güncelleme bilgisini yatay olarak ortala */
+.girsberger-ordr-opqt-container__last-updated {
+    font-size: 16px;
+    flex-grow: 1;
+    text-align: center; /* Bu kısım yatay ortalamayı sağlar */
+}
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+    .girsberger-ordr-opqt-container__header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .girsberger-ordr-opqt-container__button-wrapper {
+        margin-top: 10px;
+        margin-left: 0;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .girsberger-ordr-opqt-container {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .girsberger-ordr-opqt-container__button {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+}

@@ -1,0 +1,124 @@
+/* frontend/src/components/ShipWeekPlanner/css/weekSelectCalender.css */
+
+.week-select-button {
+    min-width: 180px !important;
+    height: 36px;
+    text-transform: none !important;
+}
+
+.week-select-dialog .MuiDialog-paper {
+    min-width: 1200px; /* Genişliği artırdık */
+    max-width: 90vw; /* Responsive için maksimum genişlik */
+}
+
+.week-select-dialog__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.week-select-dialog__title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.year-select {
+    font-size: 1.25rem !important;
+    font-weight: 500 !important;
+    min-width: 100px;
+}
+
+.close-button {
+    position: absolute !important;
+    right: 8px;
+    top: 8px;
+}
+
+.week-select-dialog__content {
+    padding: 24px !important;
+    overflow-x: hidden !important; /* Yatay scrollu engelle */
+}
+
+.week-button {
+    height: 72px !important;
+    min-width: 80px !important;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    margin: 2px !important;
+    padding: 4px !important;
+    border-radius: 4px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-transform: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.week-button:hover {
+    background-color: rgba(25, 118, 210, 0.04) !important;
+    border-color: rgba(25, 118, 210, 0.5) !important;
+    z-index: 1;
+}
+
+.week-button.selected {
+    background-color: rgba(25, 118, 210, 0.12) !important;
+    border-color: #1976d2 !important;
+    z-index: 2;
+}
+
+.week-button.other-year {
+    opacity: 0.5;
+    background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
+.week-number {
+    font-weight: 500 !important;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: 2px !important;
+}
+
+.week-dates {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 0.75rem !important;
+    margin-bottom: 2px !important;
+    text-align: center !important;
+}
+
+.week-count {
+    color: #1976d2;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+}
+
+/* Responsive düzenlemeler */
+@media (max-width: 1200px) {
+    .week-select-dialog .MuiDialog-paper {
+        margin: 16px;
+    }
+
+    .week-button {
+        height: 64px !important;
+        min-width: 70px !important;
+    }
+}
+
+@media (max-width: 960px) {
+    .week-button {
+        height: 56px !important;
+        min-width: 60px !important;
+    }
+
+    .week-dates,
+    .week-count {
+        font-size: 0.7rem !important;
+    }
+}
+
+/* Fare ile kaydırma için smooth scroll */
+.week-select-dialog__content {
+    scroll-behavior: smooth;
+}

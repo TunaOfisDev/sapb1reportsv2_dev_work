@@ -1,0 +1,30 @@
+/* frontend/src/components/ProductConfigv2/styles/OptionSelector.css */
+
+/* Ana konteyner */
+.option-selector {
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Başlık */
+  .option-selector__title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #1f2937; /* Tailwind slate-800 */
+  }
+  
+  /* Seçenek butonlarını kapsayan alan */
+  .option-selector__buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  
+  /* Responsive düzeyde butonların alt alta geçmesini sağla */
+  @media (max-width: 600px) {
+    .option-selector__buttons {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  }
+  

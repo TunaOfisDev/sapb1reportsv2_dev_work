@@ -1,0 +1,192 @@
+/* frontend/src/components/SalesOrderDocSum/css/ShowModalOrderDocDetail.css */
+.ShowModalOrderDocDetail {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 95%;
+  max-width: 1200px;
+  max-height: 90vh;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+ 
+}
+
+.ShowModalOrderDocDetail__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.ShowModalOrderDocDetail__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #2C4E6C;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.ShowModalOrderDocDetail__header-title {
+  margin: 0;
+  color: #2C4E6C;
+  font-size: 1.5rem;
+}
+
+.ShowModalOrderDocDetail__header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.ShowModalOrderDocDetail__export-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.ShowModalOrderDocDetail__export-button:hover {
+  background-color: #218838;
+}
+
+.ShowModalOrderDocDetail__export-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.ShowModalOrderDocDetail__close-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.ShowModalOrderDocDetail__close-button:hover {
+  background-color: #c82333;
+}
+
+/* Modal içeriği için kaydırma çubukları */
+/* frontend/src/components/SalesOrderDocSum/css/ShowModalOrderDocDetail.css */
+
+.ShowModalOrderDocDetail__content {
+  max-height: calc(90vh - 150px);
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+
+
+
+/* frontend/src/components/SalesOrderDocSum/css/ShowModalOrderDocDetail.css */
+.ShowModalOrderDocDetail__table-wrapper {
+  overflow-x: auto; /* Yatay kaydırma */
+  position: relative;
+  margin-top: 10px;
+}
+
+.ShowModalOrderDocDetail__table {
+  width: 100%;
+  border-collapse: separate; /* Yapışkan başlık için separate kullanıyoruz */
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.ShowModalOrderDocDetail__table thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: #2C4E6C; /* Başlık arka plan rengi */
+}
+
+.ShowModalOrderDocDetail__table th {
+  color: white;
+  text-align: left;
+  padding: 12px 8px;
+  border: 1px solid #dee2e6;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1); /* Gölge efekti */
+}
+
+.ShowModalOrderDocDetail__table th:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  border-bottom: 2px solid #1a3347; /* Başlık altında koyu çizgi */
+}
+
+.ShowModalOrderDocDetail__table td {
+  padding: 8px;
+  border: 1px solid #dee2e6;
+  background-color: inherit;
+}
+
+.ShowModalOrderDocDetail__table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.ShowModalOrderDocDetail__table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.ShowModalOrderDocDetail__table tbody tr:hover {
+  background-color: #e9ecef;
+}
+
+/* Toplam satırını yapışkan yapma */
+.ShowModalOrderDocDetail__table tfoot {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background-color: #fff;
+  box-shadow: 0 -2px 2px rgba(0, 0, 0, 0.1);
+}
+
+.ShowModalOrderDocDetail__table tfoot tr {
+  background-color: #f8f9fa;
+}
+
+.ShowModalOrderDocDetail__table tfoot td {
+  border-top: 2px solid #2C4E6C;
+  font-weight: bold;
+  padding: 12px 8px;
+}
+
+
+/* Scrollbar stilleri */
+.ShowModalOrderDocDetail__content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.ShowModalOrderDocDetail__content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.ShowModalOrderDocDetail__content::-webkit-scrollbar-thumb {
+  background: #2C4E6C;
+  border-radius: 4px;
+}
+
+.ShowModalOrderDocDetail__content::-webkit-scrollbar-thumb:hover {
+  background: #1a3347;
+}

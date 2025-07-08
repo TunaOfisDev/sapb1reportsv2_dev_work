@@ -1,0 +1,114 @@
+/* DateRangeColumnFilter.css */
+.date-range-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: inherit; /* Sütun genişliğini miras al */
+    width: 80%;
+    min-width: 80px;
+  }
+  
+  .date-range-filter__container {
+    position: relative;
+    width: 80%;
+    margin-bottom: 4px;
+  }
+  
+  .date-range-filter__wrapper {
+    width: 100% !important;
+    display: block !important;
+  }
+  
+  .date-range-filter__input {
+    width: 100% !important;
+    height: 28px;
+    padding: 4px 8px;
+    font-size: 12px;
+    color: #2C4E6C;
+    background-color: #ffffff !important;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    outline: none;
+    box-sizing: border-box !important; /* Genişliği padding ile birleştir */
+    max-width: 100%; /* Taşmayı önle */
+  }
+  
+  .date-range-filter__input:focus {
+    border-color: #2C4E6C;
+    box-shadow: 0 0 0 2px rgba(44, 78, 108, 0.2);
+  }
+  
+  .date-range-filter__input--disabled {
+    background-color: #e9ecef !important;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+  
+  .date-range-filter__popper {
+    z-index: 9999 !important;
+    background-color: white !important;
+    border-radius: 4px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    padding: 8px !important;
+  }
+  
+  .date-range-filter__calendar {
+    background-color: white !important;
+    border: 1px solid #ddd !important;
+    border-radius: 4px !important;
+    font-family: inherit !important;
+    font-size: 12px !important;
+  }
+  
+  .date-range-filter__calendar .react-datepicker__header {
+    background-color: white !important;
+    border-bottom: 1px solid #ddd !important;
+  }
+  
+  .date-range-filter__calendar .react-datepicker__day {
+    background-color: white !important;
+    color: #333 !important;
+  }
+  
+  .date-range-filter__calendar .react-datepicker__day:hover {
+    background-color: #f0f0f0 !important;
+  }
+  
+  .date-range-filter__calendar .react-datepicker__day--selected {
+    background-color: #2C4E6C !important;
+    color: white !important;
+  }
+  
+  .date-range-filter__calendar .react-datepicker__day--in-range {
+    background-color: rgba(44, 78, 108, 0.1) !important;
+    color: #333 !important;
+  }
+  
+  /* Medya sorguları */
+  @media (max-width: 768px) {
+    .date-range-filter__input {
+      font-size: 11px;
+      height: 26px;
+      padding: 3px 6px;
+    }
+    
+    .date-range-filter__calendar {
+      font-size: 11px !important;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .date-range-filter {
+      gap: 2px;
+    }
+    
+    .date-range-filter__input {
+      font-size: 10px;
+      height: 24px;
+      padding: 2px 4px;
+    }
+    
+    .date-range-filter__calendar {
+      font-size: 10px !important;
+    }
+  }

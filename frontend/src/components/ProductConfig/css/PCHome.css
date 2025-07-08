@@ -1,0 +1,55 @@
+/* frontend\src\components\ProductConfig\pages\PCHome.css */
+.pc-home {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.pc-home__title {
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.pc-home__description {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 40px;
+}
+
+.pc-home__features {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.pc-home__feature {
+    flex: 1;
+    padding: 0 20px;
+}
+
+.pc-home__feature h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.pc-home__feature p {
+    font-size: 16px;
+    color: #666;
+}
+
+.pc-home__cta {
+    margin-top: 40px;
+}
+
+@media (max-width: 768px) {
+    .pc-home__features {
+        flex-direction: column;
+    }
+
+    .pc-home__feature {
+        margin-bottom: 30px;
+    }
+}

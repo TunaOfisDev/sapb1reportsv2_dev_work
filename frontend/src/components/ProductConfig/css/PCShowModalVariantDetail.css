@@ -1,0 +1,102 @@
+/* frontend/src/components/ProductConfig/css/PCShowModalVariantDetail.css */
+.pc-variant-detail {
+    padding: 1rem;
+}
+
+.pc-variant-detail__header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1.5rem;
+}
+
+.pc-variant-status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.pc-variant-status-badge--draft {
+    background-color: #e2e8f0;
+    color: #475569;
+}
+
+.pc-variant-status-badge--progress {
+    background-color: #fef3c7;
+    color: #b45309;
+}
+
+.pc-variant-status-badge--completed {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.pc-variant-status-badge--archived {
+    background-color: #f1f5f9;
+    color: #64748b;
+}
+
+.pc-variant-detail__section {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: #f8fafc;
+    border-radius: 8px;
+}
+
+.pc-variant-detail__section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.pc-variant-detail__field {
+    display: flex;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+}
+
+.pc-variant-detail__label {
+    flex: 0 0 140px;
+    font-weight: 500;
+    color: #64748b;
+}
+
+.pc-variant-detail__value {
+    flex: 1;
+    color: #1e293b;
+}
+
+.pc-variant-detail__code {
+    flex: 1;
+}
+
+.pc-variant-code-parts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.pc-variant-code-part {
+    background-color: #e2e8f0;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.875rem;
+}
+
+.pc-variant-detail__price {
+    font-weight: 600;
+    color: #059669;
+}
+
+.pc-variant-detail__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+}

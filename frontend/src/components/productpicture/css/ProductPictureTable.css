@@ -1,0 +1,129 @@
+/* frontend/src/components/productpicture/css/ProductPictureTable.css */
+.product-picture-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Hafif bir gölge efekti */
+  border-radius: 10px; /* Köşeleri yuvarlaklaştır */
+  overflow: hidden; /* Köşeleri yuvarlaklaştırıldığında içeriği sınırla */
+}
+
+.product-picture-table thead th {
+  background-color: #0073e6;
+  color: white;
+  padding: 15px 20px;
+  text-align: left;
+  border-bottom: 1px solid #ffffff; /* Başlık altında ince beyaz çizgi */
+}
+
+.product-picture-table tbody td {
+  padding: 15px 20px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.product-picture-table tbody tr:nth-child(odd) {
+  background-color: #f7f7f7;
+}
+
+.product-picture-table tbody tr:hover {
+  background-color: #e6f2ff;
+}
+
+
+.product-picture-table__image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  overflow: auto;
+}
+
+.product-picture-table__image-modal img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+.product-picture-table__close {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+}
+
+.product-picture-table__instant-data-button {
+  padding: 10px 20px;
+  border: none;
+  background-color: #0073e6;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.product-picture-table__instant-data-button:hover {
+  background-color: #005bb5;
+}
+
+.product-picture-table__instant-data-button-label {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+}
+
+.product-picture-table__instant-data-button--loading {
+  background-color: #b4c6e7;
+  cursor: not-allowed;
+}
+
+.price-cell {
+  text-align: right; /* İçeriği sağa yaslar */
+  font-size: 20px; /* Font büyüklüğünü ayarlar */
+  font-weight: bold; /* Yazıyı kalın yapar */
+}
+
+.currency-cell {
+  width: 5ch; /* Genişliği 8 karakter genişliğinde sabitle */
+  display: inline-block; /* İçeriği bir kutu içine al */
+  overflow: hidden; /* İçerik genişliği kutuyu aşıyorsa gizle */
+  white-space: nowrap; /* İçerik kesilene kadar tek satırda göster */
+  text-overflow: ellipsis; /* İçerik kutudan taşarsa "..." ile göster */
+  text-align: right; /* İçeriği sağa yasla */
+  font-size: 20px; /* Font büyüklüğünü 12px yap */
+  font-weight: bold; /* Yazıyı kalın yap */
+}
+
+/* Filtre kutuları için genel stil */
+.product-picture-table thead tr:nth-child(2) th {
+  padding: 0; /* Üst padding'i kaldırıyoruz */
+  padding-bottom: 10px; /* Alt padding'i arttırıyoruz */
+}
+
+/* Her bir filtre kutusu input'unun stilini ayarlayın */
+.product-picture-table thead tr:nth-child(2) th input {
+  width: 95%; /* Genişliği kolon genişliğine uyarla */
+  padding: 5px; /* İç padding ekle */
+  margin: 10px 0; /* Üst ve alt margini ayarla */
+  box-sizing: border-box; /* Kutu modelini düzgün bir şekilde ayarla */
+  border: 1px solid #ddd; /* Kenarlık ekle */
+  border-radius: 5px; /* Kenarları yuvarlaklaştır */
+}
+
+/* Yüksekliği ve görünümü iyileştirilmiş filtre kutuları için CSS */
+.product-picture-table__filter {
+  display: flex; /* Flexbox kullanarak hizalama yap */
+  align-items: center; /* İçeriği dikey olarak ortala */
+  justify-content: space-between; /* İçeriği yatay olarak eşit aralıklarla dağıt */
+  background-color: #f9f9f9; /* Filtre kutusu arka plan rengi */
+  margin-bottom: 10px; /* Filtre kutusu altındaki boşluğu ayarla */
+  padding: 5px 10px; /* İç boşluk ekle */
+  border-radius: 5px; /* Kenar yuvarlaklığını ayarla */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Gölge efekti ekle */
+}

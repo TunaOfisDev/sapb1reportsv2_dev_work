@@ -1,0 +1,105 @@
+/* File: frontend/src/components/ProcureCompare/css/InlineApprovalDescription.css */
+
+.inline-approval__wrapper {
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px solid #d1d1d1;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.3s ease;
+}
+
+.inline-approval__textarea {
+  width: 100%;
+  min-height: 80px;
+  resize: vertical;
+  padding: 8px 10px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+}
+
+.inline-approval__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.inline-approval__btn {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 16px;
+  min-width: 100px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.inline-approval__btn--submit {
+  background-color: #1976d2;
+  color: white;
+}
+.inline-approval__btn--submit:hover {
+  background-color: #125ea6;
+}
+
+.inline-approval__btn--cancel {
+  background-color: #6c757d;
+  color: white;
+}
+.inline-approval__btn--cancel:hover {
+  background-color: #555b60;
+}
+
+.inline-approval-description {
+  width: 100%;
+  max-width: 260px;
+}
+.inline-approval-description-wrapper {
+  position: relative;
+}
+
+.inline-approval-description-popup {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 10;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  width: 280px;
+}
+
+.inline-approval__message {
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 10px;
+  border-radius: 4px;
+}
+
+.inline-approval__message.error {
+  background-color: #f8d7da;
+  color: #a94442;
+  border: 1px solid #f5c6cb;
+}
+
+.inline-approval__message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

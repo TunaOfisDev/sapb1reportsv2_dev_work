@@ -1,0 +1,70 @@
+/* frontend/src/components/BomCostManager/css/FactorControl.css */
+/* Ana container */
+.factor-control {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* Etiket */
+.factor-control__label {
+  margin-right: 6px;
+  min-width: 110px;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+/* Input container: relative pozisyonlu */
+.factor-control__input-container {
+  position: relative;
+  width: 80px;
+}
+
+/* Input alanı */
+.factor-control__input {
+  width: 100%;
+  padding: 4px 20px 4px 4px; /* Sağ taraf için ekstra alan */
+  border: 1px solid #ccc;
+  font-size: 0.85rem;
+  text-align: right;
+  box-sizing: border-box;
+}
+
+/* Butonların konumlandırılması */
+.factor-control__buttons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Butonlar */
+.factor-control__button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 10px; /* Küçük yazı boyutu */
+  color: #2C4E6C;
+  line-height: 1;
+  width: 16px;
+  height: 50%;
+}
+
+.factor-control__button:focus {
+  outline: none;
+}
+
+.factor-control__button:hover {
+  color: #1B3249;
+}
+
+/* Üst ok için */
+.factor-control__button--up {
+  border-bottom: 1px solid #ccc;
+}
+
+/* Alt ok için aralarındaki boşluğu azaltabilirsiniz */

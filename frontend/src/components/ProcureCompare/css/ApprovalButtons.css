@@ -1,0 +1,113 @@
+/* File: frontend/src/components/ProcureCompare/css/ApprovalButtons.css */
+
+.approval-buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;              /* Daha sıkı butonlar arası mesafe */
+  align-items: stretch;
+  margin-top: 0;       /* <<< Daha az yukarıdan boşluk */
+}
+
+.approval-buttons-container > div {
+  display: flex;
+  width: 100%;
+}
+
+.btn {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;     /* <<< Dikey padding biraz azaltıldı */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  min-width: 120px;      /* Hafifçe daraltıldı */
+  transition: background-color 0.2s ease-in-out;
+}
+
+
+
+.btn-onay {
+  background-color: #006e3c;
+  color: white;
+}
+.btn-onay:hover {
+  background-color: #004f2b;
+}
+
+.btn-kismi {
+  background-color: #f0ad4e;
+  color: white;
+}
+.btn-kismi:hover {
+  background-color: #d99127;
+}
+
+.btn-red {
+  background-color: #c9302c;
+  color: white;
+}
+.btn-red:hover {
+  background-color: #a8231f;
+}
+
+.btn-iptal {
+  background-color: #6c757d;
+  color: white;
+}
+.btn-iptal:hover {
+  background-color: #565e64;
+}
+
+.approval-warning {
+  color: #a94442;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+/* ApprovalButtons.css */
+.approval-warning {
+  color: #a94442;
+  font-weight: 500;
+  font-size: 13px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 0;
+  animation: fadeOut 3s forwards;
+}
+
+.approval-success {
+  color: #155724;
+  font-weight: 500;
+  font-size: 13px;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  animation: fadeOut 3s forwards;
+}
+
+
+/* Fade out efekti */
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; display: none; }
+}
+
+  
+  /* Mobil uyum */
+  @media (max-width: 576px) {
+    .approval-buttons-container {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .approval-buttons-container .btn {
+      width: 100%;
+      min-width: unset;
+    }
+  }
+  

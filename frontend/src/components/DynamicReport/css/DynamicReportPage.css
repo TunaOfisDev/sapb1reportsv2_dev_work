@@ -1,0 +1,61 @@
+/* frontend/src/components/DynamicReport/css/DynamicReportPage.css */
+
+/* Block */
+.dynamic-report-page {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0px;
+  overflow-y: auto;  /* Dikey eksende kaydırmayı etkinleştir */
+}
+
+/* Element: Controls */
+.dynamic-report-page__controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px; /* Butonlar ve select arasında boşluk */
+  margin-bottom: 5px; /* Kontrollerin altına boşluk */
+}
+
+/* Element: SQL Table List */
+.dynamic-report-page__sql-list {
+  display: flex;
+  align-items: center; /* Başlığı ve selectbox'ı aynı hizada tutar */
+  margin-bottom: 0px; 
+}
+
+.dynamic-report-page__label {
+  font-size: 16px;
+  margin-right: 10px; /* Selectbox ile başlık arasında boşluk */
+}
+
+.dynamic-report-page__sql-list select {
+  width: 200px;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Element: Button */
+.dynamic-report-page__button {
+  padding: 10px 20px;
+  background-color: #2C4E6C; /* SAP Mavi */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dynamic-report-page__button:hover {
+  background-color: #FFC72C; /* SAP Sarı */
+}
+
+/* Element: Loading Spinner */
+.dynamic-report-page__loading-spinner {
+  margin-top: 20px;
+}
+
+/* Modifier: Active */
+.dynamic-report-page--active {
+  background-color: #f9f9f9;
+}

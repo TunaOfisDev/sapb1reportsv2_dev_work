@@ -1,0 +1,82 @@
+/* frontend/src/components/CrmBlog/css/CrmBlogContainer.css */
+.crm-blog-container {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+  }
+  
+  .crm-blog-container__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #2C4E6C; /* SAP mavisi */
+  }
+  
+  .crm-blog-container__title {
+    font-size: 20px;
+    color: #2C4E6C; /* SAP mavisi */
+    margin: 0;
+    padding: 0;
+  }
+  
+  .crm-blog-container__actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .crm-blog-container__button {
+    padding: 4px 8px;
+    background-color: #2C4E6C; /* SAP mavisi */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  .crm-blog-container__button:hover {
+    background-color: #fcbf1e; /* SAP sarısı */
+    transform: scale(1.05);
+  }
+  
+  .crm-blog-container__list {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .crm-blog-container__list th, 
+  .crm-blog-container__list td {
+    border: 1px solid #ddd;
+    padding: 4px;
+    text-align: left;
+  }
+  
+  .crm-blog-container__list th {
+    background-color: #2C4E6C; /* SAP mavisi */
+    color: white;
+  }
+  
+  .crm-blog-container__list tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  .crm-blog-container__list tr:hover {
+    background-color: #fcbf1e; /* Hover etkisi için SAP sarısı */
+  }
+  
+  .crm-blog-container__list td {
+    color: #333;
+  }
+  
+  .crm-blog-container__last-updated-time {
+    margin: 0;
+    padding: 0;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  

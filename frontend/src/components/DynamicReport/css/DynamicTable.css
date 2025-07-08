@@ -1,0 +1,61 @@
+/* frontend/src/components/DynamicReport/css/DynamicTable.css   */ 
+/* Block: dynamic-table */
+.dynamic-table {
+  margin: 5px 0;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/* Element: dynamic-table__header bem metot */
+.dynamic-table__header {
+  background-color: #094b8a; /* SAP Mavi */
+  color: white;
+  text-align: left;
+  padding: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* Element: dynamic-table__row */
+.dynamic-table__row:nth-child(odd) {
+  background-color: #f2f4f7; /* Açık Gri */
+  transition: background-color 0.3s ease;
+}
+
+.dynamic-table__row:nth-child(even) {
+  background-color: #e6e9ed; /* Koyu Gri */
+  transition: background-color 0.3s ease;
+}
+
+/* Eğer satırın üzerine gelinirse */
+.dynamic-table__row:hover,
+.dynamic-table__row.selected {
+  background-color: #FFC72C;  /* SAP Sarı */
+}
+
+/* Element: dynamic-table__cell */
+.dynamic-table__cell {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+/* Modifier: dynamic-table__cell--scrollable */
+.dynamic-table__cell--scrollable {
+  max-width: 200px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* For decimal type cells (right-align) */
+.dynamic-table__cell--decimal {
+  text-align: right;
+}
+
+/* For Input Fields (If any) */
+input[type="text"] {
+  background-color: #f3e2b4c4;  /* SAP Sarı */
+  color: rgb(5, 5, 5);
+}

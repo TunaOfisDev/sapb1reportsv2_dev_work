@@ -1,0 +1,75 @@
+/* frontend/src/components/LogoCustomerBalance/css/LogoCustomerBalanceContainer.css */
+/* Başlık Stili */
+.logo-customer-balance-container__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1px;  /* Negatif marj kullanarak başlık ve çizgiyi daha da yakınlaştır */
+    padding-bottom: -5px;  /* Başlık metninden çizgiye boşluk yok */
+    border-bottom: 2px solid #0073e6;  /* Mavi çizgi */
+    
+}
+
+.logo-customer-balance-container__button-wrapper {
+    display: flex;
+    gap: 5px;
+    margin-left: auto;  /* Butonları sağa hizala */
+}
+
+.logo-customer-balance-container__button {
+    padding: 4px 4px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.logo-customer-balance-container__button:hover {
+    background-color: #0056b3;
+}
+
+/* Genel Konteyner Stili */
+.logo-customer-balance-container {
+    background-color: #f5f5f5;
+    padding: 5px;  /* Konteynerin genel dolgusu */
+    border-radius: 5px;  /* Yumuşak köşe yuvarlaklığı */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);  /* Hafif gölge efekti */
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    border: 1px solid #ccc;  /* Çerçeve */
+}
+
+/* Son Güncelleme bilgisini yatay olarak ortala */
+.logo-customer-balance-container__last-updated {
+    font-size: 14px;
+    flex-grow: 1;
+    text-align: center; /* Bu kısım yatay ortalamayı sağlar */
+}
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+    .logo-customer-balance-container__header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .logo-customer-balance-container__button-wrapper {
+        margin-top: 5px;
+        margin-left: 0;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .logo-customer-balance-container {
+        padding: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-customer-balance-container__button {
+        padding: 3px 5px;
+        font-size: 14px;
+    }
+}

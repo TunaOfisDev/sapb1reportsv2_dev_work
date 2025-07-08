@@ -1,0 +1,69 @@
+/* frontend/src/components/SalesOfferDocSum/css/ColumnFilter.css */
+/* Filtre kutuları için stil ayarları */
+.sales-offer-doc-sum__filter {
+    width: 90%; /* Genişliği tam sütun genişliği yap */
+    box-sizing: border-box; /* Padding ve border dahil genişlik hesaplaması */
+    text-align: left; /* Sol tarafa hizalama */
+    font-size: 0.85rem; /* Font boyutu */
+    display: flex;
+    flex-direction: column;
+    border: 0px solid rgba(0, 0, 0, 0.1);
+    padding: 0.5rem; /* İç dolgu */
+}
+
+/* Filtre input elementi genişlik ayarı */
+.sales-offer-doc-sum__filter input {
+    width: 90%; /* Kutu içinde tam genişlik kullanımı */
+    padding: 0.5rem; /* İç dolgu */
+    border: 0px solid #ccc; /* Çerçeve stil ayarı */
+    font-size: 0.85rem; /* Font boyutu */
+    box-sizing: border-box;
+}
+
+.sales-offer-doc-sum__filter--musteri-ad {
+    width: 90%;
+    font-size: 0.80rem;
+    padding: 0.5rem;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.sales-offer-doc-sum__filter--musteri-ad input {
+    width: 90%; /* Kutu içinde tam genişlik kullanımı */
+    padding: 0.5rem; /* İç dolgu */
+    border: 0; /* Çerçeve stil ayarı kaldırıldı */
+    font-size: 0.80rem; /* Font boyutunu 0.80rem yap */
+    outline: none; /* Odaklanıldığında dış çizgiyi kaldır */
+    box-sizing: border-box;
+}
+
+/* Belge açıklaması sütunu için filtre genişliği %100 */
+.sales-offer-doc-sum__filter--belge-aciklamasi {
+    width: 90%;
+    padding: 0.5rem; /* İç dolgu */
+    border: 0; /* Çerçeve stil ayarı kaldırıldı */
+    font-size: 0.80rem; /* Font boyutunu 0.80rem yap */
+    outline: none; /* Odaklanıldığında dış çizgiyi kaldır */
+    box-sizing: border-box;
+}
+
+/* Responsive Tasarım */
+@media (max-width: 1024px) {
+    .sales-offer-doc-sum__filter input {
+        font-size: 0.8rem; /* Filtre font boyutu azalt */
+    }
+}
+
+@media (max-width: 768px) {
+    .sales-offer-doc-sum__filter {
+        width: 100%; /* Filtre kutusunu genişlet */
+    }
+}
+
+@media (max-width: 480px) {
+    .sales-offer-doc-sum__filter input {
+        padding: 0.2rem; /* Filtre kutusu iç dolgusunu azalt */
+    }
+}

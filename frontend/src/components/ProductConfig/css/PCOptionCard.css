@@ -1,0 +1,209 @@
+/* frontend/src/components/ProductConfig/css/PCOptionCard.css */
+.pc-option-card {
+    position: relative;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.pc-option-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.pc-option-card--selected {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px #007bff;
+}
+
+.pc-option-card--disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.pc-option-card__image-container {
+    position: relative;
+    width: 100%;
+    padding-top: 75%; /* 4:3 aspect ratio */
+    background-color: #f5f5f5;
+    overflow: hidden;
+}
+
+.pc-option-card__image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 8px;
+    transition: transform 0.3s ease;
+    background-color: #ffffff;
+}
+
+.pc-option-card__image:hover {
+    transform: scale(1.05);
+}
+
+.pc-option-card__image-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    color: #666;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.pc-option-card__content {
+    padding: 16px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pc-option-card__title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.pc-option-card__code,
+.pc-option-card__price,
+.pc-option-card__color-status {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+}
+
+.pc-option-card__price {
+    font-weight: 600;
+    color: #28a745;
+}
+
+.pc-option-card__description {
+    font-size: 10px;
+    color: #666;
+    margin: 8px 0 0;
+    line-height: 1.4;
+}
+
+.pc-option-card__popular-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: #ffd700;
+    color: #000;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    z-index: 1;
+}
+
+.pc-option-card__disabled-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: #666;
+}
+
+.pc-option-card__no-image-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #9e9e9e;
+}
+
+.pc-option-card__no-image-icon svg {
+    width: 32px;
+    height: 32px;
+    opacity: 0.5;
+}
+
+.pc-option-card__no-image-text {
+    font-size: 12px;
+    color: #757575;
+}
+
+.pc-option-card__image-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    border: 1px dashed #e0e0e0;
+}
+
+/* Loading animation */
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.pc-option-card__image-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    display: none;
+}
+
+.pc-option-card__image-container.loading::before {
+    display: block;
+}
+
+/* Responsive tasarım */
+@media (max-width: 768px) {
+    .pc-option-card__image-container {
+        padding-top: 66.67%; /* 3:2 aspect ratio */
+    }
+
+    .pc-option-card__content {
+        padding: 12px;
+    }
+
+    .pc-option-card__title {
+        font-size: 14px;
+    }
+
+    .pc-option-card__code,
+    .pc-option-card__price,
+    .pc-option-card__color-status,
+    .pc-option-card__description {
+        font-size: 12px;
+    }
+}

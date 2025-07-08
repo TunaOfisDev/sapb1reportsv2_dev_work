@@ -1,0 +1,85 @@
+/* frontend/src/components/SalesOrderDetail/css/ShowDetail.css */
+
+/* Modal base styles */
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  background: white;
+  padding: 20px;
+  border-radius: 4px;
+  outline: none;
+}
+
+.modal-content {
+  max-height: calc(100vh - 150px); /* Modal içeriği için maksimum yükseklik */
+  overflow-y: auto; /* Yatay kaydırmayı etkinleştir */
+  /* Eğer içerik max-height'tan uzunsa, otomatik olarak kaydırma çubuğu görünür olacaktır */
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+/* Show Detail button styles */
+.show-detail__button {
+  padding: 8px 16px;
+  margin-right: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Close button styles */
+.close-button {
+  padding: 8px 16px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Detail items styles */
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.detail-item__stock-code,
+.detail-item__quantity,
+.detail-item__net-amount {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.detail-table th,
+.detail-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.detail-table th {
+  background-color: #f2f2f2;
+}
+
+.numeric-cell {
+  text-align: right; /* Align the numeric values to the right */
+}

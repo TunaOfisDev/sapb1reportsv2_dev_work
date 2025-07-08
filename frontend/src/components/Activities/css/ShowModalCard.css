@@ -1,0 +1,70 @@
+/* frontend/src/components/Activities/css/ShowModalCard.css */
+/* Base container for the modal */
+.show-modal-card {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+  }
+  
+  /* Header of the modal */
+  .show-modal-card__header {
+    padding: 16px;
+    background: #f4f4f4;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .show-modal-card__title {
+    margin: 0;
+    color: #333;
+  }
+  
+  /* Event list inside the modal */
+  .show-modal-card__event-list {
+    padding: 16px;
+  }
+  
+  .show-modal-card__event-item {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .show-modal-card__event-title {
+    margin: 0 0 10px 0;
+    color: #007bff;
+    font-weight: 500;
+  }
+  
+  .show-modal-card__event-description {
+    margin: 0;
+    color: #666;
+  }
+  
+  /* Close button */
+  .show-modal-card__close-button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .show-modal-card__close-button:hover {
+    background-color: #c82333;
+  }
+  
+  /* You may need to add additional styling for the scroll bar, transitions, 
+     or any other specific styling you want for the modal */
+  

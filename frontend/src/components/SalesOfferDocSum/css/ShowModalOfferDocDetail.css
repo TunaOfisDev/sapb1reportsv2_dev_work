@@ -1,0 +1,175 @@
+/* frontend/src/components/SalesOfferDocSum/css/ShowModalOfferDocDetail.css */
+.modal-offer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff;
+  padding: 24px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 1200px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+}
+
+.modal-offer__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+}
+
+.modal-offer__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #2C4E6C;
+  padding-bottom: 16px;
+}
+
+.modal-offer__title {
+  margin: 0;
+  font-size: 24px;
+  color: #2C4E6C;
+  font-weight: 600;
+}
+
+.modal-offer__content {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 16px;
+}
+
+.modal-offer__content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-offer__content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.modal-offer__content::-webkit-scrollbar-thumb {
+  background: #2C4E6C;
+  border-radius: 4px;
+}
+
+.modal-offer__master {
+  background-color: #f8f9fa;
+  padding: 16px;
+  border-radius: 6px;
+  margin-bottom: 24px;
+  border: 1px solid #e9ecef;
+}
+
+.modal-offer__master-title {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  color: #2C4E6C;
+}
+
+.modal-offer__master-info {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #495057;
+}
+
+.modal-offer__table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 24px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+}
+
+.modal-offer__table-head {
+  background-color: #2C4E6C;
+  color: white;
+}
+
+.modal-offer__table-header {
+  padding: 12px 16px;
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.modal-offer__table-header--numeric {
+  text-align: right;
+}
+
+.modal-offer__table-cell {
+  padding: 12px 16px;
+  border-bottom: 1px solid #dee2e6;
+  color: #495057;
+}
+
+.modal-offer__table-cell--numeric {
+  text-align: right;
+}
+
+.modal-offer__table-row:hover {
+  background-color: #f8f9fa;
+}
+
+.modal-offer__footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #dee2e6;
+}
+
+.modal-offer__button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.modal-offer__button--close {
+  background-color: #dc3545;
+  color: white;
+}
+
+.modal-offer__button--close:hover {
+  background-color: #c82333;
+}
+
+@media (max-width: 768px) {
+  .modal-offer {
+      width: 95%;
+      padding: 16px;
+      font-size: 13px;
+  }
+
+  .modal-offer__title {
+      font-size: 20px;
+  }
+
+  .modal-offer__master-title {
+      font-size: 16px;
+  }
+
+  .modal-offer__table-header,
+  .modal-offer__table-cell {
+      padding: 8px 12px;
+  }
+
+  .modal-offer__button {
+      padding: 8px 16px;
+  }
+}

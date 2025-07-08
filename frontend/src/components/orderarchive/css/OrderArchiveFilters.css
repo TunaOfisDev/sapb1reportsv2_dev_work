@@ -1,0 +1,103 @@
+/* OrderArchiveFilters.css */
+
+/* Ana filtre kapsayıcısı */
+.orderarchive-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa; /* Hafif gri arka plan */
+    border-bottom: 2px solid #dee2e6; /* İnce alt çizgi */
+}
+
+/* Filtre grubu */
+.orderarchive-filters__group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Dropdown menü (select) */
+.orderarchive-filters__select {
+    padding: 0.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background-color: #ffffff; /* Beyaz arka plan */
+    font-size: 0.9rem;
+    color: #495057; /* Koyu gri yazı rengi */
+    min-width: 150px;
+    transition: border-color 0.3s ease;
+}
+
+.orderarchive-filters__select:focus {
+    border-color: #2c4e6c; /* SAP mavisi */
+    outline: none;
+}
+
+/* Arama kutusu (input) */
+.orderarchive-filters__input {
+    padding: 0.5rem;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: #495057;
+    min-width: 300px;
+    background-color: #ffffff;
+    transition: border-color 0.3s ease;
+}
+
+.orderarchive-filters__input:focus {
+    border-color: #2c4e6c;
+    outline: none;
+}
+
+/* Butonlar */
+.orderarchive-filters__button {
+    padding: 0.5rem 1rem;
+    background-color: #2c4e6c; /* SAP mavisi */
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.orderarchive-filters__button:hover {
+    background-color: #1a3346; /* Daha koyu SAP mavisi */
+    transform: scale(1.05);
+}
+
+.orderarchive-filters__button:disabled {
+    background-color: #adb5bd; /* Gri */
+    cursor: not-allowed;
+}
+
+/* Hata mesajı */
+.orderarchive-filters__error {
+    color: #d9534f; /* Kırmızı */
+    font-size: 0.85rem;
+    padding: 0.5rem;
+    background-color: #f8d7da; /* Açık kırmızı arka plan */
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+}
+
+/* Responsive tasarım */
+@media screen and (max-width: 768px) {
+    .orderarchive-filters {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .orderarchive-filters__group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .orderarchive-filters__input,
+    .orderarchive-filters__select {
+        min-width: auto;
+        width: 100%;
+    }
+}

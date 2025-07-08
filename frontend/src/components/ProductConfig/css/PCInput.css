@@ -1,0 +1,80 @@
+/* Block */
+.pc-input {
+    position: relative;
+    width: 97%;
+    margin-bottom: 0.1rem;
+}
+
+/* Element - input field container */
+.pc-input__field-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Element - input field */
+.pc-input__field {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+    background-color: #FCF2D8; /* SAP sarı tonunda hafif arka plan */
+}
+
+/* Element - label */
+.pc-input__label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+/* Element - helper text */
+.pc-input__helper-text {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+/* Modifier - focused */
+.pc-input__field--focused {
+    border-color: #F0AB00; /* SAP sarı tonu - focus durumu için */
+    box-shadow: 0 0 0 3px rgba(240, 171, 0, 0.2); /* SAP sarı tonu ile hafif glow efekti */
+}
+
+/* Modifier - error */
+.pc-input__field--error {
+    border-color: #ef4444;
+}
+
+/* Element - error message */
+.pc-input__error-message {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: #ef4444;
+}
+
+/* Modifier - disabled */
+.pc-input__field--disabled {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+}
+
+/* Modifier - search */
+.pc-input__field--search {
+    padding-left: 2.5rem;
+    background-color: #FCF2D8; /* SAP sarı tonunda hafif arka plan */
+}
+
+/* Element - search icon */
+.pc-input__search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+}

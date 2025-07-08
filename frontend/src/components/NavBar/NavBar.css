@@ -1,0 +1,93 @@
+/* frontend/src/components/NavBar/NavBar.css */
+.global-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--sap-blue);
+  padding: 10px 20px;
+  color: white;
+}
+
+.global-navbar__item {
+  color: white;
+  text-decoration: none;
+  margin-right: 15px;
+  transition: color 0.3s ease;
+}
+
+.global-navbar__item:hover {
+  color: var(--sap-yellow);
+}
+
+.global-navbar__dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius: 4px;
+}
+
+.dropdown-content a {
+  color: var(--text-color);
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: var(--sap-input);
+}
+
+.global-navbar__dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.right-menu {
+  display: flex;
+  align-items: center;
+}
+
+.global-navbar__welcome-message {
+  margin-right: 10px;
+}
+
+.global-navbar__version {
+  margin-right: 10px;
+  font-size: 0.8em;
+  color: var(--sap-yellow);
+}
+
+.global-navbar__button {
+  background-color: var(--sap-yellow);
+  border: none;
+  color: var(--text-color);
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.global-navbar__button:hover {
+  background-color: var(--sap-input);
+}
+
+.global-navbar__item--highlighted {
+  color: var(--sap-yellow);
+  font-weight: bold;
+}
+
+.global-navbar__separator {
+  margin: 0 6px;
+  color: #999;
+}

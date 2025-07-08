@@ -1,0 +1,45 @@
+/* frontend\src\components\ProductConfig\css\PCLoadingTransition.css */
+.pc-loading-transition {
+    position: relative;
+    min-height: 200px;
+}
+
+.pc-loading-transition__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+}
+
+.pc-loading-transition__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.pc-loading-transition__spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 4px solid #3b82f6;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.pc-loading-transition__text {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

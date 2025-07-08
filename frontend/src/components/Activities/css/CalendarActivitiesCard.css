@@ -1,0 +1,59 @@
+/* frontend/src/components/Activities/css/CalendarActivitiesCard.css */
+/* CalendarActivitiesCard için Block */
+.calendar__event-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background-color: white;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  /* Card üzerine gelindiğinde gölge efekti */
+  .calendar__event-card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  }
+  
+  /* Card Header için Element */
+  .calendar__event-card-header {
+    padding: 8px 16px;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  /* Card Header için başlık stilini belirleme */
+  .calendar__event-card-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 16px;
+  }
+  
+  /* Card Body için Element */
+  .calendar__event-card-body {
+    padding: 16px;
+    color: #666;
+  }
+  
+  /* Card Body içindeki paragraflar için stil */
+  .calendar__event-card-body p {
+    margin: 4px 0;
+    font-size: 14px;
+  }
+  
+  /* Modifier kullanarak numara ve işleyen için özel bir stil belirleyebiliriz */
+  .calendar__event-card-body__numara {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .calendar__event-card-body__isleyen {
+    font-style: italic;
+  }
+  
+  /* Card'ın büyüklüğünü ve metin hizalamasını ayarlama */
+  .calendar__event-card {
+    width: 100%;
+    text-align: left;
+  }
+  

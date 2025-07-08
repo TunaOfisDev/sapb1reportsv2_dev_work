@@ -1,0 +1,183 @@
+/* frontend/src/components/logo_supplier_receivables_aging/css/LogoSupplierReceivablesAgingTable.css */
+
+.logo-supplier-aging-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  font-size: 1rem;
+  font-family: 'Arial', sans-serif;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Kapsayıcı div için kaydırma ve yükseklik */
+.logo-supplier-aging__table-wrapper {
+  max-height: 600px; /* Tablo yüksekliği, ihtiyaca göre ayarlanabilir */
+  overflow-y: auto; /* Dikey kaydırma */
+  position: relative;
+}
+
+.logo-supplier-aging-table__header {
+  background-color: #2c3e50;
+  color: #fff;
+  position: sticky; /* Yapışkan başlık */
+  top: 0; /* Üstten sıfır mesafe */
+  z-index: 10; /* Diğer içeriklerin üzerinde */
+}
+
+.logo-supplier-aging-table__header-cell {
+  padding: 0.4rem 0.6rem;
+  font-weight: 600;
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+  background-color: #2c3e50; /* Başlık arka planını koru */
+}
+
+.logo-supplier-aging-table__header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  line-height: 1.2;
+  min-height: 1.4rem;
+}
+
+.logo-supplier-aging-table__header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.logo-supplier-aging-table__header-total {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #e0e0e0;
+  line-height: 1;
+}
+
+.logo-supplier-aging-table__filter-container {
+  margin-top: 0.3rem;
+}
+
+.logo-supplier-aging-table__filter-input {
+  width: 100%;
+  padding: 0.3rem 0.4rem;
+  font-size: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  box-sizing: border-box;
+  line-height: 1;
+  height: 1.6rem;
+}
+
+.logo-supplier-aging-table__body-cell {
+  padding: 0.6rem;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+  font-size: 1rem;
+}
+
+.logo-supplier-aging-table__body-row:hover {
+  background-color: #f5f7fa;
+}
+
+.logo-supplier-aging-table__numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.logo-supplier-aging-table__highlight {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.logo-supplier-aging-table__sort-arrow {
+  margin-left: 0.3rem;
+  font-size: 0.7rem;
+  color: #ccc;
+}
+
+.logo-supplier-aging-table__sort-arrow--active {
+  color: #fff;
+}
+
+.logo-supplier-aging-table__footer {
+  padding: 0.8rem;
+  text-align: right;
+  background-color: #f0f0f0;
+  font-weight: bold;
+  position: sticky; /* Footer'ı da yapışkan yapabiliriz, gerekirse */
+  bottom: 0; /* Alttan sıfır mesafe */
+  z-index: 10;
+}
+
+.logo-supplier-aging-table__cell-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.logo-supplier-aging-table__truncated-text {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.logo-supplier-aging-table__tooltip {
+  visibility: hidden;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #2c3e50;
+  color: #fff;
+  padding: 0.4rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  z-index: 10;
+  white-space: normal;
+  width: max-content;
+  max-width: 250px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.logo-supplier-aging-table__cell-wrapper:hover .logo-supplier-aging-table__tooltip {
+  visibility: visible;
+}
+
+@media (max-width: 992px) {
+  .logo-supplier-aging__table-wrapper {
+    overflow-x: auto; /* Yatay kaydırma mobil için */
+    max-height: 400px; /* Mobil için daha kısa yükseklik */
+  }
+
+  .logo-supplier-aging-table {
+    display: block;
+    white-space: nowrap;
+  }
+
+  .logo-supplier-aging-table__header-cell,
+  .logo-supplier-aging-table__body-cell {
+    padding: 0.3rem 0.4rem;
+    font-size: 0.7rem;
+  }
+
+  .logo-supplier-aging-table__header-content {
+    gap: 0.15rem;
+  }
+
+  .logo-supplier-aging-table__header-total {
+    font-size: 0.65rem;
+  }
+
+  .logo-supplier-aging-table__filter-input {
+    padding: 0.2rem 0.3rem;
+    font-size: 0.65rem;
+    height: 1.4rem;
+  }
+
+  .logo-supplier-aging-table__sort-arrow {
+    font-size: 0.65rem;
+  }
+
+  .logo-supplier-aging-table__tooltip {
+    font-size: 0.65rem;
+    max-width: 200px;
+  }
+}

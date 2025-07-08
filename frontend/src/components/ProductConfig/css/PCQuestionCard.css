@@ -1,0 +1,106 @@
+/* frontend/src/components/ProductConfig/css/PCQuestionCard.css */
+.pc-question-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 5px;
+    margin-bottom: 5px;
+    margin-top: 10px;
+    transition: opacity 0.5s ease-in-out; /* Kartın görünürlüğü için animasyon */
+}
+
+.pc-question-card__title {
+    font-size: 22px;
+    margin-bottom: 5px;
+    margin-top: 20px; /* navbar ile soru arasinda boslugu ayarlari*/
+    color: #333;
+}
+
+.pc-question-card__form {
+    display: flex;
+    flex-direction: column;
+}
+
+.pc-question-card__content {
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    opacity: 1;
+}
+
+.pc-question-card__content--loading {
+    opacity: 0.5; /* Yüklenirken içeriği yarı şeffaf yap */
+    pointer-events: none;
+}
+
+/* Butonlar sabit */
+.pc-question-card__actions {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px;
+    background: linear-gradient(to top, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 0.9) 100%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    margin-top: 20px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.5s ease-in-out; /* Butonların görünürlüğü için animasyon */
+}
+
+.pc-question-card__actions--loading {
+    opacity: 0.8; /* Yükleme sırasında butonları daha az belirgin yap */
+}
+
+.pc-question-card__actions .pc-button {
+    transition: transform 0.2s ease-in-out;
+}
+
+.pc-question-card__actions .pc-button:hover {
+    transform: translateY(-2px);
+}
+
+/* Scroll durumunda gölge efekti */
+.pc-question-card__actions--scrolled {
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pc-question-card__conditional-note {
+    font-size: 14px;
+    color: #666;
+    font-style: italic;
+    margin-top: 10px;
+}
+
+/* Yapışkan başlık */
+.pc-question-card__header {
+    position: sticky;
+    top: 0; /* Sayfanın üst kısmında sabitlenecek */
+    z-index: 101; /* Diğer elementlerin üstünde */
+    background-color: #ffffff; /* Arka plan rengi */
+    padding: 16px;
+    border-bottom: 1px solid #eee; /* Alt çizgi */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Gölge efekti */
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.pc-question-card__header--scrolled {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Scroll sonrası gölge efekti */
+}
+
+.pc-button--disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Mobil cihazlar için */
+@media (max-width: 768px) {
+    .pc-question-card__actions {
+        flex-direction: column;
+    }
+
+    .pc-question-card__actions button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}

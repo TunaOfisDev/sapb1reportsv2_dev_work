@@ -1,0 +1,74 @@
+/* frontend/src/components/SalesOfferDocSum/css/Pagination.css */
+.salesofferdocsum-pagination__controls {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  padding: 1px 0;
+}
+
+.salesofferdocsum-pagination__button {
+  margin: 2px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  background-color: #2C4E6C; /* SAP mavisi */
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.salesofferdocsum-pagination__button:hover {
+  background-color: #fcbf1e; /* SAP sarısı */
+}
+
+.salesofferdocsum-pagination__button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.salesofferdocsum-pagination__size-selector {
+  margin-right: 0px;
+  display: flex;
+  align-items: left;
+  margin-left: 0px;
+}
+
+.salesofferdocsum-pagination__size-selector-label {
+  margin-right: 0px;
+  margin-left: 0px;
+  font-size: 14px;
+}
+
+.salesofferdocsum-pagination__select {
+  padding: 8px 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+  appearance: none;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-size: 14px;
+}
+
+.salesofferdocsum-pagination__select:hover {
+  border-color: #fcbf1e !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.salesofferdocsum-pagination__info {
+  margin-left: 0px;
+  font-size: 14px;
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .salesofferdocsum-pagination__controls {
+      flex-direction: column;
+      align-items: stretch;
+  }
+  .salesofferdocsum-pagination__size-selector {
+      margin-bottom: 14px;
+  }
+}

@@ -1,0 +1,32 @@
+/* path: frontend/src/components/StockCardIntegration/css/PreviewTable.module.css */
+.preview-wrapper {
+  overflow-x: auto;
+  max-height: 60vh;
+  margin-bottom: 1rem;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.preview-table th,
+.preview-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+.preview-table th {
+  background: #f4f6f9;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.preview-note {
+  font-size: 0.85rem;
+  text-align: right;
+  margin: 0.5rem 0.25rem;
+  color: #555;
+}

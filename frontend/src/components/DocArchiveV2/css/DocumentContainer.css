@@ -1,0 +1,10 @@
+/* frontend/src/components/DocArchiveV2/css/DocumentContainer.css*/
+
+.document-container {
+    text-align: center; /* Başlığı ve içeriği ortalar */
+    padding: 20px;
+}
+
+.document-container h2 {
+    margin-bottom: 20px; /* Başlık ile altındaki içerik arasında boşluk */
+}

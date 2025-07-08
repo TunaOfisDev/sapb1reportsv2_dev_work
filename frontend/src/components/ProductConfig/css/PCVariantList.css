@@ -1,0 +1,188 @@
+/* frontend/src/components/ProductConfig/css/PCVariantList.css */
+
+/* Ana konteyner */
+.pc-variant-list {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Başlık */
+.pc-variant-list__title {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Üst kısım aksiyonları */
+.pc-variant-list__actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Arama alanı */
+.pc-variant-list__search {
+    width: 300px;
+}
+
+/* Tablo konteyner */
+.pc-variant-list__table-container {
+    overflow-x: auto;
+    margin-bottom: 20px;
+    max-height: calc(100vh - 300px);
+    overflow-y: auto;
+    position: relative;
+}
+
+/* Tablo ana yapısı */
+.pc-variant-list__table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+/* Tablo başlıkları */
+.pc-variant-list__table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 10;
+    padding: 12px;
+    font-weight: bold;
+    text-align: left;
+    border-bottom: 2px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Tablo hücreleri */
+.pc-variant-list__table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #fff;
+}
+
+/* Tablo satır hover */
+.pc-variant-list__table tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+/* Tablo başlık hover */
+.pc-variant-list__table th:hover {
+    background-color: #e9ecef;
+}
+
+/* Sıralama ikonları */
+.pc-variant-list__table th span {
+    margin-left: 8px;
+    display: inline-block;
+}
+
+/* Yükleniyor durumu */
+.pc-variant-list__loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+}
+
+/* Hata durumu */
+.pc-variant-list__error {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+    color: #dc3545;
+}
+
+/* Boş tablo durumu */
+.pc-variant-list__empty {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+}
+
+/* Sayfalama konteyner */
+.pc-variant-list__pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+/* Sayfalama bilgi alanı */
+.pc-variant-list__pagination-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Sayfa boyutu seçici */
+.pc-variant-list__page-size {
+    padding: 0.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: white;
+}
+
+/* Sayfalama kontrolleri */
+.pc-variant-list__pagination-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Sayfalama butonları */
+.pc-variant-list__pagination-button {
+    min-width: 40px;
+}
+
+/* Scrollbar stilleri */
+.pc-variant-list__table-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.pc-variant-list__table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.pc-variant-list__table-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.pc-variant-list__table-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Responsive tasarım */
+@media (max-width: 768px) {
+    .pc-variant-list__actions {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .pc-variant-list__search {
+        width: 100%;
+    }
+
+    .pc-variant-list__pagination {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .pc-variant-list__pagination-controls {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .pc-variant-list__pagination-info {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .pc-variant-list__title {
+        font-size: 24px;
+    }
+}

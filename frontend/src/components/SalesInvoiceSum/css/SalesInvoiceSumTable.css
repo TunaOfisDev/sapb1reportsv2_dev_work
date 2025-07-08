@@ -1,0 +1,170 @@
+/* frontend/src/components/SalesInvoiceSum/css/SalesInvoiceSumTable.css */
+
+.sales-invoice-sum__table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.85rem;
+  font-family: 'Arial', sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
+}
+
+/* Header Styles */
+.sales-invoice-sum__table thead th {
+  background-color: #2C4E6C;
+  color: white;
+  font-weight: bold;
+  text-align: left;
+  padding: 0.75rem 0.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border: 1px solid #dee2e6;
+}
+
+/* Column Widths */
+.sales-invoice-sum__cell--representative {
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+}
+
+.sales-invoice-sum__cell--group {
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+}
+
+.sales-invoice-sum__cell--code {
+  width: 110px;
+  min-width: 110px;
+  max-width: 110px;
+}
+
+.sales-invoice-sum__cell--customer-name {
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
+}
+
+
+/* Cell Borders */
+.sales-invoice-sum__cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sales-invoice-sum__table td,
+.sales-invoice-sum__table th {
+  border: 1px solid #dee2e6;
+  padding: 0.5rem;
+}
+
+/* Row Styles */
+.sales-invoice-sum__table tbody tr {
+  background-color: #ffffff;
+  transition: background-color 0.3s ease;
+}
+
+.sales-invoice-sum__table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.sales-invoice-sum__table tbody tr:hover {
+  background-color: #fcbf1e;
+}
+
+/* Number Cells Alignment */
+.sales-invoice-sum__table td:nth-child(n+5) {
+  text-align: right;
+}
+
+/* Header Content */
+.sales-invoice-sum__table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+}
+
+/* Sort Icons */
+.sales-invoice-sum__table th span {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+}
+
+/* Footer Styles */
+.sales-invoice-sum__table tfoot td {
+  background-color: #e9ecef;
+  font-weight: bold;
+  padding: 0.75rem 0.5rem;
+  border-top: 2px solid #dee2e6;
+}
+
+.sales-invoice-sum__table tfoot td:first-child {
+  text-align: right;
+}
+
+/* Upper Total Row */
+.sales-invoice-sum__table thead tr:nth-child(2) th {
+  background-color: #435f7a;
+  text-align: right;
+  font-size: 0.9rem;
+}
+
+/* Filter Inputs */
+.sales-invoice-sum__table input[type="text"] {
+  width: 100%;
+  padding: 0.3rem;
+  margin-top: 0.25rem;
+  border: 1px solid #ced4da;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  background-color: #f7d67def;
+}
+
+/* Column Widths (tek kural her iki elemente de uygulanır) */
+.sales-invoice-sum__code {
+  width: 110px;
+  min-width: 110px;
+  max-width: 110px;
+}
+
+.sales-invoice-sum__cname {
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
+}
+
+/* Ortak hücre ayarları değişmedi */
+.sales-invoice-sum__cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* Responsive Design */
+@media screen and (max-width: 1024px) {
+  .sales-invoice-sum__table {
+    font-size: 0.75rem;
+  }
+  
+  .sales-invoice-sum__table td,
+  .sales-invoice-sum__table th {
+    padding: 0.4rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .sales-invoice-sum__table {
+    font-size: 0.7rem;
+  }
+  
+  .sales-invoice-sum__table td,
+  .sales-invoice-sum__table th {
+    padding: 0.3rem;
+  }
+}

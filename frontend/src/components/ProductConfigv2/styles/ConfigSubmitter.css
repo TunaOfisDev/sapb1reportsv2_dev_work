@@ -1,0 +1,91 @@
+/* frontend/src/components/ProductConfigv2/styles/ConfigSubmitter.css */
+
+/* Ana Container: ERP temalı kart yapısı */
+.config-submitter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: #ffffff;
+  border: 1px solid #d9e3e7;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Birincil Buton: SAP ana mavisi */
+.config-submitter__btn {
+  background-color: #0F6BB4;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  min-width: 140px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.config-submitter__btn:hover {
+  background-color: #0D5A9E;
+}
+
+.config-submitter__btn:disabled {
+  background-color: #D1D5DE;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Hata Mesajı: SAP uyarı stili */
+.config-submitter__error {
+  background-color: #FFEBEE;
+  border-left: 4px solid #D0021B;
+  color: #D0021B;
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+/* Başarı Mesajı: SAP onay stili */
+.config-submitter__success {
+  background-color: #E8F5E9;
+  border-left: 4px solid #5CB85C;
+  color: #2E7D32;
+  padding: 1rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.config-submitter__success h4 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.config-submitter__success p {
+  margin: 0.5rem 0;
+}
+
+.config-submitter__success ul {
+  padding-left: 1rem;
+  margin: 0.5rem 0;
+}
+
+.config-submitter__success li {
+  margin-bottom: 0.25rem;
+}
+
+/* Responsive Ayarlar */
+@media (max-width: 768px) {
+  .config-submitter {
+    margin: 0 1rem;
+    padding: 1rem;
+  }
+  
+  .config-submitter__btn {
+    width: 100%;
+  }
+}

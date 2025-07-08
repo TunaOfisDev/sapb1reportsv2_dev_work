@@ -1,0 +1,43 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}Product Config Simulator Yönetimi{% endblock %}
+
+{% block content %}
+<h1>Product Config Simulator Yönetimi</h1>
+<p>Bu sayfa, ürün konfigürasyon simülatörünün istatistiklerini ve sonuçlarını görüntülemek için kullanılmaktadır.</p>
+
+{% if simulations %}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Simülasyon ID</th>
+            <th>Simülasyon Adı</th>
+            <th>Seviye</th>
+            <th>Durum</th>
+            <th>Başlangıç</th>
+            <th>Bitiş</th>
+            <th>Toplam Varyant</th>
+            <th>Toplam Hata</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for simulation in simulations %}
+        <tr>
+            <td>{{ simulation.id }}</td>
+            <td>{{ simulation.name }}</td>
+            <td>{{ simulation.get_level_display }}</td>
+            <td>{{ simulation.get_status_display }}</td>
+            <td>{{ simulation.start_time }}</td>
+            <td>{{ simulation.end_time }}</td>
+            <td>{{ simulation.total_variants }}</td>
+            <td>{{ simulation.total_errors }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Henüz simülasyon kaydı bulunamadı.</p>
+{% endif %}
+
+{% endblock %}

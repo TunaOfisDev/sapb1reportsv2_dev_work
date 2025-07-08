@@ -1,0 +1,109 @@
+/* frontend/src/components/RawMaterialWarehouseStock/css/RawMaterialWarehouseStockContainer.css */
+.raw-material-warehouse-stock-container {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+.raw-material-warehouse-stock-container__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #2C4E6C;
+}
+
+.raw-material-warehouse-stock-container__title {
+  color: #2C4E6C;
+  font-size: 24px;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.raw-material-warehouse-stock-container__controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.item-group-select,
+.zero-stock-visibility-select {
+  width: 200px;
+}
+
+.task-status {
+  font-size: 14px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.loading-message,
+.error-message {
+  text-align: center;
+  padding: 20px;
+  font-size: 18px;
+  color: #666;
+}
+
+.error-message {
+  color: #d32f2f;
+}
+
+@media (max-width: 1200px) {
+  .raw-material-warehouse-stock-container__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .raw-material-warehouse-stock-container__title {
+    margin-bottom: 15px;
+  }
+
+  .raw-material-warehouse-stock-container__controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 768px) {
+  .raw-material-warehouse-stock-container {
+    padding: 15px;
+  }
+
+  .raw-material-warehouse-stock-container__title {
+    font-size: 20px;
+  }
+
+  .item-group-select,
+  .zero-stock-visibility-select {
+    width: 150px;
+  }
+
+  .task-status {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .raw-material-warehouse-stock-container {
+    padding: 10px;
+  }
+
+  .raw-material-warehouse-stock-container__controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .item-group-select,
+  .zero-stock-visibility-select {
+    width: 100%;
+  }
+
+  .task-status {
+    text-align: center;
+  }
+}

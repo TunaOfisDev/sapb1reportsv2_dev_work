@@ -1,0 +1,51 @@
+/* frontend/src/components/SalesOrderDocSum/css/ColumnFilter.css */
+
+.sales-order-doc-sum__filter {
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  border: 0;
+  padding: 0;
+  background-color: #f9ca24;
+}
+
+.sales-order-doc-sum__filter input {
+  width: 100%;
+  padding: 0.3rem;
+  border: 0;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+  background-color: transparent;
+}
+
+.sales-order-doc-sum__filter--musteri-ad,
+.sales-order-doc-sum__filter--belge-aciklamasi {
+  width: 100%;
+  font-size: 0.80rem;
+  padding: 0.3rem;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+@media (max-width: 1024px) {
+  .sales-order-doc-sum__filter input {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .sales-order-doc-sum__filter {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .sales-order-doc-sum__filter input {
+    padding: 0.2rem;
+  }
+}

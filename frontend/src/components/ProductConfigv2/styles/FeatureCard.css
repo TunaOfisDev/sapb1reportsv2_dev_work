@@ -1,0 +1,46 @@
+/* frontend/src/components/ProductConfigv2/styles/FeatureCard.css */
+
+.feature-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .feature-card:hover,
+  .feature-card:focus {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .feature-card__image {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    object-fit: cover;
+    margin-bottom: 0.75rem;
+  }
+  
+  .feature-card__content {
+    text-align: center;
+  }
+  
+  .feature-card__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333333;
+    margin: 0;
+  }
+  
+  .feature-card__description {
+    font-size: 1rem;
+    color: #666666;
+    margin-top: 0.5rem;
+  }
+  

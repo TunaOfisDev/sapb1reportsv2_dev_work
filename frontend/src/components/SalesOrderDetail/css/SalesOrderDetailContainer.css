@@ -1,0 +1,45 @@
+/* frontend/src/components/SalesOrderDetail/css/SalesOrderDetailContainer.css */
+.sales-order-detail-container {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    border: 1px solid #dee2e6;
+}
+
+.sales-order-detail-container__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #0073e6;
+}
+
+.sales-order-detail-container__title {
+    font-size: 24px;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.sales-order-detail-container__button-wrapper {
+    display: flex;
+    gap: 10px;
+    flex-grow: 0;
+    margin-left: 10px;
+}
+
+.sales-order-detail-container__button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.sales-order-detail-container__button:hover {
+    background-color: #0056b3;
+}

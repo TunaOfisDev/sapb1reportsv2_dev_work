@@ -1,0 +1,76 @@
+{# File: backend/mailservice/templates/mailservice/report_orchestrator/failure_notification/report_failure_email.html #}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Rapor Gönderimi Başarısız</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .header {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #B22222;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .info-table th, .info-table td {
+            text-align: left;
+            padding: 8px;
+            border: 1px solid #ccc;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #666;
+        }
+        .highlight {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">Rapor Gönderimi Hatası</div>
+
+    <p><strong>Rapor Adı (API):</strong> {{ api_name }}</p>
+    <p><strong>Oluşan Hata:</strong></p>
+    <pre class="highlight">{{ error_message }}</pre>
+
+    <table class="info-table">
+        <tr>
+            <th>Görev</th>
+            <th>Detay</th>
+        </tr>
+        <tr>
+            <td>Rapor Tipi</td>
+            <td>{{ report_title|default:"Tanımsız" }}</td>
+        </tr>
+        <tr>
+            <td>Başarısızlık Zamanı</td>
+            <td>{{ failure_time|default:"-" }}</td>
+        </tr>
+        <tr>
+            <td>Deneme Sayısı</td>
+            <td>{{ retry_count|default:"?" }}/{{ max_retries|default:"?" }}</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        Bu e-posta sistem tarafından otomatik olarak oluşturulmuştur.<br>
+        Lütfen ilgili logları inceleyerek müdahale ediniz.<br><br>
+        IT Operasyonları - Rapor Orkestratör Sistemi
+    </div>
+
+</body>
+</html>

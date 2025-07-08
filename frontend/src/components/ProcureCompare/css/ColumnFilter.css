@@ -1,0 +1,12 @@
+/* File: frontend/src/components/ProcureCompare/containers/ColumnFilter.css */
+
+.column-filter__input {
+  width: 100%;
+  max-width: 100%; 
+  padding: 0.3rem;
+  font-size: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-top: 4px;
+}

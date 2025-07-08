@@ -1,0 +1,44 @@
+/* frontend/src/components/FileShareHub/css/showmodalimage.css */
+
+.modal-image-container {
+  display: flex;
+  position: fixed;
+  z-index: 5000; /* Tüm bileşenlerin üstünde */
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.9);
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.3s ease;
+}
+
+.modal-image-content {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain; /* Orijinal oranını korur */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.modal-image-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: #fff;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.modal-image-close:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}

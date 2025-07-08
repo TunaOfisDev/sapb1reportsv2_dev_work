@@ -1,0 +1,18 @@
+/* frontend/src/components/productpicture/css/LoadingSpinner.css*/
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.spinner-border {
+  margin-bottom: 10px; /* Spinner altındaki mesaj için boşluk */
+}
+
+.loading-text {
+  font-size: 1.5rem; /* Metin boyutu */
+  color: #007bff; /* Metin rengi */
+}

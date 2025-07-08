@@ -1,0 +1,250 @@
+/* frontend/src/components/BomCostManager/css/BomCostTableContainer.css */
+
+/* Master Alanlar Stili */
+.bom-cost-table__master {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px;
+  background: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
+
+.bom-cost-table__master label {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.bom-cost-table__master input {
+  width: 80px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  text-align: right;
+}
+
+.bom-cost-table__master button {
+  background-color: #2C4E6C;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.bom-cost-table__master button:hover {
+  background-color: #1B3249;
+}
+
+/* BOM Maliyet Tablosu */
+.bom-cost-table-container {
+  overflow-x: auto; /* Yatay kaydırma çubuğu ekle */
+  position: relative;
+  max-height: 600px; /* Maksimum yükseklik */
+  overflow-y: auto; /* Dikey kaydırma çubuğu ekle */
+}
+
+.bom-cost-table {
+  width: auto; /* Kolonlar için otomatik genişlik */
+  min-width: 100%; /* Minimum genişlik tabloyu tam ekran yapar */
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  border: 1px solid #ccc;
+  table-layout: fixed; /* Sabit genişlikli kolonlar için */
+}
+
+.bom-cost-table th,
+.bom-cost-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Yapışkan Başlıklar */
+.bom-cost-table thead th {
+  position: sticky; /* Yapışkan başlıklar */
+  top: 0; /* En üstte sabit kalacak */
+  background-color: #2C4E6C; /* Başlık arka plan rengi */
+  color: white;
+  z-index: 3; /* Diğer içeriklerin üzerine gelmesini sağla */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Hafif gölge efekti */
+}
+
+/* Kolon Genişlikleri */
+.bom-cost-table th.col-level { width: 80px; }
+.bom-cost-table th.col-sub-item { width: 150px; }
+.bom-cost-table th.col-code { width: 150px; }
+.bom-cost-table th.col-quantity { width: 80px; }
+.bom-cost-table th.col-price { width: 100px; }
+.bom-cost-table th.col-currency { width: 90px; }
+.bom-cost-table th.col-rate { width: 90px; }
+.bom-cost-table th.col-source { width: 110px; }
+.bom-cost-table th.col-date { width: 100px; }
+.bom-cost-table th.col-component-cost { width: 120px; }
+.bom-cost-table th.col-sales-price { width: 100px; }
+.bom-cost-table th.col-sales-currency { width: 100px; }
+.bom-cost-table th.col-price-list { width: 110px; }
+.bom-cost-table th.col-new-price { width: 100px; }
+.bom-cost-table th.col-new-currency { width: 100px; }
+.bom-cost-table th.col-daily-rate { width: 100px; }
+.bom-cost-table th.col-current-cost { width: 110px; }
+.bom-cost-table th.col-type { width: 100px; }
+.bom-cost-table th.col-group { width: 130px; }
+
+/* Çift satırlar için arka plan rengi */
+.bom-cost-table tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+/* Hover efekti */
+.bom-cost-table tr:hover {
+  background-color: #F2C100;
+}
+
+/* Tüm hücreleri sağa yasla */
+.bom-cost-table td {
+  text-align: right;
+}
+
+/* Metin hücrelerini sola yasla */
+.bom-cost-table td.text-left {
+  text-align: left !important;
+}
+
+/* Input alanları için stiller */
+.bom-cost-table__input {
+  width: 90%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  text-align: right;
+}
+
+/* Yeni Fiyat inputları için özel stil */
+.bom-cost-table__numeric-input {
+  width: 90%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  text-align: right;
+  appearance: textfield; /* Input üzerindeki artırma/azaltma butonlarını gizle - Firefox için */
+}
+
+/* Chrome, Safari, Edge, Opera için input üzerindeki artırma/azaltma butonlarını gizle */
+.bom-cost-table__numeric-input::-webkit-outer-spin-button,
+.bom-cost-table__numeric-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Select alanları için stiller */
+.bom-cost-table__select {
+  width: 90%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+/* Master alanını üç sütunlu grid olarak tanımlıyoruz */
+/* 3:1:2 oranında sıralama => (Ana Ürün 3/6, Satış 1/6, Maliyet 2/6) */
+.bom-master-container {
+  display: grid;
+  grid-template-columns: 3fr 1fr 2fr; /* 3:1:2 oran */
+  gap: 15px;
+  padding: 15px;
+  background: #f8f8f8;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+/* Her bölüm için ortak stil */
+.bom-master-container > div {
+  background: #fff;
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Bölüm başlıkları */
+.bom-master__section-header {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #2C4E6C;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 4px;
+}
+
+/* Satış, ana ürün ve maliyet bilgileri için satır düzeni */
+.bom-master__info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.bom-master__info-row label {
+  font-weight: bold;
+  color: #555;
+}
+
+/* Maliyet hesaplama bölümü */
+.bom-master__factor-controls {
+  margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Hesapla butonu ve sonuç */
+.bom-master__calculate-button {
+  background-color: #F2C100;
+  color: #002D62;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.bom-master__calculate-button:hover {
+  background-color: #FFD700;
+}
+
+.bom-master__total-cost {
+  margin-top: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #002D62;
+  text-align: right;
+}
+
+/* Responsive düzenleme: daha dar ekranlarda grid kolonlarını alt alta getir */
+@media (max-width: 768px) {
+  .bom-master-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+  .bom-cost-table {
+    font-size: 0.75rem;
+  }
+  .bom-cost-table td,
+  .bom-cost-table th {
+    padding: 0.3rem;
+  }
+  .bom-cost-table__input,
+  .bom-cost-table__numeric-input {
+    font-size: 0.75rem;
+    padding: 2px;
+  }
+}

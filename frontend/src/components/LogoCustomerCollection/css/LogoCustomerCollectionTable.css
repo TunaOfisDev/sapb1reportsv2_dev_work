@@ -1,0 +1,183 @@
+/* frontend/src/components/LogoCustomerCollection/css/LogoCustomerCollectionTable.css */
+
+.logo-customer-collection__table-wrapper {
+  max-height: 600px;
+  overflow-y: auto;
+  position: relative;
+}
+
+.logo-customer-collection-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  font-size: 1rem;
+  font-family: 'Arial', sans-serif;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.logo-customer-collection-table__header {
+  background-color: #2c3e50;
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo-customer-collection-table__header-cell {
+  padding: 0.4rem 0.6rem;
+  font-weight: 600;
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+  background-color: #2c3e50;
+}
+
+.logo-customer-collection-table__header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  line-height: 1.2;
+  min-height: 1.4rem;
+}
+
+.logo-customer-collection-table__header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.logo-customer-collection-table__header-total {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #e0e0e0;
+  line-height: 1;
+}
+
+.logo-customer-collection-table__filter-container {
+  margin-top: 0.3rem;
+}
+
+.logo-customer-collection-table__filter-input {
+  width: 100%;
+  padding: 0.3rem 0.4rem;
+  font-size: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  box-sizing: border-box;
+  line-height: 1;
+  height: 1.6rem;
+}
+
+.logo-customer-collection-table__body-cell {
+  padding: 0.6rem;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+  font-size: 1rem;
+}
+
+.logo-customer-collection-table__body-row:hover {
+  background-color: #f5f7fa;
+}
+
+.logo-customer-collection-table__numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.logo-customer-collection-table__highlight {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.logo-customer-collection-table__sort-arrow {
+  margin-left: 0.3rem;
+  font-size: 0.7rem;
+  color: #ccc;
+}
+
+.logo-customer-collection-table__sort-arrow--active {
+  color: #fff;
+}
+
+.logo-customer-collection-table__footer {
+  padding: 0.8rem;
+  text-align: right;
+  background-color: #f0f0f0;
+  font-weight: bold;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+.logo-customer-collection-table__cell-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.logo-customer-collection-table__truncated-text {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.logo-customer-collection-table__tooltip {
+  visibility: hidden;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #2c3e50;
+  color: #fff;
+  padding: 0.4rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  z-index: 10;
+  white-space: normal;
+  width: max-content;
+  max-width: 250px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.logo-customer-collection-table__cell-wrapper:hover .logo-customer-collection-table__tooltip {
+  visibility: visible;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .logo-customer-collection__table-wrapper {
+    overflow-x: auto;
+    max-height: 400px;
+  }
+
+  .logo-customer-collection-table {
+    display: block;
+    white-space: nowrap;
+  }
+
+  .logo-customer-collection-table__header-cell,
+  .logo-customer-collection-table__body-cell {
+    padding: 0.3rem 0.4rem;
+    font-size: 0.7rem;
+  }
+
+  .logo-customer-collection-table__header-content {
+    gap: 0.15rem;
+  }
+
+  .logo-customer-collection-table__header-total {
+    font-size: 0.65rem;
+  }
+
+  .logo-customer-collection-table__filter-input {
+    padding: 0.2rem 0.3rem;
+    font-size: 0.65rem;
+    height: 1.4rem;
+  }
+
+  .logo-customer-collection-table__sort-arrow {
+    font-size: 0.65rem;
+  }
+
+  .logo-customer-collection-table__tooltip {
+    font-size: 0.65rem;
+    max-width: 200px;
+  }
+}

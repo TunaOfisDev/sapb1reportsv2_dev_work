@@ -1,0 +1,131 @@
+/* frontend/src/components/ProductConfig/css/PCHanaData.css */
+.pc-hana-data {
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.pc-hana-data__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.pc-hana-data__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+}
+
+.pc-hana-data__update-time {
+    font-size: 0.875rem;
+    color: #718096;
+}
+
+.pc-hana-data__loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+}
+
+.pc-hana-data__spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+.pc-hana-data__error {
+    text-align: center;
+    padding: 2rem;
+    color: #e53e3e;
+}
+
+.pc-hana-data__error-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.pc-hana-data__empty {
+    text-align: center;
+    padding: 2rem;
+    color: #718096;
+}
+
+.pc-hana-data__empty-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.pc-hana-data__table-container {
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.pc-hana-data__table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.pc-hana-data__table th,
+.pc-hana-data__table td {
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.pc-hana-data__table th {
+    background-color: #f7fafc;
+    font-weight: 600;
+}
+
+.pc-hana-data__price {
+    text-align: right;
+    font-family: monospace;
+}
+
+.pc-hana-data__actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.pc-hana-data__retry-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+.pc-hana-data__retry-button:hover {
+    background-color: #0056b3;
+}
+
+.pc-hana-data__retry-button:disabled {
+    background-color: #c0c0c0;
+    cursor: not-allowed;
+}
+
+.pc-hana-data__update-time {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

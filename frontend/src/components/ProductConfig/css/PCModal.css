@@ -1,0 +1,112 @@
+/* frontend/src/components/ProductConfig/css/PCModal.css */
+.pc-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.pc-modal {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 90%;
+    width: 100%;
+    margin: 40px auto;
+}
+
+.pc-modal--small { max-width: 400px; }
+.pc-modal--medium { max-width: 600px; }
+.pc-modal--large { max-width: 800px; }
+
+.pc-modal--fullscreen {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    margin: 0;
+    border-radius: 0;
+}
+
+.pc-modal--centered {
+    margin: auto;
+}
+
+.pc-modal--scrollable .pc-modal__content {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+.pc-modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.pc-modal__title {
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.pc-modal__close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.pc-modal__content {
+    padding: 16px;
+}
+
+.pc-modal__footer {
+    padding: 16px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Animations */
+.pc-modal--fade {
+    animation: fadeIn 0.3s;
+}
+
+.pc-modal--slide-up {
+    animation: slideUp 0.3s;
+}
+
+.pc-modal--slide-down {
+    animation: slideDown 0.3s;
+}
+
+.pc-modal--zoom {
+    animation: zoomIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}

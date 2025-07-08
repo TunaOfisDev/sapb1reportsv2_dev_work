@@ -1,0 +1,45 @@
+/* frontend/src/components/TotalRisk/css/PivotTable.css */
+
+/* Genel blok stilini güncelle */
+.pivot-table {
+  display: table-cell;
+  width: 50%;
+  justify-content: flex-start; /* Sola yasla */
+  padding: 10px;
+  background-color: #ffefd5; /* Arka plan rengi */
+  border-radius: 5px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ff0000; /* Kenarlık */
+  font-weight: bold;
+  margin-bottom: 5px; /* Altta boşluk */
+  font-family: Arial, sans-serif;
+}
+
+/* Satır ve değerleri */
+.pivot-table__row {
+  margin-bottom: 5px; /* Satırlar arası boşluk */
+}
+
+.pivot-table__label,
+.pivot-table__value {
+  font-size: 14px; /* Yazı boyutunu küçült */
+  color: #333; /* Yazı rengi */
+}
+
+/* PivotTable bileşeninizi JSX'de doğru şekilde yerleştirmek için */
+/* ... diğer stiller */
+
+.header-pivot-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Başlık ve PivotTable arasında boşluk bırak */
+}
+
+.header-pivot-container h1 {
+  margin: 0; /* Varsayılan margin'i kaldır */
+}
+
+/* Eğer PivotTable için özel genişlik ayarlamanız gerekiyorsa, aşağıdaki gibi bir stil ekleyebilirsiniz. */
+.pivot-table-container {
+  width: fit-content; /* PivotTable'ın genişliğini içeriğine göre ayarlar */
+}

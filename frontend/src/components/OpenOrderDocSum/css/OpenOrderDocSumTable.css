@@ -1,0 +1,125 @@
+/* frontend/src/components/OpenOrderDocSum/css/OpenOrderDocSumTable.css */
+/* Tablo genel stil ayarları */
+.open-order-doc-sum__table {
+    width: 100%;
+    margin-top: 0px;  /* Tabloyu yukarı taşı */
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 16px;
+    display: block;
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Tablo hücreleri ve başlıklar için ortak stiller */
+.open-order-doc-sum__table th,
+.open-order-doc-sum__table td {
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+}
+
+/* Başlık satırı stil ayarları */
+.open-order-doc-sum__thead--header {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Sütun başlıklarına hover efekti */
+.open-order-doc-sum__th--hover:hover {
+    background-color: #007bff;
+}
+
+
+/* Sayısal veriler için hizalama */
+.open-order-doc-sum__td--numeric,
+.open-order-doc-sum__th--numeric-header {
+    text-align: right;
+}
+
+/* Toplam değerler için kalın yazı stili */
+.open-order-doc-sum__td--total {
+    font-weight: bold;
+}
+
+
+/* Alt toplam için sağa hizalama ve kalın yazı stil ayarları */
+.open-order-doc-sum__tfoot--dynamic-subtotal,
+.open-order-doc-sum__tfoot--dynamic-subtotal-right,
+.open-order-doc-sum__td--footer-bold {
+    font-weight: bold;
+    text-align: right;
+}
+
+/* Gizli hücreler için stil */
+.open-order-doc-sum__td--hidden {
+    display: none;
+}
+
+/* satici adı sütunu için taşan metni gösterme ayarları */
+.open-order-doc-sum__th--belge-no,
+.open-order-doc-sum__td--belge-no{
+    white-space: nowrap; /* Metni tek satırda tut */
+    overflow: hidden; /* Taşmayı engelle */
+    text-overflow: ellipsis; /* Taşan metni "..." ile göster */
+    max-width: 50px; /* Maksimum genişlik ayarı */
+    min-width: 25px; /* Minimum genişlik ayarı */
+    display: block; /* Block seviyesinde bir eleman olarak tanımla */
+}
+
+/* satici adı sütunu için taşan metni gösterme ayarları */
+.open-order-doc-sum__th--satici,
+.open-order-doc-sum__td--satici {
+    white-space: nowrap; /* Metni tek satırda tut */
+    overflow: hidden; /* Taşmayı engelle */
+    text-overflow: ellipsis; /* Taşan metni "..." ile göster */
+    max-width: 100px; /* Maksimum genişlik ayarı */
+    min-width: 50px; /* Minimum genişlik ayarı */
+    display: block; /* Block seviyesinde bir eleman olarak tanımla */
+}
+
+/* Müşteri adı sütunu için taşan metni gösterme ayarları */
+.open-order-doc-sum__td--musteri-ad,
+.open-order-doc-sum__th--musteri-ad {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px; /* Ayarlanabilir genişlik */
+  display: block;
+}
+
+/* Responsive Tasarım */
+@media (max-width: 1024px) {
+    .open-order-doc-sum__table {
+        font-size: 0.9rem; /* Font boyutunu azalt */
+    }
+    .open-order-doc-sum__table th,
+    .open-order-doc-sum__table td {
+        padding: 0.4rem; /* Padding azalt */
+    }
+}
+@media (max-width: 768px) {
+    .open-order-doc-sum__table th,
+    .open-order-doc-sum__table td {
+        padding: 0.3rem; /* Daha fazla padding azaltma */
+    }
+}
+@media (max-width: 480px) {
+    .open-order-doc-sum__table {
+        font-size: 0.75rem; /* Mobil için font boyutunu daha da küçült */
+    }
+    .open-order-doc-sum__table th,
+    .open-order-doc-sum__table td {
+        padding: 0.2rem; /* Mobil için padding azalt */
+    }
+}
+
+
+

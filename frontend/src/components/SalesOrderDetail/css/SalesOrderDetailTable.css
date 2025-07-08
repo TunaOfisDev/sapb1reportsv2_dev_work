@@ -1,0 +1,78 @@
+/* frontend/src/components/SalesOrderDetail/css/SalesOrderDetailTable.css */
+
+/* Ana tablo stil ayarları */
+.sales-order-detail__table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  
+  .sales-order-detail__table th,
+  .sales-order-detail__table td {
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+  }
+  
+  .sales-order-detail__table tr:hover {
+    background-color: #f2f2f2;
+  }
+  
+  .sales-order-detail__thead--header.sales-order-detail__thead--musteri-kodu,
+  .sales-order-detail__td--musteri-kodu {
+    width: 120px;
+  }
+  
+  .sales-order-detail__thead--header {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .sales-order-detail__thead--numeric-header,
+  .sales-order-detail__td--numeric {
+    text-align: right;
+  }
+  
+  .sales-order-detail__td--yillik-toplam {
+    font-weight: bold;
+  }
+  
+  .sales-order-detail__table .filter-container {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    padding: 0.5rem;
+    border: 0;
+    outline: none;
+    width: 80%;
+  }
+  
+  .sales-order-detail__table .filter-container .sales-order-detail__filter-input {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    width: calc(100% - 10px);
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+  }
+  
+  .column-filter-wrapper {
+    display: block;
+    width: 100%;
+  }
+  
+  .column-filter-wrapper input {
+    width: 100%;
+  }
+  
+  @media (max-width: 768px) {
+    .sales-order-detail__table .filter-container .sales-order-detail__filter-input {
+      position: static;
+      width: 90%;
+      margin: 0;
+    }
+  }
+  

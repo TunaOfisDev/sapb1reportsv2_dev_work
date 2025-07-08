@@ -1,0 +1,60 @@
+/* frontend/src/components/ProcureCompare/css/TeklifFiyatlariCell.css */
+
+.teklif-cell__wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 0;
+  margin: 0;
+  align-items: stretch;
+  width: 100%;
+}
+
+.teklif-cell__entry {
+  padding: 0;               
+  margin: 0;
+  width: 100%;
+  border: none;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  background: none;
+  border-radius: 0;
+  box-sizing: border-box;
+}
+
+
+.teklif-cell__entry--highlight {
+  background-color: #d2f8d2;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.teklif-cell__firma {
+  font-size: 0.90rem;
+  color: #222;
+
+}
+
+.teklif-cell__fiyat {
+  font-size: 0.90rem;
+  color: #333;
+}
+
+.teklif-cell__fiyat--highlight {
+  color: #006400;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .teklif-cell__entry {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .teklif-cell__firma,
+  .teklif-cell__fiyat {
+    font-size: 0.70rem;
+  }
+}

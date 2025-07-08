@@ -1,0 +1,50 @@
+/* frontend/src/components/ProductConfig/css/PCForwardButton.css */
+
+.pc-forward-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #3b82f6;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.pc-forward-button:hover {
+    background-color: #2563eb;
+}
+
+.pc-forward-button:disabled {
+    background-color: #d1d5db;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.pc-forward-button.loading {
+    pointer-events: none;
+    background-color: #3b82f6;
+}
+
+.pc-forward-button .spinner {
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 3px solid #ffffff;
+    border-top: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

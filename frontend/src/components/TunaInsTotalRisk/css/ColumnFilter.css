@@ -1,0 +1,19 @@
+/* frontend/src/components/TotalRisk/css/ColumnFilter.css */
+.totalrisk-columnfilter {
+  display: flex;
+  align-items: center;
+}
+
+.totalrisk-columnfilter__input {
+  width: 90%; /* Genişliği %100 yap */
+  font-size: 0.85rem; /* Font büyüklüğünü ayarla */
+  padding: 0.2rem; /* Padding artır */
+  margin: 0; /* Eğer gerekliyse */
+  border: 0.1; /* Çerçeve kaldır */
+  outline: none; /* Odaklanıldığında dış çizgiyi kaldır */
+  background-color: #f7d67def; /* SAP input rengi */
+}
+
+.totalrisk-columnfilter-container {
+  margin-right: 20%; /* Filtre ve sıralama simgesini sağa iter */
+}

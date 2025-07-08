@@ -1,0 +1,119 @@
+/* frontend/src/components/logo_supplier_receivables_aging/css/LogoSupplierReceivablesAgingContainer.css */
+
+.logo-supplier-aging {
+  padding: 16px;
+  width: 100%;          /* tam genişlik */
+  margin: 0;            /* soldan hizala, ortalama yok */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9f9f9;
+}
+
+.logo-supplier-aging__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap; /* Küçük ekranlarda taşmayı önler */
+}
+
+.logo-supplier-aging__title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  color: #2c3e50;
+  white-space: nowrap;
+}
+
+.logo-supplier-aging__last-updated {
+  font-size: 16px;
+  color: #555;
+  white-space: nowrap;
+}
+
+.logo-supplier-aging__controls {
+  display: flex;
+  gap: 8px;
+}
+
+.logo-supplier-aging__button {
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  background-color: #2c3e50;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.logo-supplier-aging__button:hover:not(:disabled) {
+  background-color: #34495e;
+}
+
+.logo-supplier-aging__button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.logo-supplier-aging__status {
+  text-align: center;
+  padding: 12px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #333;
+}
+
+.logo-supplier-aging__status--error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+  .logo-supplier-aging__header {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .logo-supplier-aging__title {
+    font-size: 18px;
+  }
+
+  .logo-supplier-aging__last-updated {
+    font-size: 12px;
+  }
+
+  .logo-supplier-aging__controls {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .logo-supplier-aging__button {
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-supplier-aging__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .logo-supplier-aging__controls {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .logo-supplier-aging__button {
+    width: auto;
+    flex-grow: 1;
+  }
+}

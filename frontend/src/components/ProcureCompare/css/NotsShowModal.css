@@ -1,0 +1,65 @@
+/* BEM yöntemine uygun responsive ve sade modal */
+.nots-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 600px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 24px;
+    z-index: 999;
+  }
+  
+  .nots-modal__header {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #1e1e1e;
+  }
+  
+  .nots-modal__content {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+    white-space: pre-wrap;
+  }
+  
+  .nots-modal__close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #999;
+  }
+  
+  .nots-modal__backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.35);
+    z-index: 998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+
+  @media screen and (max-width: 480px) {
+    .nots-modal {
+      padding: 16px;
+    }
+  
+    .nots-modal__header {
+      font-size: 18px;
+    }
+  
+    .nots-modal__content {
+      font-size: 14px;
+    }
+  }
+  

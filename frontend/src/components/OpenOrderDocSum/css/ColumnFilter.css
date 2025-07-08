@@ -1,0 +1,54 @@
+/* frontend/src/components/OpenOrderDocSum/css/ColumnFilter.css */
+
+.open-order-doc-sum__filter {
+    --filter-width: 90%;
+    --filter-max-width: 300px;
+    --filter-min-width: 25px;
+    --filter-font-size: 0.85rem;
+    --filter-padding: 0.5rem;
+
+    width: var(--filter-width);
+    max-width: var(--filter-max-width);
+    min-width: var(--filter-min-width);
+    font-size: var(--filter-font-size);
+    box-sizing: border-box;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.open-order-doc-sum__filter input {
+    width: 100%;
+    padding: var(--filter-padding);
+    font-size: inherit;
+    border: none;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.open-order-doc-sum__filter--musteri-ad {
+    --musteri-ad-max-width: 300px;
+    --musteri-ad-min-width: 250px;
+
+    max-width: var(--musteri-ad-max-width);
+    min-width: var(--musteri-ad-min-width);
+}
+
+/* Responsive Tasarım */
+@media (max-width: 1024px) {
+    .open-order-doc-sum__filter {
+        --filter-font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .open-order-doc-sum__filter {
+        --filter-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .open-order-doc-sum__filter {
+        --filter-padding: 0.2rem;
+    }
+}

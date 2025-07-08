@@ -1,0 +1,55 @@
+/* frontend/src/components/ShipWeekPlanner/css/GeneralSearch.css */
+.general-search {
+    display: flex;
+    align-items: center;
+    background-color: #fff !important;
+    border-radius: 4px !important;
+}
+
+.general-search .MuiOutlinedInput-root {
+    border-radius: 4px;
+}
+
+.general-search .MuiOutlinedInput-input {
+    padding: 8px 4px;
+    font-size: 0.875rem;
+}
+
+.general-search .MuiInputBase-root {
+    padding-right: 8px;
+}
+
+.general-search .MuiInputAdornment-root {
+    margin-right: 0;
+}
+
+.general-search .MuiIconButton-root {
+    padding: 4px;
+}
+
+.general-search .MuiIconButton-root:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Hover ve focus durumları */
+.general-search:hover .MuiOutlinedInput-root {
+    border-color: rgba(0, 0, 0, 0.23);
+}
+
+.general-search .MuiOutlinedInput-root.Mui-focused {
+    border-color: #1976d2;
+}
+
+/* Placeholder stil */
+.general-search .MuiInputBase-input::placeholder {
+    color: rgba(0, 0, 0, 0.54);
+    opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .general-search {
+        width: 100%;
+        margin: 10px 0;
+    }
+}

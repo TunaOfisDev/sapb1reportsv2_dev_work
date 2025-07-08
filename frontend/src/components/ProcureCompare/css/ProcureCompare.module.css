@@ -1,0 +1,390 @@
+/* File: frontend/src/components/ProcureCompare/css/ProcureCompare.module.css */
+
+/* Genel Sayfa Yapısı */
+.procure-compare {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem;
+  background-color: #ffffff;
+  color: #1c1c1c;
+  font-family: 'Segoe UI', 'Roboto', 'SAP Fiori', sans-serif;
+}
+
+/* Başlık Alanı */
+.procure-compare__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #2C4E6C;
+  padding-bottom: 0.5rem;
+}
+
+.procure-compare__title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #2C4E6C;
+}
+
+/* Sync Butonu */
+.procure-compare__sync-button {
+  background-color: #f0ab00;
+  color: #000;
+  padding: 0.6rem 1.2rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.procure-compare__sync-button:hover {
+  background-color: #e6a100;
+}
+
+/* Tablo Scroll Alanı */
+.procure-compare__table-wrapper {
+  max-height: 75vh;
+  overflow-y: auto;
+  overflow-x: auto;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+}
+
+/* Genel Tablo Yapısı */
+.procure-compare__table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  font-family: 'Arial', sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #dee2e6;
+}
+
+/* Sticky Başlıklar */
+.procure-compare__table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #2C4E6C;
+  color: white;
+  font-weight: bold;
+  text-align: left;
+  padding: 0.6rem 1rem 0.2rem 1rem;
+  z-index: 10;
+  background-clip: padding-box;
+  vertical-align: bottom;
+}
+/* Filtre input'u da sticky hücre içinde görünür şekilde */
+.column-filter__input {
+  width: 100%;
+  padding: 0.3rem;
+  font-size: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-top: 4px;
+}
+
+/* Hücreler */
+.procure-compare__table th,
+.procure-compare__table td {
+  border: 1px solid #dee2e6;
+  padding: 0.6rem 0.2rem 0.6rem 0.2rem; /* top right bottom left */
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+
+/* Satır Arkaplanları */
+.procure-compare__table tbody tr {
+  background-color: #ffffff;
+  transition: background-color 0.3s ease;
+}
+
+.procure-compare__table tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.procure-compare__table tbody tr:hover {
+  background-color: #fcbf1e; /* SAP hover rengi */
+}
+
+.procure-compare__col--kalem-tanimi {
+  width: 30ch;
+  min-width: 30ch;
+  max-width: 30ch;
+  overflow: hidden;               /* <-- Değiştirildi */
+  white-space: normal;
+  text-overflow: ellipsis;
+  overflow-wrap: break-word;      /* <-- Daha modern çözüm */
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+
+
+.procure-compare__col--tedarikci-ad {
+  width: 20ch;
+  min-width: 15ch;
+  max-width: 20ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+.procure-compare__col--belge-tarih {
+  width: 14ch;
+  min-width: 14ch;
+  max-width: 14ch;
+}
+
+.procure-compare__col--belge-no {
+  width: 12ch;
+  min-width: 12ch;
+  max-width: 12ch;
+}
+.procure-compare__col--sip-miktar {
+  width: 12ch;
+  min-width: 12ch;
+  max-width: 14ch;
+  text-align: right;
+  padding-right: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+.procure-compare__col--net-fiyat {
+  width: 17ch;
+  min-width: 17ch;
+  max-width: 17ch;
+  font-weight: bold;
+  text-align: right;
+}
+
+.procure-compare__col--doviz {
+  width: 10ch;
+  min-width: 10ch;
+  max-width: 10ch;
+  font-weight: bold;
+}
+
+.procure-compare__col--referans-teklifler {
+  width: 20ch;
+  min-width: 20ch;
+  max-width: 20ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.procure-compare__col--teklif-fiyatlari {
+  width: 35ch; /* Eskiden 22ch gibi görünüyordu, 4ch büyütüyorum (~+20px) */
+  min-width: 35ch;
+  max-width: 35ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: normal; /* Nobold */
+  font-size: 0.90rem; /* Bir kademe küçültüldü */
+  text-align: left; /* Sola yaslı */
+  padding-left: 0; /* Biraz iç boşluk */
+  margin: 0;
+}
+
+
+.procure-compare__td--numeric {
+  text-align: right;
+}
+
+.procure-compare__last-updated {
+  margin-left: auto;
+  margin-right: 2rem;
+  align-self: center;
+  font-weight: bold;
+  font-size: 0.85rem;
+  color: #555;
+  white-space: nowrap;
+}
+
+.procure-compare__actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.procure-compare__excel-button {
+  background-color: #1976d2;
+  color: white;
+  font-weight: 500;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.procure-compare__excel-button:hover {
+  background-color: #155fa0;
+}
+
+.procure-compare__col--actions {
+  width: 25ch;
+  min-width: 20ch;
+  max-width: 25ch;
+  text-align: center;
+  vertical-align: top;
+  padding: 8px;
+}
+
+.procure-compare__action-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  min-height: 42px;
+}
+
+.procure-compare__col--approval-history {
+  width: 20ch;
+  min-width: 15ch;
+  max-width: 20ch;
+  white-space: normal;
+}
+
+
+.procure-compare__collapsed-row {
+  max-height: 60px;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  cursor: pointer;
+}
+
+.procure-compare__expanded-row {
+  max-height: 1000px;
+  overflow: visible;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  cursor: pointer;
+}
+
+.procure-compare__pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.procure-compare__accordion-buttons button {
+  margin-left: 10px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.row-wrapper-collapsed {
+  max-height: 60px;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.row-wrapper-expanded {
+  max-height: 1000px;
+  overflow: visible;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+
+/* Accordion Butonlar Wrapper */
+.procure-compare__accordion-buttons {
+  display: flex;
+  justify-content: flex-start;  /* !important gerekmez */
+  align-items: center;
+  gap: 10px;
+  padding-left: 5px; /* <- işte bu 3mm hassas kaydırma burada yapılmalı */
+}
+
+
+/* Accordion Normal Mod: Koyu Mavi Ton */
+.procure-compare__accordion-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #1565c0; /* Koyu mavi */
+  border: 2px solid #0d47a1; /* Daha koyu mavi */
+  color: #ffffff; /* Yazı beyaz */
+  padding: 8px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-left: 5px; /* Sola hafif kaydırıldı */
+  transition: background-color 0.25s ease, color 0.25s ease, transform 0.2s ease;
+}
+
+.procure-compare__accordion-button:hover {
+  background-color: #0d47a1; /* Hover koyu mavi */
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+/* Accordion Expanded Mod: Koyu Yeşil Ton */
+.procure-compare__accordion-button-expanded {
+  background-color: #2e7d32; /* Koyu yeşil */
+  border: 2px solid #1b5e20; /* Daha koyu yeşil */
+  color: #ffffff; /* Yazı beyaz */
+}
+
+.procure-compare__accordion-button-expanded:hover {
+  background-color: #1b5e20; /* Hover koyu yeşil */
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+/* Accordion Buton İkonu */
+.procure-compare__accordion-button-icon {
+  font-size: 16px;
+}
+
+/* Altın Ok İkonu */
+.procure-compare__gold-arrow {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  margin-top: 2px;
+}
+
+/* Kalem Tanımı Metni */
+.procure-compare__kalem-tanimi-text {
+  color: #000000;
+  text-decoration: none;
+  white-space: normal;
+  line-height: 1.3;
+}
+
+
+
+
+/* Responsive Tasarım */
+@media screen and (max-width: 768px) {
+  .procure-compare__table {
+    font-size: 0.75rem;
+  }
+
+  .procure-compare__table th,
+  .procure-compare__table td {
+    padding: 0.4rem 0.6rem;
+  }
+
+  .procure-compare__title {
+    font-size: 1.5rem;
+  }
+
+  .procure-compare__sync-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}

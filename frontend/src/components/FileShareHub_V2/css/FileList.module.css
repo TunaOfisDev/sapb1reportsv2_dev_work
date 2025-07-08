@@ -1,0 +1,62 @@
+/* frontend/src/components/FileShareHub_V2/css/FileList.module.css */
+
+.file-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .file-list__item {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: box-shadow 0.2s ease-in-out;
+    cursor: pointer;
+  }
+  
+  .file-list__item:hover {
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .file-list__thumbnail {
+    width: 100%;
+    max-width: 128px;
+    height: auto;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+    object-fit: cover;
+  }
+  
+  .file-list__name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #212529;
+    word-break: break-all;
+  }
+  
+  .file-list__icon {
+    font-size: 1.5rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .file-list {
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+  
+    .file-list__name {
+      font-size: 0.75rem;
+    }
+  
+    .file-list__thumbnail {
+      max-width: 100px;
+    }
+  }
+  

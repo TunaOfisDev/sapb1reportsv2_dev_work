@@ -1,0 +1,75 @@
+/* frontend/src/components/SalesOrderDocSum/css/SalesOrderDocSumContainer.css */
+/* Başlık Stili */
+.sales-order-doc-sum-container__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1px;  /* Negatif marj kullanarak başlık ve çizgiyi daha da yakınlaştır */
+    padding-bottom: -5px;  /* Başlık metninden çizgiye boşluk yok */
+    border-bottom: 2px solid #2C4E6C;  /* Mavi çizgi */
+}
+
+.sales-order-doc-sum-container__button-wrapper {
+    display: flex;
+    gap: 5px;
+    margin-left: auto;  /* Butonları sağa hizala */
+}
+
+.sales-order-doc-sum-container__button {
+    padding: 8px 12px;
+    background-color: #2C4E6C;;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.sales-order-doc-sum-container__button:hover {
+    background-color: #396891;;
+}
+
+/* Genel Konteyner Stili */
+.sales-order-doc-sum-container {
+    background-color: #f5f5f5;
+    padding: 5px;  /* Konteynerin genel dolgusu */
+    border-radius: 5px;  /* Yumuşak köşe yuvarlaklığı */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);  /* Hafif gölge efekti */
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    border: 1px solid #ccc;  /* Çerçeve */
+}
+
+/* Son Güncelleme bilgisini yatay olarak ortala */
+.sales-order-doc-sum-container__last-updated {
+    font-size: 16px;
+    flex-grow: 1;
+    text-align: center; /* Bu kısım yatay ortalamayı sağlar */
+}
+
+
+/* Responsive Tasarım */
+@media (max-width: 768px) {
+    .sales-order-doc-sum-container__header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .sales-order-doc-sum-container__button-wrapper {
+        margin-top: 10px;
+        margin-left: 0;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .sales-order-doc-sum-container {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sales-order-doc-sum-container__button {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+}

@@ -1,0 +1,90 @@
+/* frontend/src/components/ProductConfig/css/PCHeader.css  */
+.pc-header {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px 0;
+}
+
+.pc-header__content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pc-header__brand {
+    display: flex;
+    align-items: center;
+}
+
+.pc-header__logo {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.pc-header__title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.pc-header__nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+
+.pc-header__nav-item {
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 10px 15px;
+    transition: color 0.3s;
+}
+
+.pc-header__nav-item:hover {
+    color: #007bff;
+}
+
+.pc-header__user {
+    display: flex;
+    align-items: center;
+}
+
+.pc-header__username {
+    margin-right: 15px;
+    font-size: 14px;
+}
+
+.pc-header__logout {
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    color: #333;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.pc-header__logout:hover {
+    background-color: #e2e6ea;
+}
+
+@media (max-width: 768px) {
+    .pc-header__content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pc-header__nav {
+        margin-top: 10px;
+    }
+
+    .pc-header__user {
+        margin-top: 10px;
+    }
+}

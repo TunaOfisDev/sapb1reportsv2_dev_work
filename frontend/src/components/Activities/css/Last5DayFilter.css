@@ -1,0 +1,22 @@
+/* frontend/src/components/Activities/css/Last5DayFilter.css  */
+.last5day-filter {
+    display: flex;
+    justify-content: space-around;
+    padding: 1em;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    margin-bottom: 1em;
+  }
+  
+  .last5day-filter .filter-button {
+    padding: 0.5em 1em;
+    border: none;
+    background-color: #e7e7e7;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .last5day-filter .filter-button:hover,
+  .last5day-filter .filter-button.selected {
+    background-color: #d3d3d3;
+  }

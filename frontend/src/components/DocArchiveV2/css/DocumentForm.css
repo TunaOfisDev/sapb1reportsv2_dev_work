@@ -1,0 +1,41 @@
+/* frontend/src/components/DocArchiveV2/css/DocumentForm.css */
+.DocumentForm__form {
+    margin: 20px 0;
+}
+
+.DocumentForm__form-group {
+    margin-bottom: 20px;
+}
+
+.DocumentForm__label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.DocumentForm__input,
+.DocumentForm__textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.DocumentForm__textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+.DocumentForm__button {
+    background-color: #0056b3;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.DocumentForm__button:hover {
+    background-color: #004494;
+}

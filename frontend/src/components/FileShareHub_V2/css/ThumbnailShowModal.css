@@ -1,0 +1,70 @@
+/* frontend/src/components/FileShareHub_V2/css/ThumbnailShowModal.css */
+
+/* Ekranın tamamını kaplayan karartma */
+.tsm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+    animation: tsm-fade-in 0.25s ease-out;
+  }
+  
+  /* Dialog container */
+  .tsm-dialog {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    background: #fff;
+    animation: tsm-zoom-in 0.25s ease-out;
+  }
+  
+  /* 2× büyütme, ancak ekrana taşma olmasın */
+  .tsm-image {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 180%; /* 2× görsel genişliği (thumbnail 256px ise ≈460px) */
+    max-height: 90vh;
+  }
+  
+  /* Kapat butonu */
+  .tsm-close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    font-size: 1.25rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease-in-out;
+  }
+  
+  .tsm-close:hover {
+    background: rgba(0, 0, 0, 0.8);
+  }
+  
+  /* Animations */
+  @keyframes tsm-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes tsm-zoom-in {
+    from { transform: scale(0.9); }
+    to { transform: scale(1); }
+  }
+  

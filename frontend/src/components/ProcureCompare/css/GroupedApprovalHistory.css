@@ -1,0 +1,59 @@
+/* frontend/src/components/ProcureCompare/css/GroupedApprovalHistory.css  */
+
+.grouped-history {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 14px;
+  padding: 4px;
+  max-width: 280px;
+  overflow-x: hidden;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+.grouped-history__item {
+  display: flex;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 8px 12px;
+  flex-wrap: wrap;
+}
+
+.grouped-history__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.grouped-history__action {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.grouped-history__meta {
+  font-size: 12px;
+  color: #666;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.grouped-history__comment {
+  display: none;
+}
+
+.grouped-history__loading,
+.grouped-history__error,
+.grouped-history__empty {
+  font-size: 13px;
+  color: #999;
+  padding: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .grouped-history__item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

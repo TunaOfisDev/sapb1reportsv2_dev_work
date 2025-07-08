@@ -1,0 +1,120 @@
+/* path: frontend/src/components/StockCardIntegration/css/StockCardList.module.css */
+
+.stock-card-list {
+  background-color: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 1.5rem;
+  font-family: 'Segoe UI', sans-serif;
+  overflow-x: auto;
+}
+
+/* Başlık */
+.stock-card-list__title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #0b5394;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+/* Tablo */
+.stock-card-list__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stock-card-list__table th,
+.stock-card-list__table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.95rem;
+  vertical-align: top;
+}
+
+.stock-card-list__table th {
+  background-color: #f4f6f9;
+  color: #0b5394;
+  font-weight: 600;
+}
+
+.stock-card-list__table tr:hover {
+  background-color: #fef5dc;
+}
+
+/* Durum Badge */
+.stock-card-list__badge--status {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.stock-card-list__badge--success {
+  background-color: #dff0d8;
+  color: #3c763d;
+}
+
+.stock-card-list__badge--error {
+  background-color: #f2dede;
+  color: #a94442;
+}
+
+.stock-card-list__badge--pending {
+  background-color: #fcf8e3;
+  color: #8a6d3b;
+}
+
+/* Sayfalama alanı */
+.stock-card-list__pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.2rem;
+}
+
+.stock-card-list__pagination button {
+  background-color: #f9c00c;
+  color: #000;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.stock-card-list__pagination button:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+.stock-card-list__pagination span {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .stock-card-list {
+    padding: 1rem;
+  }
+
+  .stock-card-list__title {
+    font-size: 1.2rem;
+  }
+
+  .stock-card-list__table th,
+  .stock-card-list__table td {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+
+  .stock-card-list__pagination {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

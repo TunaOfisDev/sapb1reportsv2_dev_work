@@ -1,0 +1,88 @@
+/* frontend/src/components/ProductConfig/css/PCVariantSummary.css */
+.pc-variant-summary {
+    background-color: #eef4f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.pc-variant-summary__title {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.pc-variant-summary__content {
+    display: flex;
+    flex-direction: column;
+}
+
+.pc-variant-summary__item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.pc-variant-summary__label {
+    font-weight: bold;
+    color: #555;
+}
+
+.pc-variant-summary__value {
+    color: #333;
+}
+
+.pc-variant-summary__item--price {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.pc-variant-summary__item--price .pc-variant-summary__value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #28a745;
+}
+
+.pc-variant-summary__codes-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.pc-variant-summary__code-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background-color: #f5f5f5;
+    margin-bottom: 4px;
+    border-radius: 4px;
+}
+
+.pc-variant-summary__code-text {
+    font-family: monospace;
+    font-size: 14px;
+}
+
+.pc-variant-summary__copy-button {
+    margin-left: 8px;
+}
+
+.pc-variant-summary__no-codes {
+    color: #6c757d; /* Gri renk */
+    font-style: italic; /* Yazı stilini italik yap */
+    margin-top: 5px;
+}
+
+
+@media (max-width: 768px) {
+    .pc-variant-summary__item {
+        flex-direction: column;
+    }
+
+    .pc-variant-summary__label {
+        margin-bottom: 5px;
+    }
+}

@@ -1,0 +1,158 @@
+/* frontend/src/components/SupplierPayment/css/SupplierPaymentContainer.css */
+.supplier-payment-container {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+  border: 1px solid #dee2e6;
+}
+
+.supplier-payment-container__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #2C4E6C; /* SAP mavisi */
+}
+
+.supplier-payment-container__title {
+  font-size: 24px;
+  color: #2C4E6C; /* SAP mavisi */
+  margin: 0;
+  padding: 0;
+}
+
+.supplier-payment-container__last-updated {
+  font-size: 16px;
+  color: #666;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.supplier-payment-container__button-wrapper {
+  display: flex;
+  gap: 10px;
+}
+
+.supplier-payment-container__button {
+  padding: 8px 16px;
+  background-color: #2C4E6C; /* SAP mavisi */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.supplier-payment-container__button:hover {
+  background-color: #fcbf1e; /* SAP sarısı */
+  transform: scale(1.05);
+}
+
+.supplier-payment-container__button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Hata mesajları için stiller */
+.error-message {
+  background-color: #fff8f8;
+  border: 1px solid #ffe0e0;
+  border-radius: 5px;
+  padding: 15px;
+  margin: 10px 0;
+  color: #333;
+}
+
+.error-message p {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.error-message .last-update-info {
+  display: block;
+  color: #666;
+  margin-top: 8px;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.supplier-payment-container__processed-data {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #ffe0e0;
+}
+
+.supplier-payment-container__processed-data p {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #2C4E6C;
+}
+
+.supplier-payment-container__processed-data ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.supplier-payment-container__processed-data li {
+  color: #666;
+  margin: 5px 0;
+  font-size: 13px;
+}
+
+/* Yükleme durumu */
+.supplier-payment-container__loading {
+  text-align: center;
+  padding: 15px;
+  color: #2C4E6C;
+  font-size: 14px;
+}
+
+/* Progress durumu */
+.supplier-payment-container__progress {
+  text-align: center;
+  padding: 10px;
+  color: #2C4E6C;
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+/* Veri yok durumu */
+.supplier-payment-container__no-data {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-size: 14px;
+  background-color: #f8f9fa;
+  border: 1px dashed #dee2e6;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+
+.supplier-payment-container__last-updated {
+  font-size: 16px;
+  color: #666;
+  flex-grow: 1;
+  text-align: center;
+  padding: 0 20px;
+  white-space: nowrap;
+}
+
+.supplier-payment-container__last-updated span {
+  display: inline-block;
+  font-weight: 500;
+}
+
+.supplier-payment-container__last-updated-info {
+  margin-top: 8px;
+  color: #666;
+  font-size: 14px;
+  padding: 5px 0;
+  border-top: 1px solid #ffe0e0;
+}

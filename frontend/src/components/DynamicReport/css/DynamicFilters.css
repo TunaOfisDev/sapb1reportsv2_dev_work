@@ -1,0 +1,20 @@
+/* frontend/src/components/DynamicReport/css/DynamicFilters.css  */
+/* Block: dynamic-filters */
+.dynamic-filters {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Element: dynamic-filters__cell */
+.dynamic-filters__cell {
+flex: 1;
+min-width: 120px;
+padding: 10px;
+}
+
+/* Element: dynamic-filters__input */
+.dynamic-filters__input {
+width: 100%;
+padding: 8px;
+}
+

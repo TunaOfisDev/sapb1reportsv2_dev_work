@@ -1,0 +1,146 @@
+{# File: backend/mailservice/templates/mailservice/procure_compare_approval_email_pdf.html #}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .header {
+            position: relative;
+            padding: 10px 0 20px 0;
+            border-bottom: 2px solid #2196f3;
+            margin-bottom: 20px;
+        }
+        .header .logo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            font-size: 14px;
+            font-weight: bold;
+            color: #0d47a1;
+        }
+        .header h1 {
+            text-align: center;
+            font-size: 22px;
+            margin: 0;
+            color: #0d47a1;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+        }
+        .section h2 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #bbb;
+            padding-bottom: 5px;
+        }
+        .field {
+            margin-bottom: 8px;
+        }
+        .field-label {
+            font-weight: bold;
+            display: inline-block;
+            width: 180px;
+            color: #2c3e50;
+        }
+        .teklif-listesi {
+            margin: 8px 0 0 190px;
+            padding-left: 15px;
+        }
+        .status-box {
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .status-onay { background-color: #c8e6c9; color: #2e7d32; }
+        .status-kismi_onay { background-color: #fff9c4; color: #f9a825; }
+        .status-red { background-color: #ffcdd2; color: #c62828; }
+        .status-onay_iptal { background-color: #eeeeee; color: #616161; font-style: italic; }
+        .footer {
+            margin-top: 30px;
+            font-size: 10px;
+            text-align: center;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">TUNA OFİS AŞ</div>
+        <h1>
+            {% if approval.action == 'onay_iptal' %}
+                ONAY İPTAL FORMU
+            {% else %}
+                SATINALMA ONAY FORMU
+            {% endif %}
+        </h1>
+        <p style="text-align: center;">{{ approval.created_at|date:"d.m.Y H:i" }}</p>
+    </div>
+
+    {% with detay=approval.satir_detay_json %}
+    <div class="section">
+        <h2>Kalem Bilgileri</h2>
+        <div class="field"><span class="field-label">Belge Tarihi:</span> {{ detay.belge_tarih|default:"-" }}</div>
+        <div class="field"><span class="field-label">Belge No:</span> {{ approval.belge_no }}</div>
+        <div class="field"><span class="field-label">Kalem Tanımı:</span> {{ detay.kalem_tanimi|default:"-" }}</div>
+        <div class="field"><span class="field-label">Tedarikçi:</span> {{ detay.tedarikci|default:"-" }}</div>
+        <div class="field"><span class="field-label">Miktar:</span> {{ detay.sip_miktar|default:"-" }}</div>
+        <div class="field"><span class="field-label">Net Fiyat (DPB):</span> {{ detay.net_fiyat_dpb|default:"-" }}</div>
+        <div class="field"><span class="field-label">Döviz:</span> {{ detay.detay_doviz|default:"-" }}</div>
+        <div class="field"><span class="field-label">Net Tutar (YPB):</span> {{ detay.net_tutar_ypb|default:"-" }}</div>
+
+        <div class="field">
+            <span class="field-label">Referans Teklifler:</span>
+            {% if detay.referans_teklifler %}
+                {{ detay.referans_teklifler|join:", " }}
+            {% else %}
+                -
+            {% endif %}
+        </div>
+
+        <div class="field">
+            <span class="field-label">Teklif Fiyatları:</span>
+            <ul class="teklif-listesi">
+                {% if detay.teklif_fiyatlari %}
+                    {% for firma, fiyat in detay.teklif_fiyatlari.items %}
+                        <li>{{ firma }}: {{ fiyat }}</li>
+                    {% endfor %}
+                {% else %}
+                    <li>Veri bulunamadı.</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    {% endwith %}
+
+    <div class="section">
+        <h2>Onay Bilgisi</h2>
+        <div class="field">
+            <span class="field-label">Durum:</span>
+            <span class="status-box status-{{ approval.action|lower }}">{{ approval.get_action_display }}</span>
+        </div>
+        <div class="field"><span class="field-label">Açıklama:</span> {{ approval.aciklama|default:"-" }}</div>
+        <div class="field"><span class="field-label">Onaylayan:</span> {{ approval.kullanici.email }}</div>
+        <div class="field"><span class="field-label">Onay Tarihi:</span> {{ approval.created_at|date:"d.m.Y H:i" }}</div>
+    </div>
+
+    <div class="footer">
+        Bu belge sistem tarafından dijital olarak oluşturulmuştur. Fiziksel imza gerektirmez.
+    </div>
+</body>
+</html>

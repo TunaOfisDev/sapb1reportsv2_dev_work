@@ -1,0 +1,54 @@
+/* frontend/src/components/ProductConfig/css/PCOptionList.css  */
+.pc-option-list {
+    margin-top: 10px;
+}
+
+.pc-option-list__search {
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.pc-option-list__grid {
+    display: grid;
+    /* Kartları %75 boyutunda göstermek için grid-template-columns'u güncelle */
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); /* Orijinal 200px'in %75'i */
+    gap: 13px; /* Orijinal 20px'in %75'i */
+    padding: 5px; /* İsteğe bağlı: dış padding */
+}
+
+.pc-option-list__select {
+    width: 100%;
+    padding: 10px;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.pc-option-list__select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Seçili kart arka plan efekti */
+.pc-option-card--selected {
+    background-color: rgba(0, 123, 255, 0.1); /* Hafif mavi arka plan */
+    border-color: #007bff; /* Mavi kenar */
+    box-shadow: 0 0 0 2px #007bff; /* Daha belirgin bir kenar efekti */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover efekti sadece seçili kart için */
+.pc-option-card--selected:hover {
+    background-color: rgba(0, 123, 255, 0.2); /* Hover sırasında arka plan rengini biraz daha koyulaştır */
+    cursor: pointer;
+}
+
+
+@media (max-width: 768px) {
+    .pc-option-list__grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}

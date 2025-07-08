@@ -1,0 +1,8 @@
+# backend/salesorderdocsum/apps.py
+
+from django.apps import AppConfig
+
+
+class SalesorderdocsumConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'salesorderdocsum'

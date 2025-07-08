@@ -1,0 +1,101 @@
+/* frontend/src/components/DocArchiveV2/css/DocumentManager.css */
+/* Ana blok */
+.document-manager {
+    font-family: Arial, sans-serif;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Form bloğu */
+.document-manager__form {
+    background-color: white;
+    padding: 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.document-manager__form-group {
+    margin-bottom: 15px;
+}
+
+.document-manager__label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.document-manager__input,
+.document-manager__textarea,
+.document-manager__select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.document-manager__textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+/* Butonlar */
+.document-manager__button {
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+}
+
+.document-manager__button:hover {
+    background-color: #004494;
+}
+
+.document-manager__button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Liste bloğu */
+.document-manager__list {
+    background-color: white;
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.document-manager__table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.document-manager__table th,
+.document-manager__table td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.document-manager__table th {
+    background-color: #f0f0f0;
+}
+
+/* Özel modifikatörler */
+.document-manager__button--small {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+.document-manager__button--danger {
+    background-color: #dc3545;
+}
+
+.document-manager__button--danger:hover {
+    background-color: #c82333;
+}

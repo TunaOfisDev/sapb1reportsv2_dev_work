@@ -10,10 +10,8 @@ def get_pdf_upload_path(instance, filename):
     PDF dosyasını heliosforgev2/storage/pdf/ altına kaydeder.
     """
     today = now().strftime("%Y%m%d")
-    return os.path.relpath(
-        os.path.join(settings.HELIOS_STORAGE["PDF"], f"{today}_{filename}"),
-        settings.MEDIA_ROOT
-    )
+    return f"heliosforgev2/storage/pdf/{today}_{filename}"
+
 
 class Document(models.Model):
     """

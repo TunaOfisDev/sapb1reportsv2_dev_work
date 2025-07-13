@@ -27,7 +27,14 @@ class Chunk(models.Model):
     def __str__(self):
         return f"{self.chunk_id} (Page {self.page_number})"
 
+    @property
+    def box_dict(self):
+        return {
+            "x0": self.left_x, "x1": self.right_x,
+            "bottomY": self.bottom_y, "topY": self.top_y,
+        }
     class Meta:
         verbose_name = "Chunk"
         verbose_name_plural = "Chunks"
         ordering = ["document", "page_number", "chunk_id"]
+

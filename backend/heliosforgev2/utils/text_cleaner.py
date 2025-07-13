@@ -48,3 +48,16 @@ def normalize_quotes(text: str) -> str:
     Akıllı tırnakları (typographic quotes) düz tırnağa çevir
     """
     return text.replace("“", '"').replace("”", '"').replace("‘", "'").replace("’", "'")
+
+
+def remove_header_footer(text: str) -> str:
+    """
+    SAP Help PDF'lerinde sıkça geçen üstbilgi/altbilgileri (örn. help.sap.com, tarih, sayfa no) temizler.
+    """
+    lines = text.splitlines()
+    cleaned = []
+    for line in lines:
+        if re.search(r"(help\.sap\.com|SAP Business One|Page \d+|\d{1,2}/\d{1,2}/\d{2,4})", line):
+            continue
+        cleaned.append(line)
+    return "\n".join(cleaned)

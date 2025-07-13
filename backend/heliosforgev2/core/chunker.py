@@ -1,15 +1,15 @@
 # backend/heliosforgev2/core/chunker.py
-
 from typing import List, Dict, Any
 from collections import defaultdict
 from heliosforgev2.utils.text_cleaner import clean_text, is_meaningful
 import re
 
 
-def group_runs_by_line(runs: List[Dict[str, Any]], y_tolerance: float = 1.5) -> List[List[Dict]]:
-    """
-    Aynı yatay satırda yer alan text run’ları grupla (baseLineY’ye göre)
-    """
+# ---------------------------------------------------------------------------
+# Satır gruplayıcı (değişmedi)
+# ---------------------------------------------------------------------------
+def group_runs_by_line(runs: List[Dict[str, Any]], y_tolerance: float = 1.5) -> List[List[Dict]]:  # noqa: D401
+    """Aynı yatay satırda yer alan text-run’ları grupla (baseLineY’ye göre)."""
     lines = defaultdict(list)
 
     for run in runs:
@@ -17,13 +17,16 @@ def group_runs_by_line(runs: List[Dict[str, Any]], y_tolerance: float = 1.5) -> 
         key = round(base_y / y_tolerance) * y_tolerance
         lines[key].append(run)
 
-    return [sorted(line, key=lambda r: r["leftX"]) for line in sorted(lines.values(), key=lambda l: l[0]["baseLineY"])]
+    # soldan sağa, yukarıdan aşağıya
+    return [sorted(line, key=lambda r: r["leftX"])
+            for line in sorted(lines.values(), key=lambda l: l[0]["baseLineY"])]
 
 
+# ---------------------------------------------------------------------------
+# Başlık (section title) sezgisi (değişmedi)
+# ---------------------------------------------------------------------------
 def detect_section_title(line: list, font_threshold: int = 18) -> bool:
-    """
-    Font boyutu VEYA başlık örüntüsü (örn: 10.7 Database Authentication) olan satırları tespit eder.
-    """
+    """Başlık olabilecek satırı tespit et (font boyutu veya 1.2.3 ... örüntüsü)."""
     for r in line:
         text = r.get("text", "").strip()
         font_id = r.get("fontId", "")
@@ -33,69 +36,86 @@ def detect_section_title(line: list, font_threshold: int = 18) -> bool:
         heading_like = bool(re.match(r"^\d+(\.\d+)*\s+[A-Z]", text))
 
         try:
-            if isinstance(font_id, str) and font_id.isdigit():
-                font_val = int(font_id)
-            elif isinstance(font_id, (int, float)):
-                font_val = font_id
-            else:
-                font_val = 0
-        except:
+            font_val = int(font_id) if isinstance(font_id, str) and font_id.isdigit() else float(font_id)
+        except Exception:
             font_val = 0
 
         if heading_like or font_val >= font_threshold:
             return True
-
     return False
 
 
-def extract_chunks_from_runs(runs: List[Dict], page_number: int, doc_id: str) -> List[Dict]:
+# ---------------------------------------------------------------------------
+# Ana chunker - Y ekseni düzeltildi
+# ---------------------------------------------------------------------------
+def extract_chunks_from_runs(                 # noqa: D401
+    runs: List[Dict[str, Any]],
+    page_number: int,
+    doc_id: str,
+    page_height: float,
+) -> List[Dict[str, Any]]:
     """
-    Tek bir sayfanın 'runs' verisini anlamlı chunk’lara böler.
+    Tek bir sayfanın 'runs' verisini anlamlı chunk’lara böler
+    ve bounding-box’ları alt-sol kökenine çevirir.
     """
-    chunks = []
-    section_title = None
+    chunks: List[Dict[str, Any]] = []
+    section_title: str | None = None
     lines = group_runs_by_line(runs)
 
     chunk_index = 1
-    buffer = []
+    buffer: list[str] = []
 
-    bbox = {
-        "leftX": None,
-        "bottomY": None,
-        "rightX": None,
-        "topY": None,
+    # PyMuPDF üst-sol kökene göre ham bbox tut
+    bbox_raw = {
+        "x0": None,   # sol
+        "x1": None,   # sağ
+        "y_min": None,  # en yukarı (küçük değer)
+        "y_max": None,  # en aşağı (büyük değer)
     }
 
-    def flush_chunk():
-        nonlocal buffer, chunk_index, bbox, section_title
+    # ------------- iç yardımcı ------------------------------------------------
+    def flush_chunk() -> None:
+        nonlocal buffer, chunk_index, section_title, bbox_raw
+
         if not buffer:
             return
 
         content = clean_text(" ".join(buffer))
         if not is_meaningful(content):
-            buffer = []
+            buffer.clear()
             return
+
+        # Ham bbox → alt-sol normalize
+        if bbox_raw["y_min"] is not None:
+            bottomY = page_height - bbox_raw["y_max"]
+            topY    = page_height - bbox_raw["y_min"]
+        else:
+            bottomY = topY = None
+
+        bbox_norm = {
+            "leftX":  bbox_raw["x0"],
+            "rightX": bbox_raw["x1"],
+            "bottomY": bottomY,
+            "topY":    topY,
+        }
 
         chunk_id = f"{doc_id}-PAGE{page_number:03d}-CHUNK{chunk_index:03d}"
         chunks.append({
-            "chunk_id": chunk_id,
-            "page_number": page_number,
+            "chunk_id":      chunk_id,
+            "page_number":   page_number,
             "section_title": section_title,
-            "content": content,
-            "bounding_box": bbox.copy()
+            "content":       content,
+            "bounding_box":  bbox_norm,
         })
         chunk_index += 1
-        buffer = []
-        bbox = {
-            "leftX": None,
-            "bottomY": None,
-            "rightX": None,
-            "topY": None,
-        }
 
+        # reset
+        buffer.clear()
+        bbox_raw = {"x0": None, "x1": None, "y_min": None, "y_max": None}
+
+    # ------------- ana döngü --------------------------------------------------
     for line in lines:
-        line_text = " ".join(r["text"] for r in line)
-        line_text = clean_text(line_text)
+        line_text = clean_text(" ".join(r["text"] for r in line))
 
         if detect_section_title(line):
             flush_chunk()
@@ -105,14 +125,17 @@ def extract_chunks_from_runs(runs: List[Dict], page_number: int, doc_id: str) ->
         if is_meaningful(line_text):
             buffer.append(line_text)
 
-            # Bounding box güncelle
             xs = [r["leftX"] for r in line] + [r["rightX"] for r in line]
-            ys = [r["bottomY"] for r in line] + [r["topY"] for r in line]
+            ys = [r["topY"]  for r in line] + [r["bottomY"] for r in line]
 
-            bbox["leftX"] = min(xs) if bbox["leftX"] is None else min(bbox["leftX"], min(xs))
-            bbox["rightX"] = max(xs) if bbox["rightX"] is None else max(bbox["rightX"], max(xs))
-            bbox["bottomY"] = min(ys) if bbox["bottomY"] is None else min(bbox["bottomY"], min(ys))
-            bbox["topY"] = max(ys) if bbox["topY"] is None else max(bbox["topY"], max(ys))
+            x_min, x_max = min(xs), max(xs)
+            y_min, y_max = min(ys), max(ys)
+
+            # ham bbox güncelle
+            bbox_raw["x0"]   = x_min if bbox_raw["x0"]   is None else min(bbox_raw["x0"], x_min)
+            bbox_raw["x1"]   = x_max if bbox_raw["x1"]   is None else max(bbox_raw["x1"], x_max)
+            bbox_raw["y_min"] = y_min if bbox_raw["y_min"] is None else min(bbox_raw["y_min"], y_min)
+            bbox_raw["y_max"] = y_max if bbox_raw["y_max"] is None else max(bbox_raw["y_max"], y_max)
 
     flush_chunk()
     return chunks

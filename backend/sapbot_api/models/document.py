@@ -1,11 +1,12 @@
 # backend/sapbot_api/models/document.py
 from django.db import models
-from django.contrib.auth.models import User
-from django.contrib.postgres.fields import JSONField
+from django.contrib.auth import get_user_model
+from django.db.models import JSONField
 from django.core.validators import FileExtensionValidator
 from .base import BaseModel, SoftDeleteModel
 import os
 
+User = get_user_model()
 
 class DocumentSource(SoftDeleteModel):
     """Döküman kaynak modeli"""

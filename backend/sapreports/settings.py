@@ -743,6 +743,8 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100MB
 FILE_UPLOAD_TEMP_DIR = '/tmp/sapbot_uploads'
 
+import os
+os.makedirs(FILE_UPLOAD_TEMP_DIR, exist_ok=True)
 
 
 # SAPBot AI Settings

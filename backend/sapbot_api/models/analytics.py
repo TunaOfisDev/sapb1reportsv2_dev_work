@@ -1,7 +1,7 @@
 # backend/sapbot_api/models/analytics.py
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.contrib.postgres.fields import JSONField
+from django.db.models import JSONField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .base import BaseModel, TimestampedModel
 from datetime import timedelta

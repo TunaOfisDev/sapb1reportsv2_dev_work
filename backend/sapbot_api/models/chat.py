@@ -1,9 +1,10 @@
 # backend/sapbot_api/models/chat.py
 from django.db import models
-from django.contrib.auth.models import User
-from django.contrib.postgres.fields import JSONField
+from django.contrib.auth import get_user_model
+from django.db.models import JSONField
 from .base import BaseModel, TimestampedModel
 
+User = get_user_model()
 
 class ChatConversation(BaseModel):
     """Chat konuşması modeli"""

@@ -1,12 +1,13 @@
 
 # backend/sapbot_api/models/system.py
 from django.db import models
-from django.contrib.auth.models import User
-from django.contrib.postgres.fields import JSONField
+from django.contrib.auth import get_user_model
+from django.db.models import JSONField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .base import BaseModel, TimestampedModel
 import json
 
+User = get_user_model()
 
 class SystemConfiguration(BaseModel):
     """Sistem konfigürasyon modeli"""

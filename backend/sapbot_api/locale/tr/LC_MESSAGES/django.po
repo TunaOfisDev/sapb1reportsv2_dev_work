@@ -1,0 +1,323 @@
+# SAPBot API Turkish Translation File
+# Copyright (C) 2025 Tuna Çelik
+# This file is distributed under the same license as the SAPBot API package.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: SAPBot API 1.0\n"
+"Report-Msgid-Bugs-To: support@tunacelik.com.tr\n"
+"POT-Creation-Date: 2025-01-16 12:00+0300\n"
+"PO-Revision-Date: 2025-01-16 12:00+0300\n"
+"Last-Translator: SAPBot Team <team@tunacelik.com.tr>\n"
+"Language-Team: Turkish <tr@tunacelik.com.tr>\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Model verbose names (Türkçe kaynak dil olduğu için aynı kalır)
+msgid "Döküman Kaynağı"
+msgstr "Döküman Kaynağı"
+
+msgid "Döküman Kaynakları"
+msgstr "Döküman Kaynakları"
+
+msgid "Bilgi Parçası"
+msgstr "Bilgi Parçası"
+
+msgid "Bilgi Parçaları"
+msgstr "Bilgi Parçaları"
+
+msgid "Chat Konuşması"
+msgstr "Chat Konuşması"
+
+msgid "Chat Konuşmaları"
+msgstr "Chat Konuşmaları"
+
+msgid "Chat Mesajı"
+msgstr "Chat Mesajı"
+
+msgid "Chat Mesajları"
+msgstr "Chat Mesajları"
+
+msgid "Kullanıcı Profili"
+msgstr "Kullanıcı Profili"
+
+msgid "Kullanıcı Profilleri"
+msgstr "Kullanıcı Profilleri"
+
+msgid "Kullanıcı Tercihi"
+msgstr "Kullanıcı Tercihi"
+
+msgid "Kullanıcı Tercihleri"
+msgstr "Kullanıcı Tercihleri"
+
+msgid "Kullanıcı Oturumu"
+msgstr "Kullanıcı Oturumu"
+
+msgid "Kullanıcı Oturumları"
+msgstr "Kullanıcı Oturumları"
+
+msgid "Kullanıcı Aktivitesi"
+msgstr "Kullanıcı Aktivitesi"
+
+msgid "Kullanıcı Aktiviteleri"
+msgstr "Kullanıcı Aktiviteleri"
+
+msgid "Sistem Konfigürasyonu"
+msgstr "Sistem Konfigürasyonu"
+
+msgid "Sistem Konfigürasyonları"
+msgstr "Sistem Konfigürasyonları"
+
+msgid "Sistem Metriği"
+msgstr "Sistem Metriği"
+
+msgid "Sistem Metrikleri"
+msgstr "Sistem Metrikleri"
+
+msgid "Sistem Log"
+msgstr "Sistem Log"
+
+msgid "Sistem Logları"
+msgstr "Sistem Logları"
+
+msgid "Sorgu Analitiği"
+msgstr "Sorgu Analitiği"
+
+msgid "Sorgu Analitikleri"
+msgstr "Sorgu Analitikleri"
+
+msgid "Kullanıcı Geri Bildirimi"
+msgstr "Kullanıcı Geri Bildirimi"
+
+msgid "Kullanıcı Geri Bildirimleri"
+msgstr "Kullanıcı Geri Bildirimleri"
+
+msgid "Hata Log"
+msgstr "Hata Log"
+
+msgid "Hata Logları"
+msgstr "Hata Logları"
+
+# Field labels (Türkçe olduğu için aynı kalır)
+msgid "Başlık"
+msgstr "Başlık"
+
+msgid "Açıklama"
+msgstr "Açıklama"
+
+msgid "Döküman Tipi"
+msgstr "Döküman Tipi"
+
+msgid "Dosya Yolu"
+msgstr "Dosya Yolu"
+
+msgid "Dosya Boyutu (bytes)"
+msgstr "Dosya Boyutu (bytes)"
+
+msgid "Dosya Hash"
+msgstr "Dosya Hash"
+
+msgid "Dil"
+msgstr "Dil"
+
+msgid "İşleme Durumu"
+msgstr "İşleme Durumu"
+
+msgid "İşlenme Tarihi"
+msgstr "İşlenme Tarihi"
+
+msgid "İşleme Hatası"
+msgstr "İşleme Hatası"
+
+msgid "Yükleyen"
+msgstr "Yükleyen"
+
+msgid "Kaynak URL"
+msgstr "Kaynak URL"
+
+msgid "Versiyon"
+msgstr "Versiyon"
+
+msgid "Etiketler"
+msgstr "Etiketler"
+
+msgid "Ek Bilgiler"
+msgstr "Ek Bilgiler"
+
+msgid "Öncelik"
+msgstr "Öncelik"
+
+msgid "Herkese Açık mı?"
+msgstr "Herkese Açık mı?"
+
+msgid "Oluşturulma Tarihi"
+msgstr "Oluşturulma Tarihi"
+
+msgid "Güncellenme Tarihi"
+msgstr "Güncellenme Tarihi"
+
+msgid "Aktif mi?"
+msgstr "Aktif mi?"
+
+msgid "Silinme Tarihi"
+msgstr "Silinme Tarihi"
+
+msgid "İçerik"
+msgstr "İçerik"
+
+msgid "İçerik Hash'i"
+msgstr "İçerik Hash'i"
+
+msgid "İçerik Uzunluğu"
+msgstr "İçerik Uzunluğu"
+
+msgid "Vector Embedding"
+msgstr "Vector Embedding"
+
+msgid "Embedding Model"
+msgstr "Embedding Model"
+
+msgid "Sayfa Numarası"
+msgstr "Sayfa Numarası"
+
+msgid "Bölüm Başlığı"
+msgstr "Bölüm Başlığı"
+
+msgid "SAP Modülü"
+msgstr "SAP Modülü"
+
+msgid "Teknik Seviye"
+msgstr "Teknik Seviye"
+
+msgid "Anahtar Kelimeler"
+msgstr "Anahtar Kelimeler"
+
+msgid "Relevans Skoru"
+msgstr "Relevans Skoru"
+
+msgid "Kullanım Sayısı"
+msgstr "Kullanım Sayısı"
+
+msgid "Son Kullanım"
+msgstr "Son Kullanım"
+
+msgid "Kalite Skoru"
+msgstr "Kalite Skoru"
+
+msgid "Doğrulanmış mı?"
+msgstr "Doğrulanmış mı?"
+
+msgid "Doğrulayan"
+msgstr "Doğrulayan"
+
+msgid "Kullanıcı"
+msgstr "Kullanıcı"
+
+msgid "Oturum ID"
+msgstr "Oturum ID"
+
+msgid "Kullanıcı Tipi"
+msgstr "Kullanıcı Tipi"
+
+msgid "Tarayıcı Bilgisi"
+msgstr "Tarayıcı Bilgisi"
+
+msgid "IP Adresi"
+msgstr "IP Adresi"
+
+msgid "Son Aktivite"
+msgstr "Son Aktivite"
+
+msgid "Arşivlenmiş mi?"
+msgstr "Arşivlenmiş mi?"
+
+msgid "Konuşma"
+msgstr "Konuşma"
+
+msgid "Mesaj Tipi"
+msgstr "Mesaj Tipi"
+
+msgid "Mesaj İçeriği"
+msgstr "Mesaj İçeriği"
+
+msgid "Kullanılan Kaynaklar"
+msgstr "Kullanılan Kaynaklar"
+
+msgid "Yanıt Süresi (saniye)"
+msgstr "Yanıt Süresi (saniye)"
+
+msgid "Token Sayısı"
+msgstr "Token Sayısı"
+
+msgid "Kullanılan Model"
+msgstr "Kullanılan Model"
+
+msgid "Tespit Edilen Niyet"
+msgstr "Tespit Edilen Niyet"
+
+msgid "Güven Skoru"
+msgstr "Güven Skoru"
+
+msgid "Görünen Ad"
+msgstr "Görünen Ad"
+
+msgid "Tercih Edilen Dil"
+msgstr "Tercih Edilen Dil"
+
+msgid "SAP Modülleri"
+msgstr "SAP Modülleri"
+
+msgid "Chat Ayarları"
+msgstr "Chat Ayarları"
+
+msgid "Email Bildirimleri"
+msgstr "Email Bildirimleri"
+
+msgid "Push Bildirimleri"
+msgstr "Push Bildirimleri"
+
+msgid "Oturum Timeout (dakika)"
+msgstr "Oturum Timeout (dakika)"
+
+msgid "Günlük Maksimum İstek"
+msgstr "Günlük Maksimum İstek"
+
+msgid "Avatar"
+msgstr "Avatar"
+
+msgid "Biyografi"
+msgstr "Biyografi"
+
+msgid "Beta Kullanıcısı mı?"
+msgstr "Beta Kullanıcısı mı?"
+
+msgid "Son Giriş IP"
+msgstr "Son Giriş IP"
+
+# Choice fields
+msgid "PDF Döküman"
+msgstr "PDF Döküman"
+
+msgid "Video Dosyası"
+msgstr "Video Dosyası"
+
+msgid "Manuel Giriş"
+msgstr "Manuel Giriş"
+
+msgid "API Dokümantasyonu"
+msgstr "API Dokümantasyonu"
+
+msgid "Web Sayfası"
+msgstr "Web Sayfası"
+
+msgid "Türkçe"
+msgstr "Türkçe"
+
+msgid "İngilizce"
+msgstr "İngilizce"
+
+msgid "Karışık (TR/EN)"

@@ -395,7 +395,7 @@ STARTUP_TASK_SYNC = True
 # Zamanlanmış görevler (beat) settings.py içinde
 from report_orchestrator.config.celery_settings import CELERY_BEAT_SCHEDULE as REPORT_ORCHESTRATOR_SCHEDULE
 from sapreports.beat_schedule_config import BEAT_SCHEDULE as CORE_BEAT_SCHEDULE
-from sapbot_api.tasks.maintenance_tasks import MAINTENANCE_TASKS
+
 
 CELERY_IMPORTS = [
     "taskorchestrator.tasks",
@@ -445,7 +445,7 @@ CELERY_BEAT_SCHEDULE = {
     **REPORT_ORCHESTRATOR_SCHEDULE,
     **CORE_BEAT_SCHEDULE,
     **SAPBOT_BEAT_SCHEDULE,
-    **MAINTENANCE_TASKS,
+
 }
 
 # Channels Configuration

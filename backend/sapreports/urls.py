@@ -72,6 +72,7 @@ urlpatterns = [
     path('api/v2/salesbudgetv2/', include('salesbudgetv2.api.urls')),
     path('api/v2/salesinvoicesum/', include('salesinvoicesum.api.urls')),
     path('api/v2/salesofferdocsum/', include('salesofferdocsum.api.urls')),
+    path('api/v2/sapbot_api/', include('sapbot_api.api.urls')),
     path('api/v2/salesorder/', include('salesorder.api.urls')),
     path('api/v2/salesorderdetail/', include('salesorderdetail.api.urls')),
     path('api/v2/salesorderdocsum/', include('salesorderdocsum.api.urls')),

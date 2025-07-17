@@ -14,7 +14,7 @@ Bu modül sistem bakım görevlerini içerir:
 import os
 import tempfile
 from datetime import datetime, timedelta
-from typing import models
+from django.db import models
 from django.core.cache import cache
 from django.db import transaction, connection
 from django.utils import timezone
@@ -28,9 +28,22 @@ from ..models import (
    PerformanceMetrics
 )
 from ..utils.cache_utils import clear_all_cache, get_cache_stats
-from ..utils.helpers import format_file_size, time_ago
+from ..utils.helpers import format_file_size
 
 logger = get_task_logger(__name__)
+
+from celery import shared_task
+from django.utils import timezone
+from datetime import timedelta
+
+@shared_task
+def clear_old_logs():
+    # lazy import – apps artık yüklü
+    from sapbot_api.models import SystemLog
+    SystemLog.objects.filter(
+        created_at__lt=timezone.now() - timedelta(days=30)
+    ).delete()
+    return "old logs cleared"
 
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=300)

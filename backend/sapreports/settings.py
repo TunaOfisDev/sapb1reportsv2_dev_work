@@ -295,8 +295,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'sapbot_api.middleware.SecurityMiddleware',  # SAPBot güvenlik middleware
-    'sapbot_api.middleware.RequestLoggingMiddleware',  # SAPBot request logging
+    #'sapbot_api.middleware.SecurityMiddleware',  # SAPBot güvenlik middleware
+    #'sapbot_api.middleware.RequestLoggingMiddleware',  # SAPBot request logging
     #'authcentral.middleware.CheckBlacklistedTokenMiddleware',  # Güncellenmiş yol
 ]
 

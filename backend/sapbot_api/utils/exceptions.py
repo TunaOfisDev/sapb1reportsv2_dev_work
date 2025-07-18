@@ -646,3 +646,29 @@ ERROR_CODES = {
     'SAP_MODULE_ERROR': 'SAP_MODULE_ERROR',
     'INTENT_DETECTION_ERROR': 'INTENT_DETECTION_ERROR'
 }
+
+# ------------------------------------------------------------------------
+# Güvenlik / denetim odaklı hata
+# ------------------------------------------------------------------------
+class SecurityException(SAPBotException):
+    """Güvenlik ihlali veya denetim hatası"""
+
+    def __init__(
+        self,
+        message: str = "Güvenlik ihlali tespit edildi",
+        event_type: str | None = None,
+        severity: str | None = None,
+        **kwargs
+    ):
+        details = kwargs.get("details", {})
+        if event_type:
+            details["event_type"] = event_type
+        if severity:
+            details["severity"] = severity
+
+        super().__init__(
+            message=message,
+            error_code="SECURITY_ERROR",
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )

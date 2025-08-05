@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import useFormForgeApi from '../../hooks/useFormForgeApi';
-import DataTable from '../reusable/DataTable'; // react-table v7 kullandığımızı varsayarak...
+import DataTable from '../reusable/DataTable';
 import styles from '../../css/FormSchemaListScreen.module.css';
 
 const FormSchemaListScreen = () => {
@@ -19,12 +19,11 @@ const FormSchemaListScreen = () => {
     }
   };
 
-  // DÜZELTME BU BLOKTA
   const columns = useMemo(
     () => [
       {
         Header: 'Form Başlığı',
-        accessor: 'title', // v7 için accessor 'accessorKey' yerine 'accessor' olabilir.
+        accessor: 'title',
       },
       {
         Header: 'Departman',
@@ -32,20 +31,27 @@ const FormSchemaListScreen = () => {
       },
       {
         Header: 'Oluşturan (ID)',
-        // DEĞİŞTİ: 'created_by_username' yerine 'created_by' kullanıyoruz
-        accessor: 'created_by', 
+        accessor: 'created_by',
       },
       {
         Header: 'Tarih',
         accessor: 'created_at',
-        // Cell, v7'de büyük harfle yazılır
         Cell: ({ value }) => new Date(value).toLocaleDateString(),
       },
       {
         Header: 'Eylemler',
         id: 'actions',
         Cell: ({ row }) => (
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            {/* DEĞİŞİKLİK: "Paylaş" butonu yerine "Veri Gir" linki eklendi */}
+            <Link 
+              to={`fill/${row.original.id}`} 
+              className="btn btn-sm btn-outline-success"
+              title="Bu Forma Veri Gir"
+            >
+              Veri Gir
+            </Link>
+            
             <Link to={`builder/${row.original.id}`} className="btn btn-sm btn-outline-primary">
               Düzenle
             </Link>
@@ -62,7 +68,6 @@ const FormSchemaListScreen = () => {
         ),
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 

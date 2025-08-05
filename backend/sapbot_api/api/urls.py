@@ -1,26 +1,22 @@
-# backend/sapbot_api/api/urls.py
+# backend/sapbot_api/urls.py
+from django.urls import path, include
+from django.contrib import admin
+from ..admin.document_admin import admin_site
 
-from django.urls import path
-
-from .views import (
-    DocumentSourceListCreateView,
-    DocumentSourceDetailView,
-    ChatConversationListCreateView,
-    ChatMessageListCreateView,
-    ChatMessageDetailView,
-)
-
-app_name = "sapbot_api"
-
-urlpatterns = [
-    path("documents/", DocumentSourceListCreateView.as_view(), name="document-list"),
-    path("documents/<uuid:pk>/", DocumentSourceDetailView.as_view(), name="document-detail"),
-    path("conversations/", ChatConversationListCreateView.as_view(), name="conversation-list"),
-    path(
-        "conversations/<uuid:conversation_id>/messages/",
-        ChatMessageListCreateView.as_view(),
-        name="conversation-messages",
-    ),
-    path("messages/<uuid:pk>/", ChatMessageDetailView.as_view(), name="message-detail"),
+# Admin URL'leri için custom pattern
+admin_patterns = [
+    path('admin/', admin.site.urls),
+    path('sapbot-admin/', admin_site.urls),  # Custom admin site
 ]
- 
+
+# Ana URL patterns
+urlpatterns = [
+    # API endpoints
+    path('api/v1/', include('sapbot_api.api.urls')),
+    
+    # Admin interfaces
+    path('', include(admin_patterns)),
+    
+    # Health check
+    path('health/', include('sapbot_api.health.urls')),
+]

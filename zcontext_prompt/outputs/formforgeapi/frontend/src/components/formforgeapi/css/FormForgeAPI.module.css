@@ -1,0 +1,43 @@
+/* path: frontend/src/components/formforgeapi/css/FormForgeAPI.module.css */
+
+.dataTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.dataTable th,
+.dataTable td {
+    border: 1px solid var(--sap-grey-3);
+    padding: 8px;
+    text-align: left;
+}
+
+.dataTable th {
+    background-color: var(--sap-grey-2);
+    font-weight: bold;
+}
+
+.loading {
+    text-align: center;
+    margin-top: 20px;
+    font-style: italic;
+    color: var(--sap-grey-4);
+}
+
+.actions {
+    display: flex;
+    gap: 10px; /* Adjust as needed */
+}
+
+.deleteButtonSmall {
+    background-color: var(--sap-red); /* Example: Use SAP red color */
+    color: white;
+    border: none;
+    padding: 5px 10px; /* Smaller padding */
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Add more styles as needed */
+

@@ -82,7 +82,7 @@ class QueryAnalyticsAdmin(BaseModelAdmin, AnalyticsExportMixin, BulkActionsMixin
     
     search_fields = ['query', 'user__email', 'session_id']
     
-    readonly_fields = BaseModelAdmin.readonly_fields + (
+    readonly_fields = BaseModelAdmin.readonly_fields = (
         'query_hash',
         'query_length',
         'metadata_display',

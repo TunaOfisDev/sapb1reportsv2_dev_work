@@ -1,0 +1,127 @@
+/* FormBuilderScreen.module.css  --------------------------------------- */
+/* BLOCK-LEVEL TOKENS  (yalnızca .formBuilderScreen için geçerlidir) */
+.formBuilderScreen {
+  --fbs-bg:              #f7f9fa;
+  --fbs-border:          #e6e8ec;
+  --fbs-shadow-light:    0 1px 2px rgba(0, 0, 0, 0.04);
+  --fbs-header-height:   56px;
+
+  --fbs-primary:         #0a6ed1;
+  --fbs-primary-hover:   #0d7aea;
+
+  --fbs-radius:          4px;
+  --fbs-z:               20;
+}
+
+/* ---------- Root (viewport–wide container) -------------------------- */
+.formBuilderScreen {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;                   /* tam görünüm yüksekliği */
+  background: var(--fbs-bg);
+}
+
+/* ---------- Header / top bar --------------------------------------- */
+.formBuilderScreen__header {
+  flex: 0 0 var(--fbs-header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  background: #ffffff;
+  border-bottom: 1px solid var(--fbs-border);
+  box-shadow: var(--fbs-shadow-light);
+  z-index: var(--fbs-z);
+}
+
+.formBuilderScreen__logo {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.formBuilderScreen__viewToggle {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.formBuilderScreen__toggleBtn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border: 1px solid var(--fbs-border);
+  border-radius: var(--fbs-radius);
+  background: #ffffff;
+  cursor: pointer;
+  transition: background 150ms linear, color 150ms linear, border 150ms linear;
+}
+
+.formBuilderScreen__toggleBtn--active {
+  background: var(--fbs-primary);
+  color: #ffffff;
+  border-color: var(--fbs-primary);
+}
+
+.formBuilderScreen__toggleBtn:not(.formBuilderScreen__toggleBtn--active):hover {
+  background: #f3f4f6;
+}
+
+/* ---------- Main two/three-column layout --------------------------- */
+.formBuilderScreen__layout {
+  flex: 1 1 auto;
+  display: flex;
+  overflow: hidden;                 /* çocuk bileşenlerin taşmasını engeller */
+}
+
+/* Slotlar: FieldPalette / Canvas / FieldPropsDrawer */
+.formBuilderScreen__paletteSlot {
+  /* genişlik FieldPalette.module.css tarafında tanımlı (240 px) */
+  flex: 0 0 auto;
+}
+
+.formBuilderScreen__canvasSlot {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 1.25rem;
+  overscroll-behavior: contain;
+}
+
+.formBuilderScreen__drawerSlot {
+  /* genişlik FieldPropsDrawer.module.css tarafında tanımlı (320 px) */
+  flex: 0 0 auto;
+}
+
+/* ---------- Preview mode (only canvas visible) --------------------- */
+.formBuilderScreen--preview
+  .formBuilderScreen__paletteSlot,
+.formBuilderScreen--preview
+  .formBuilderScreen__drawerSlot {
+  display: none;                    /* sadece ortadaki canlı form kalır */
+}
+
+.formBuilderScreen--preview
+  .formBuilderScreen__canvasSlot {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+/* ---------- Mobile / tablet tweaks --------------------------------- */
+@media (max-width: 1023.98px) {
+  /* Palette mobilde off-canvas kullanıyorsa burada gizli olabilir */
+  .formBuilderScreen__paletteSlot {
+    display: none;
+  }
+}
+
+@media (max-width: 767.98px) {
+  /* Drawer da mobilde kapalı başlayabilir */
+  .formBuilderScreen__drawerSlot {
+    display: none;
+  }
+
+  /* Header yüksekliği artırılabilir (opsiyonel) */
+  .formBuilderScreen__header {
+    flex: 0 0 64px;
+  }
+}

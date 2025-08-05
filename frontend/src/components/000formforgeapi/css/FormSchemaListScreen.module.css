@@ -1,0 +1,161 @@
+/* path: frontend/src/components/formforgeapi/css/FormSchemaListScreen.module.css */
+
+/* SAP Business One HANA ERP paleti — mavi (#0A6ED1) & sarı (#F5B800)
+   BEM mimarisi, modern + responsive “Form Schemas” ekranı. */
+
+/* ---------- BLOK ---------- */
+.form-schema-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  font-family: "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
+}
+
+/* ---------- ELEMENT: TITLE ---------- */
+.form-schema-list__title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #0a6ed1;
+  text-align: center;
+}
+
+/* ---------- ELEMENT: LIST ---------- */
+.form-schema-list__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ---------- ELEMENT: ITEM ---------- */
+.form-schema-list__item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1rem;
+  border: 1px solid #dfe5e8;
+  border-radius: 6px;
+  background: #fafbfd;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-schema-list__item:hover {
+  background: #e8f3ff;
+  box-shadow: 0 2px 8px rgba(10, 110, 209, 0.12);
+}
+
+/* ---------- ELEMENT: LINK ---------- */
+.form-schema-list__link {
+  font-weight: 500;
+  color: #0a6ed1;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.form-schema-list__link:hover {
+  color: #084c9b;
+}
+
+/* ---------- ELEMENT: ACTIONS ---------- */
+.form-schema-list__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ---------- ELEMENT: BUTTON ---------- */
+.form-schema-list__button {
+  padding: 0.45rem 0.95rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  color: #ffffff;
+}
+
+.form-schema-list__button--primary {
+  background: #0a6ed1;       /* mavi */
+}
+
+.form-schema-list__button--secondary {
+  background: #f5b800;       /* sarı */
+}
+
+.form-schema-list__button--danger {
+  background: #c0392b;       /* kırmızı ton (silme) */
+}
+
+.form-schema-list__button:hover {
+  transform: translateY(-1px);
+}
+
+.form-schema-list__button:active {
+  transform: translateY(0);
+}
+
+/* ---------- home button ---------- */
+.form-data-list__home-button {
+  padding: 0.55rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: #0a6ed1;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.form-data-list__home-button:hover {
+  background: #084c9b;
+  transform: translateY(-1px);
+}
+
+
+/* ---------- RESPONSIVE BREAKPOINTS ---------- */
+@media (max-width: 768px) {
+  .form-schema-list {
+    padding: 1.5rem;
+  }
+
+  .form-schema-list__title {
+    font-size: 1.5rem;
+  }
+
+  .form-schema-list__item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-schema-list__actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-schema-list {
+    padding: 1rem;
+  }
+
+  .form-schema-list__title {
+    font-size: 1.35rem;
+  }
+
+  .form-schema-list__button {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+}

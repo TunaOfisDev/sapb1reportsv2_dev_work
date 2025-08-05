@@ -1,0 +1,125 @@
+/* FormCanvas.module.css  --------------------------------------------- */
+/* BLOCK-LEVEL TOKENS (yalnız .formCanvas içinde geçerlidir) */
+.formCanvas {
+  --fc-bg:                 #ffffff;
+  --fc-section-bg:         #f9fafb;
+  --fc-row-gap:            1rem;
+
+  --fc-border:             #e6e8ec;
+  --fc-border-dashed:      2px dashed #cbd5e1;
+
+  --fc-field-bg:           #ffffff;
+  --fc-field-hover-bg:     #f1f5f9;
+  --fc-field-selected-bg:  #e0f2fe;
+
+  --fc-field-shadow:       0 1px 3px rgba(0, 0, 0, 0.06);
+
+  --fc-placeholder-bg:     rgba(10, 110, 209, 0.08);
+  --fc-placeholder-border: rgba(10, 110, 209, 0.3);
+
+  --fc-radius:             4px;
+}
+
+/* ---------- Canvas root --------------------------------------------- */
+.formCanvas {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: var(--fc-bg);
+  min-height: 100%;
+}
+
+/* ---------- Section (dikey gruplar / sekmeler) ---------------------- */
+.formCanvas__section {
+  background: var(--fc-section-bg);
+  border: 1px solid var(--fc-border);
+  border-radius: var(--fc-radius);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--fc-row-gap);
+}
+
+.formCanvas__sectionTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* ---------- Row (Grid satırı) --------------------------------------- */
+.formCanvas__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  min-height: 60px;                       /* boş satır görünürlüğü */
+  border: 1px dashed transparent;         /* placeholder için alan */
+  border-radius: var(--fc-radius);
+  transition: border-color 120ms linear, background 120ms linear;
+}
+
+.formCanvas__row--dragOver {
+  background: var(--fc-placeholder-bg);
+  border-color: var(--fc-placeholder-border);
+}
+
+/* ---------- Field card (droppable child) ---------------------------- */
+.formCanvas__field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  background: var(--fc-field-bg);
+  border: 1px solid var(--fc-border);
+  border-radius: var(--fc-radius);
+  box-shadow: var(--fc-field-shadow);
+  cursor: pointer;
+  user-select: none;
+  transition: background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.formCanvas__field:hover:not(.formCanvas__field--selected) {
+  background: var(--fc-field-hover-bg);
+}
+
+.formCanvas__field--selected {
+  background: var(--fc-field-selected-bg);
+  border-color: var(--fc-placeholder-border);
+  box-shadow: 0 0 0 2px var(--fc-placeholder-border);
+}
+
+/* ---------- Field placeholder (DnD ghost) --------------------------- */
+.formCanvas__placeholder {
+  background: var(--fc-placeholder-bg);
+  border: var(--fc-border-dashed);
+  border-radius: var(--fc-radius);
+  min-height: 48px;
+}
+
+/* ---------- Empty state --------------------------------------------- */
+.formCanvas__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  border: 2px dashed var(--fc-border);
+  border-radius: var(--fc-radius);
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+.formCanvas__emptyIcon {
+  font-size: 1.25rem;
+  margin-right: 0.5rem;
+}
+
+/* ---------- Responsive tweaks --------------------------------------- */
+@media (max-width: 767.98px) {
+  .formCanvas__section {
+    padding: 0.75rem;
+  }
+
+  .formCanvas__row {
+    grid-template-columns: 1fr;          /* tek sütuna düş */
+  }
+}

@@ -1,0 +1,46 @@
+/* frontend/src/components/formforgeapi/css/FormDataListScreen.module.css */
+/* FormDataListScreen.module.css  ------------------------------------ */
+/* BLOCK-LEVEL TOKENS (yalnız .formDataListScreen bloğu içinde geçerlidir) */
+.formDataListScreen {
+  --fds-bg:             #ffffff;
+  --fds-border:         #e6e8ec;
+  --fds-shadow:         0 1px 2px rgba(0, 0, 0, 0.04);
+
+  --fds-primary:        #0a6ed1;
+  --fds-primary-hover:  #0d7aea;
+
+  --fds-radius:         4px;
+}
+
+/* ---------- Root ---------------------------------------------------- */
+.formDataListScreen {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem 1.75rem;
+  background: var(--fds-bg);
+  min-height: 100dvh;
+}
+
+/* ---------- Başlık -------------------------------------------------- */
+.formDataListScreen__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* ---------- Tablo sarmalayıcı -------------------------------------- */
+.formDataListScreen__table {
+  border: 1px solid var(--fds-border);
+  border-radius: var(--fds-radius);
+  box-shadow: var(--fds-shadow);
+  overflow: hidden; /* DataTable <table> köşelerde taşmasın */
+}
+
+/* ---------- Responsive tweaks -------------------------------------- */
+@media (max-width: 767.98px) {
+  .formDataListScreen {
+    padding: 1rem;
+  }
+}

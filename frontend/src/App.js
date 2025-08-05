@@ -76,6 +76,10 @@ import TunaInsTotalRiskContainer from './components/TunaInsTotalRisk/containers/
 import TunaInsSupplierPaymentContainer from './components/TunaInsSupplierPayment/containers/TunaInsSupplierPaymentContainer';
 import TunaInsSupplierAdvanceBalanceContainer from './components/TunaInsSupplierAdvanceBalance/containers/TunaInsSupplierAdvanceBalanceContainer';
 
+
+// YENİ EKLENEN FORMFORGEAPI MODÜLÜ
+import FormForgeApiModule from './components/formforgeapi';
+
 function App() {
   return (
     <>
@@ -172,7 +176,8 @@ function App() {
             }
           />   
 
-
+            {/* YENİ EKLENEN FORMFORGEAPI ROTASI */}
+            <Route path="/formforgeapi/*" element={<FormForgeApiModule />} />
 
             {/* Tuna Insaat rotaları */}  
             <Route path="/tunainstotalrisk" element={<TunaInsTotalRiskContainer />} />  

@@ -1,0 +1,196 @@
+# zcontext_prompt/prompts/FormForgeAPI_user.txt
+### **Güncellenmiş `FormForgeAPI_user.txt`**
+
+````
+============================================================================
+İŞ EMRİ v3.0: Yeni Modül - FormForgeAPI (Tam Otomasyon)
+============================================================================
+TALİMAT: AI, bu iş emrini ve referans gösterilen context dosyalarını
+kullanarak, sürükle-bırak özellikli, yüksek esneklikte bir dinamik
+form modülü üretmelidir. Betikler bu dosyayı okuyarak otomatik
+entegrasyon ve kurulum yapacaktır.
+============================================================================
+
+--------------------------------------------------------------------------
+BÖLÜM A: GENEL BİLGİLER VE PROJE VİZYONU
+--------------------------------------------------------------------------
+
+1. META BİLGİLER (Whitepaper için)
+
+| Alan         | Değer          |
+|--------------|----------------|
+| module_name  | formforgeapi   |
+| author       | Selim Koçak    |
+| version      | 1.0.0          |
+| sorumlu_ekip | Selim & Tars   |
+
+2. İŞ HEDEFİ VE KAPSAM (Whitepaper için)
+
+[cite_start]Bu modülün amacı, son kullanıcıların kodlama bilgisi olmadan, sürükle-bırak arayüzüyle kendi veri toplama formlarını oluşturmasını sağlamaktır. [cite: 89, 96] [cite_start]Kullanıcılar, forma metin, sayı, tarih gibi farklı tiplerde alanlar ekleyebilmeli, bu alanları zorunlu kılabilmeli ve veri listeleme ekranında hangi alanların görüneceğini (`is_master`) belirleyebilmelidir. [cite: 96]
+
+--------------------------------------------------------------------------
+BÖLÜM B: BACKEND TEKNİK SPESİFİKASYONLARI
+--------------------------------------------------------------------------
+
+1. VERİTABANI MİMARİSİ (models/formforgeapi.py)
+Aşağıdaki 5 modelli, ilişkisel yapı **kesinlikle** bu şekilde oluşturulmalıdır:
+1.  **Model: `Department`**
+2.  **Model: `Form`**
+3.  **Model: `FormField`** (`FieldType` TextChoices içermeli)
+4.  **Model: `FormSubmission`**
+5.  **Model: `SubmissionValue`**
+
+Örnek Model Detayları:
+- **`FormField`**: `form` (ForeignKey to Form), `label` (CharField), `field_type` (CharField with choices), `is_required` (BooleanField), `is_master` (BooleanField, listeleme ekranında gösterilecek kolonlar için), `order` (IntegerField, sürükle-bırak sıralaması için).
+- **`SubmissionValue`**: `submission` (ForeignKey to FormSubmission), `form_field` (ForeignKey to FormField), `value` (TextField).
+
+2. SERVİS KATMANI MANTIĞI (services/formforgeapi_service.py)
+- [cite_start]`save_submission` fonksiyonu, gelen `submitted_data` dictionary'sini ayrıştırarak `SubmissionValue` kayıtları oluşturmalıdır. [cite: 98]
+
+3. API (VIEWS & URLS)
+- [cite_start]`Department`, `Form`, `FormField`, `FormSubmission` için `ModelViewSet`'ler oluşturulmalıdır. [cite: 99]
+- [cite_start]`FormSubmissionViewSet`'in `create` metodu, `save_submission` servisini çağıracak şekilde özelleştirilmelidir. [cite: 99]
+
+--------------------------------------------------------------------------
+BÖLÜM C: FRONTEND TEKNİK SPESİFİKASYONLARI
+--------------------------------------------------------------------------
+
+1. BİLEŞEN YAPISI VE EKRANLAR
+- **`page-level/FormBuilderScreen.jsx`**: `react-beautiful-dnd` ile sürükle-bırak destekli form şeması oluşturma ekranı.
+- **`page-level/FormSchemaListScreen.jsx`**: Oluşturulan tüm form şemalarını `reusable/SchemaTable.jsx` kullanarak listeleyen ekran.
+- **`page-level/FormDataListScreen.jsx`**: Bir şemaya ait girilmiş verileri `reusable/DataTable.jsx` kullanarak listeleyen ekran.
+- **`page-level/FormFillScreen.jsx`**: Bir şemaya yeni veri girişi yapmak için kullanılan form ekranı.
+- **`reusable/SchemaTable.jsx`**: Verilen `schemas` prop'una göre şemaları listeleyen, yeniden kullanılabilir tablo bileşeni (Aşağıdaki kod kullanılacak).
+- **`reusable/DataTable.jsx`**: Verilen `columns` ve `data` proplarına göre verileri listeleyen, yeniden kullanılabilir tablo bileşeni (Aşağıdaki kod kullanılacak).
+
+2. "USTA İŞİ" ŞABLONLAR (Bunları Değiştirmeden Doğrudan Kullan)
+
+- **`reusable/SchemaTable.jsx`:**
+  ```javascript
+  // path: frontend/src/components/formforgeapi/components/reusable/SchemaTable.jsx
+  import React from 'react';
+  import { useTable, useSortBy } from 'react-table';
+  import { Link } from 'react-router-dom';
+  import styles from '../../css/formforgeapi.module.css';
+
+  const SchemaTable = ({ schemas, loading, deleteSchema }) => {
+      const data = React.useMemo(() => schemas, [schemas]);
+      const columns = React.useMemo(() => [
+          { Header: 'Form Başlığı', accessor: 'title' },
+          { Header: 'Departman', accessor: 'department_name' }, // department.name yerine department_name kullanılacak
+          { Header: 'Oluşturan', accessor: 'created_by.username' },
+          {
+              Header: 'İşlemler',
+              accessor: 'id',
+              Cell: ({ row }) => (
+                  <div className={styles.actions}>
+                      <Link to={`/formforgeapi/fill/${row.original.id}`}>Formu Doldur</Link>
+                      <Link to={`/formforgeapi/data/${row.original.id}`}>Verileri Gör</Link>
+                      <Link to={`/formforgeapi/edit/${row.original.id}`}>Düzenle</Link>
+                      <button onClick={() => deleteSchema(row.original.id)} className={styles.deleteButtonSmall}>Sil</button>
+                  </div>
+              )
+          }
+      ], [deleteSchema]);
+
+      const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data }, useSortBy);
+      if (loading) return <div className={styles.loading}>Yükleniyor...</div>;
+      return (
+          <table {...getTableProps()} className={styles.dataTable}>
+              <thead>
+                  {headerGroups.map(hg => (
+                      <tr {...hg.getHeaderGroupProps()}>
+                          {hg.headers.map(col => (
+                              <th {...col.getHeaderProps(col.getSortByToggleProps())}>
+                                  {col.render('Header')}
+                                  <span>{col.isSorted ? (col.isSortedDesc ? ' 🔽' : ' 🔼') : ''}</span>
+                              </th>
+                          ))}
+                      </tr>
+                  ))}
+              </thead>
+              <tbody {...getTableBodyProps()}>
+                  {rows.map(row => {
+                      prepareRow(row);
+                      return (
+                          <tr {...row.getRowProps()}>
+                              {row.cells.map(cell => <td {...cell.getCellProps()}>{cell.render('Cell')}</td>)}
+                          </tr>
+                      );
+                  })}
+              </tbody>
+          </table>
+      );
+  };
+  export default SchemaTable;
+````
+
+  - **`reusable/DataTable.jsx`:**
+    ```javascript
+    // path: frontend/src/components/formforgeapi/components/reusable/DataTable.jsx
+    import React from 'react';
+    import { useTable, useSortBy } from 'react-table';
+    import styles from '../../css/formforgeapi.module.css';
+
+    const DataTable = ({ columns, data, loading }) => {
+        const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data }, useSortBy);
+        if (loading) return <div className={styles.loading}>Yükleniyor...</div>;
+        return (
+            <table {...getTableProps()} className={styles.dataTable}>
+                <thead>
+                    {headerGroups.map(hg => (
+                        <tr {...hg.getHeaderGroupProps()}>
+                            {hg.headers.map(col => (
+                                <th {...col.getHeaderProps(col.getSortByToggleProps())}>
+                                    {col.render('Header')}
+                                    <span>{col.isSorted ? (col.isSortedDesc ? ' 🔽' : ' 🔼') : ''}</span>
+                                </th>
+                            ))}
+                        </tr>
+                    ))}
+                </thead>
+                <tbody {...getTableBodyProps()}>
+                    {rows.map(row => {
+                        prepareRow(row);
+                        return (
+                            <tr {...row.getRowProps()}>
+                                {row.cells.map(cell => <td {...cell.getCellProps()}>{cell.render('Cell')}</td>)}
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
+        );
+    };
+    export default DataTable;
+    ```
+
+<!-- end list -->
+
+3.  ANAHTAR ÖZELLİKLER VE İNTERAKTİVİTE
+
+<!-- end list -->
+
+  - [cite\_start]**Sürükle-Bırak Form Tasarımı:** `FormBuilderScreen.jsx` içinde `react-beautiful-dnd` kullanarak form alanlarının yeniden sıralanabilmesi sağlanmalıdır. [cite: 130]
+  - [cite\_start]**Dinamik Veri Tablosu:** `FormDataListScreen.jsx`, backend'den gelen form şemasındaki `is_master: true` olan alanları bularak `DataTable` için kolonları dinamik olarak oluşturmalıdır. [cite: 133]
+  - [cite\_start]**Veri Yapısı Sözleşmesi:** Frontend ve backend arasındaki veri alışverişi, bu dökümanın önceki versiyonunda tanımlanan payload yapılarına harfiyen uymalıdır. [cite: 100, 101, 102, 103, 104]
+
+-----
+
+## BÖLÜM D: ZORUNLU ÇIKTI FORMATI (DEĞİŞTİRMEYİN)
+
+Her bir dosya, \#\#\#/tam/dosya/yolu/ornek.py\#\#\# ve \#\#\#END\_OF\_FILE\#\#\#
+ayraçlarıyla sarmalanmalıdır. Bu kurala harfiyen uyulmalı, ayraçlar
+arasına başka hiçbir metin veya açıklama eklenmemelidir.
+
+-----
+
+## BÖLÜM E: FRONTEND BAĞIMLILIKLARI (npm install için)
+
+# [Bu bölümdeki paketler gen\_api.sh tarafından otomatik olarak kurulacaktır.
+
+# Paketleri boşlukla ayırarak tek satırda yazın.]
+
+react-beautiful-dnd react-table@7 react-hook-form yup @hookform/resolvers file-saver react-toastify
+
+```

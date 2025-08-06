@@ -13,18 +13,21 @@ from .serializers import (
     FormSubmissionSerializer, 
     SubmissionValueSerializer
 )
+# Service katmanını ve özel izinleri tekrar import ediyoruz
 from ..services import formforgeapi_service
+from ..permissions import IsCreatorOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 
 class DepartmentViewSet(viewsets.ModelViewSet):
     """
     Departmanları yönetmek için kullanılan API endpoint'i.
-    Tam CRUD (Create, Retrieve, Update, Delete) işlevselliği sunar.
     """
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
+    permission_classes = [IsAuthenticated]
 
+    # Service katmanı kullanımını geri getiriyoruz
     def get_queryset(self):
-        # Departman listesini servisten alır.
         return formforgeapi_service.get_department_list()
 
 class FormViewSet(viewsets.ModelViewSet):
@@ -32,16 +35,16 @@ class FormViewSet(viewsets.ModelViewSet):
     Form şemalarını yönetmek için kullanılan ana API endpoint'i.
     Arşivleme ve Versiyonlama gibi özel eylemler içerir.
     """
+    queryset = Form.objects.all() # Hata ayıklaması sırasında eklenen kritik düzeltme
     serializer_class = FormSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         """
-        Bu metod, istenen eyleme göre dinamik olarak queryset döndürür.
-        - 'list' eylemi için: URL'deki '?status=' parametresine göre filtreleme yapar.
-        - Diğer tüm eylemler (detay, güncelleme, arşivleme vb.) için:
-          Arşivlenmiş formları da bulabilmek için filtresiz bir liste kullanır.
+        Gelen isteğe göre formları filtreler.
+        `list` eylemi için `status` parametresine göre filtreleme yapar.
         """
-        queryset = Form.objects.all().select_related('department', 'created_by').prefetch_related('fields', 'versions')
+        queryset = self.queryset.select_related('department', 'created_by').prefetch_related('fields', 'versions')
         
         if self.action == 'list':
             status_filter = self.request.query_params.get('status', Form.FormStatus.PUBLISHED)
@@ -51,73 +54,67 @@ class FormViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        """Yeni bir form oluşturulduğunda durumunu 'PUBLISHED' olarak ayarlar."""
+        """Yeni form oluşturulduğunda `created_by` ve `status` alanlarını ayarlar."""
         serializer.save(created_by=self.request.user, status=Form.FormStatus.PUBLISHED)
         
-    # GÜNCELLENDİ: url_path eklendi
+    # Özel eylemleri (@action) geri getiriyoruz
     @action(detail=True, methods=['post'], url_path='archive')
     def archive(self, request, pk=None):
-        try:
-            form = self.get_object()
-            form.status = Form.FormStatus.ARCHIVED
-            form.save()
-            return Response({'status': 'form archived'}, status=status.HTTP_200_OK)
-        except Form.DoesNotExist:
-            return Response({'error': 'Form not found'}, status=status.HTTP_404_NOT_FOUND)
+        form = self.get_object()
+        form.status = Form.FormStatus.ARCHIVED
+        form.save()
+        return Response({'status': 'form archived'}, status=status.HTTP_200_OK)
     
-    # GÜNCELLENDİ: url_path eklendi
     @action(detail=True, methods=['post'], url_path='unarchive')
     def unarchive(self, request, pk=None):
-        try:
-            form = self.get_object()
-            form.status = Form.FormStatus.PUBLISHED
-            form.save()
-            return Response({'status': 'form unarchived and published'}, status=status.HTTP_200_OK)
-        except Form.DoesNotExist:
-            return Response({'error': 'Form not found'}, status=status.HTTP_404_NOT_FOUND)
+        form = self.get_object()
+        form.status = Form.FormStatus.PUBLISHED
+        form.save()
+        return Response({'status': 'form unarchived'}, status=status.HTTP_200_OK)
             
-    # GÜNCELLENDİ: url_path'in tireli olduğundan emin oluyoruz
     @action(detail=True, methods=['post'], url_path='create-version')
     def create_version(self, request, pk=None):
-        try:
-            new_form = formforgeapi_service.create_new_form_version(pk, request.user)
-            serializer = self.get_serializer(new_form)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        except Form.DoesNotExist:
-            return Response({'error': 'Original form not found'}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        new_form = formforgeapi_service.create_new_form_version(pk, request.user)
+        serializer = self.get_serializer(new_form)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class FormFieldViewSet(viewsets.ModelViewSet):
     """Form alanlarını (FormField) yönetir."""
     queryset = FormField.objects.all()
     serializer_class = FormFieldSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return formforgeapi_service.get_formfield_list()
 
     @action(detail=False, methods=['post'], url_path='update-order')
     def update_order(self, request):
-        """Birden çok form alanının sıralamasını tek seferde günceller."""
-        # Bu fonksiyonun mantığı servise taşındı, direkt onu çağırıyoruz.
+        """Alanların sırasını toplu olarak günceller."""
         return formforgeapi_service.update_formfield_order(request.data)
 
 class FormSubmissionViewSet(viewsets.ModelViewSet):
-    """Doldurulmuş formları (FormSubmission) yönetir."""
+    """Form gönderimlerini (FormSubmission) yönetir."""
     queryset = FormSubmission.objects.all()
     serializer_class = FormSubmissionSerializer
+    permission_classes = [IsAuthenticated, IsCreatorOrReadOnly]
 
     def get_queryset(self):
-        return formforgeapi_service.get_formsubmission_list()
+        """Gönderimleri forma göre filtreler ve performansı artırmak için ilgili verileri önceden çeker."""
+        queryset = self.queryset.select_related('created_by').prefetch_related('values__form_field')
+        form_id = self.request.query_params.get('form')
+        if form_id:
+            return queryset.filter(form_id=form_id)
+        return queryset.none() # Form ID belirtilmemişse hiçbir şey döndürme
 
     def perform_create(self, serializer):
-        """Yeni bir gönderim oluşturulduğunda 'created_by' alanını otomatik doldurur."""
+        """Yeni gönderim oluşturulduğunda `created_by` alanını ayarlar."""
         serializer.save(created_by=self.request.user)
 
 class SubmissionValueViewSet(viewsets.ModelViewSet):
     """Form gönderimlerindeki her bir alanın değerini (SubmissionValue) yönetir."""
     queryset = SubmissionValue.objects.all()
     serializer_class = SubmissionValueSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return formforgeapi_service.get_submissionvalue_list()

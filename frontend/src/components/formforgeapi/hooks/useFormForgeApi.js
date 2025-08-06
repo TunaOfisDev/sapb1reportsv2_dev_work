@@ -1,28 +1,34 @@
 // path: frontend/src/components/formforgeapi/hooks/useFormForgeApi.js
-import { useState, useCallback, useMemo } from "react";
+
+import { useState, useCallback, useMemo, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import FormForgeApiApi from "../api/FormForgeApiApi";
+import AuthContext from "../../../auth/AuthContext";
 
 export default function useFormForgeApi() {
   const navigate = useNavigate();
+  
+  const { user } = useContext(AuthContext);
 
   // --- STATE MANAGEMENT ---
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [forms, setForms] = useState([]);
-  const [archivedForms, setArchivedForms] = useState([]); // YENİ: Arşivlenmiş formlar için state
+  const [archivedForms, setArchivedForms] = useState([]);
   const [currentForm, setCurrentForm] = useState(null);
   const [submissions, setSubmissions] = useState([]);
   const [departments, setDepartments] = useState([]);
 
+  const [selectedSubmission, setSelectedSubmission] = useState(null);
+  const [isViewModalOpen, setViewModalOpen] = useState(false);
+
   // --- API İŞLEMLERİ (CALLBACKS) ---
   const handleError = (err, message = "Bir hata oluştu.") => {
-    const errorMessage = err.response?.data?.detail || message;
+    const errorMessage = err.response?.data?.detail || err.message || message;
     setError(errorMessage);
-    console.error(err);
+    console.error("Hook Hatası:", err);
   };
 
-  // GÜNCELLENDİ: Hem aktif hem de arşivlenmiş formları getirebilir
   const fetchForms = useCallback(async (status = 'PUBLISHED') => {
     setLoading(true);
     setError(null);
@@ -68,42 +74,34 @@ export default function useFormForgeApi() {
     }
   }, [navigate]);
 
-  // GÜNCELLENDİ: Hem aktif hem de arşiv listesini tazeleyecek
   const archiveForm = useCallback(async (id) => {
     setLoading(true);
     setError(null);
     try {
       await FormForgeApiApi.archiveForm(id);
-      // Aktif formlar listesinden kaldır
       setForms((prevForms) => prevForms.filter((form) => form.id !== id));
-      // Arşiv listesini de tazeleyelim ki hemen görünsün
       fetchForms('ARCHIVED'); 
     } catch (err) {
       handleError(err, "Form arşivlenirken bir hata oluştu.");
     } finally {
       setLoading(false);
     }
-  }, [fetchForms]); // fetchForms dependency olarak eklendi
+  }, [fetchForms]);
 
-  // GÜNCELLENDİ: Hem arşiv hem de aktif listesini tazeleyecek
   const unarchiveForm = useCallback(async (id) => {
     setLoading(true);
     setError(null);
     try {
       await FormForgeApiApi.unarchiveForm(id);
-      // Arşivlenmiş formlar listesinden kaldır
       setArchivedForms((prevForms) => prevForms.filter((form) => form.id !== id));
-      // Aktif formlar listesini tazeleyelim ki form oraya geri dönsün
       fetchForms('PUBLISHED');
     } catch (err) {
       handleError(err, "Form arşivden çıkarılırken bir hata oluştu.");
     } finally {
       setLoading(false);
     }
-  }, [fetchForms]); // fetchForms dependency olarak eklendi
+  }, [fetchForms]);
 
-
-  // YENİ: Form versiyonu oluşturma fonksiyonu
   const createNewVersion = useCallback(async (id) => {
     setLoading(true);
     setError(null);
@@ -165,46 +163,94 @@ export default function useFormForgeApi() {
     }
   }, []);
 
+  // --- EYLEM YÖNETİCİLERİ (ACTION HANDLERS) ---
+  const handleViewClick = useCallback((submission) => {
+    setSelectedSubmission(submission);
+    setViewModalOpen(true);
+  }, []);
+
+  const handleEditClick = useCallback((submission) => {
+    console.log("Düzenlenecek Veri:", submission);
+    alert(`ID: ${submission.id} olan veri düzenlenecek.`);
+  }, []);
+
   // --- TÜRETİLMİŞ VERİ (MEMOIZED) ---
   const submissionColumns = useMemo(() => {
     if (!currentForm?.fields) return [];
+
     const dynamicColumns = currentForm.fields
       .sort((a, b) => a.order - b.order)
-      .map((field) => ({ Header: field.label, accessor: `value_${field.id}` }));
-    return [ { Header: "Gönderim Tarihi", accessor: "created_at", Cell: ({ value }) => new Date(value).toLocaleString() }, ...dynamicColumns ];
-  }, [currentForm]);
+      .map((field) => ({
+        Header: field.label,
+        accessor: (row) => {
+          const valueObj = row.values.find(v => v.form_field === field.id);
+          return valueObj ? valueObj.value : "—";
+        },
+        id: `field_${field.id}`,
+      }));
 
-  const submissionFormattedData = useMemo(() => {
-    if (!submissions) return [];
-    return submissions.map(submission => {
-        const rowData = { id: submission.id, created_at: submission.created_at };
-        submission.values.forEach(val => {
-            rowData[`value_${val.form_field}`] = val.value;
-        });
-        return rowData;
-    });
-  }, [submissions]);
+    const staticColumns = [
+      {
+        Header: "Gönderen",
+        // DÜZELTME: CustomUser modelinizde 'username' olmadığı için 'email' kullanılıyor.
+        accessor: (row) => row.created_by?.email || "Bilinmiyor",
+        id: 'created_by'
+      },
+      {
+        Header: "Gönderim Tarihi",
+        accessor: 'created_at',
+        Cell: ({ value }) => new Date(value).toLocaleString(),
+        id: 'created_at'
+      },
+      {
+        Header: "Eylemler",
+        id: "actions",
+        Cell: ({ row }) => (
+          <div className="d-flex gap-2">
+            <button
+              className="btn btn-sm btn-outline-info"
+              onClick={() => handleViewClick(row.original)}
+            >
+              Görüntüle
+            </button>
+            {user && user.id === row.original.created_by?.id && (
+              <button
+                className="btn btn-sm btn-outline-primary"
+                onClick={() => handleEditClick(row.original)}
+              >
+                Düzenle
+              </button>
+            )}
+          </div>
+        ),
+      },
+    ];
+
+    return [...dynamicColumns, ...staticColumns];
+  }, [currentForm, user, handleViewClick, handleEditClick]);
 
   // Hook'un dışarıya açtığı arayüz
   return {
     loading,
     error,
     forms,
-    archivedForms, // YENİ
+    archivedForms,
     currentForm,
     submissions,
     departments,
     fetchForms,
     fetchForm,
     createForm,
-    archiveForm, // GÜNCELLENDİ
-    unarchiveForm, // YENİ
-    createNewVersion, // YENİ
-    deleteForm: archiveForm, // Eski isimlendirmeyi de destekler
+    archiveForm,
+    unarchiveForm,
+    createNewVersion,
+    deleteForm: archiveForm,
     fetchSubmissions,
     createSubmission,
     fetchDepartments,
     submissionColumns,
-    submissionFormattedData,
+    isViewModalOpen,
+    setViewModalOpen,
+    selectedSubmission
   };
 }

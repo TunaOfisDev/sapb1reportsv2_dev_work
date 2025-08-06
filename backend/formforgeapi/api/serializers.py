@@ -1,13 +1,14 @@
 # path: backend/formforgeapi/api/serializers.py
 from rest_framework import serializers
+from django.contrib.auth import get_user_model
 from ..models import Department, Form, FormField, FormSubmission, SubmissionValue, FormFieldOption
 
-# Gereksiz ve hatalı FormFieldSerializer tanımını siliyoruz veya yorum satırı yapıyoruz.
-# class FormFieldSerializer(serializers.ModelSerializer):
-#    class Meta:
-#        model = FormField
-#        fields = ['id', 'form', 'label', 'field_type', 'is_required', 'is_master', 'order', 'created_at', 'updated_at']
-#        read_only_fields = ['created_at', 'updated_at']
+# Kullanıcı bilgilerini (ID ve username) göstermek için basit bir serializer
+# Bu, created_by alanını sadece bir ID yerine bir obje olarak döndürmemizi sağlar.
+class SimpleUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ['id', 'email'] # Frontend'de ihtiyaç duyabileceğiniz alanlar
 
 class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,7 +29,6 @@ class FormFieldOptionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Boş olamaz")
         return value.strip()
 
-# Bu, artık FormField için tek ve doğru serializer tanımıdır.
 class FormFieldSerializer(serializers.ModelSerializer):
     options = FormFieldOptionSerializer(many=True, required=False)
 
@@ -37,12 +37,11 @@ class FormFieldSerializer(serializers.ModelSerializer):
         fields = [
             "id", "form", "label", "field_type",
             "is_required", "is_master", "order",
-            "options",           # 👈 Seçenekler artık kalıcı olarak burada!
+            "options",
             "created_at", "updated_at",
         ]
         read_only_fields = ["created_at", "updated_at"]
 
-    # create / update içinde nested options yönetimi
     def create(self, validated_data):
         options_data = validated_data.pop("options", [])
         form_field = super().create(validated_data)
@@ -55,52 +54,71 @@ class FormFieldSerializer(serializers.ModelSerializer):
         form_field = super().update(instance, validated_data)
 
         if options_data is not None:
-            # Basit strateji: mevcut seçenekleri sil, yenilerini ekle
             instance.options.all().delete()
             for opt in options_data:
                 FormFieldOption.objects.create(form_field=instance, **opt)
         return form_field
 
+# --- GÜNCELLENEN BÖLÜM BAŞLANGICI ---
+
+# GÜNCELLEME 1: "Görüntüle" modalı için alan etiketini ekliyoruz.
 class SubmissionValueSerializer(serializers.ModelSerializer):
+    # Bu alan, `form_field` ID'si üzerinden ilgili alanın `label`'ını otomatik olarak çeker.
+    form_field_label = serializers.CharField(source='form_field.label', read_only=True)
+
     class Meta:
         model = SubmissionValue
-        # 'submission' alanı nested serializer'da zorunlu olmamalı
-        fields = ['id', 'submission', 'form_field', 'value', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'submission', 'created_at', 'updated_at']
+        fields = ['id', 'form_field', 'form_field_label', 'value'] # Sadeleştirilmiş alanlar
+        read_only_fields = ['id', 'form_field_label']
 
+# GÜNCELLEME 2: Frontend'e zengin veri sağlamak için güncellendi.
 class FormSubmissionSerializer(serializers.ModelSerializer):
+    # `values` alanı artık güncellenmiş `SubmissionValueSerializer`'ı kullanacak.
     values = SubmissionValueSerializer(many=True)
+    
+    # `created_by` alanını ID yerine kullanıcı objesi olarak döndürmek için.
+    # Bu sayede frontend hem ID'ye (user.id) hem de username'e (user.username) erişebilir.
+    created_by = SimpleUserSerializer(read_only=True)
 
     class Meta:
         model = FormSubmission
         fields = ['id', 'form', 'created_by', 'values', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by']
+        read_only_fields = ['id', 'created_by', 'created_at', 'updated_at']
 
     def create(self, validated_data):
+        # 'created_by' bilgisi view'dan context ile geldiği için `validated_data`'dan çıkarılır.
         values_data = validated_data.pop('values')
-        # request.user'ı almak için `created_by`'ı validated_data'ya ekle
-        validated_data['created_by'] = self.context['request'].user
+        
+        # `perform_create` metodunu view'da kullandığımız için 'created_by' ataması burada gereksiz.
+        # Eğer view'da atama yapılmıyorsa bu satır kalmalı:
+        # validated_data['created_by'] = self.context['request'].user
+        
         form_submission = FormSubmission.objects.create(**validated_data)
         for value_data in values_data:
-            # submission değeri otomatik olarak atanıyor
             SubmissionValue.objects.create(submission=form_submission, **value_data)
         return form_submission
+
+# --- GÜNCELLENEN BÖLÜM SONU ---
+
 
 class FormSerializer(serializers.ModelSerializer):
     fields = FormFieldSerializer(many=True, read_only=True)
     department_name = serializers.CharField(source='department.name', read_only=True)
-    created_by_username = serializers.CharField(source='created_by.username', read_only=True)
-    # YENİ: status alanını okunabilir formatta almak için
+    
+    # GÜNCELLEME 3: Form listesinde de oluşturan kullanıcıyı zengin formatta gösterelim.
+    created_by = SimpleUserSerializer(read_only=True)
+    
     status_display = serializers.CharField(source='get_status_display', read_only=True)
-    # YENİ: Versiyonları iç içe göstermek için
-    versions = serializers.StringRelatedField(many=True) 
+    versions = serializers.StringRelatedField(many=True, read_only=True) 
 
     class Meta:
         model = Form
         fields = [
             'id', 'title', 'description', 'department', 'department_name', 
-            'created_by', 'created_by_username', 'fields', 
+            'created_by', 'fields', 
             'status', 'status_display', 'parent_form', 'version', 'versions',
             'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'created_by_username']
+        # `created_by` artık bir obje olduğu için `read_only_fields`'da kalmalı.
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 
+                            'department_name', 'status_display', 'versions']

@@ -1,0 +1,121 @@
+/* path: frontend/src/components/formforgeapi/css/ViewSubmissionModal.module.css */
+/* BEM Block: view-modal */
+.viewModal {
+  background: white;
+  border-radius: 0.3rem;
+  box-shadow: 0 5px 15px rgba(0,0,0,.5);
+  width: 90%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh; /* Ekran yüksekliğinin %90'ını geçmesin */
+
+  /* Zaten var olan değişkenleriniz */
+  --modal-padding: 1.5rem;
+  --border-color: #dee2e6;
+  --label-color: #6c757d;
+  --value-color: #212529;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Elements */
+.viewModal__header {
+  padding: 1rem var(--modal-padding);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.viewModal__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--value-color);
+}
+
+.viewModal__body {
+  padding: var(--modal-padding);
+}
+
+.viewModal__dataGrid {
+  display: grid;
+  grid-template-columns: minmax(120px, 30%) 1fr; /* Sol sütun (etiket) max 30%, sağ sütun kalanı alır */
+  gap: 1rem 1.5rem; /* Dikey ve yatay boşluk */
+  margin-bottom: 1.5rem;
+}
+
+.viewModal__dataLabel,
+.viewModal__dataValue {
+  padding: 0;
+  margin: 0;
+  word-break: break-word; /* Uzun kelimeler varsa satır sonuna sığdır */
+}
+
+.viewModal__dataLabel {
+  font-weight: 600;
+  color: var(--label-color);
+  grid-column: 1 / 2;
+}
+
+.viewModal__dataValue {
+  color: var(--value-color);
+  grid-column: 2 / 3;
+}
+
+.viewModal__divider {
+  border: 0;
+  border-top: 1px solid var(--border-color);
+  margin: var(--modal-padding) 0;
+}
+
+.viewModal__footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem var(--modal-padding);
+  border-top: 1px solid var(--border-color);
+}
+
+/* YENİ EKLENENLER: Portal'ın çalışması için gerekli ana sınıflar */
+.viewModal__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.viewModal__closeButton {
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+
+
+
+/* Responsive Tasarım */
+@media (max-width: 576px) {
+  .viewModal__dataGrid {
+    grid-template-columns: 1fr; /* Tek sütuna düşür */
+    gap: 0.25rem; /* Boşlukları azalt */
+  }
+
+  .viewModal__dataLabel {
+    margin-bottom: 0.25rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+  }
+
+  .viewModal__dataValue {
+    margin-bottom: 1rem; /* Her değerden sonra boşluk bırak */
+  }
+}

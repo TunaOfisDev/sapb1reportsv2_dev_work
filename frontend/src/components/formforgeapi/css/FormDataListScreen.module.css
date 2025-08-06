@@ -59,6 +59,59 @@
   border-radius: 9999px;
 }
 
+.formDataListScreen__table {
+  border: 1px solid var(--fds-border);
+  border-radius: var(--fds-radius);
+  box-shadow: var(--fds-shadow);
+  overflow-x: auto; /* Yatay scroll eklendi, taşmaları önler */
+}
+
+/* YENİ: Tablo hücre içeriği için BEM elementi */
+.formDataListScreen__cellContent {
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+/* YENİ: Eylem butonları için BEM elementi ve modifier'ları */
+.formDataListScreen__actionButton {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.2rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  text-decoration: none;
+  display: inline-block;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.formDataListScreen__actionButton_info {
+  color: #0c5460;
+  background-color: #d1ecf1;
+  border-color: #bee5eb;
+}
+
+.formDataListScreen__actionButton_info:hover {
+  background-color: #b3dfe7;
+}
+
+.formDataListScreen__actionButton_primary {
+  color: #004085;
+  background-color: #cce5ff;
+  border-color: #b8daff;
+}
+
+.formDataListScreen__actionButton_primary:hover {
+  background-color: #a3caff;
+}
+
+
+/* ... (dosyanın geri kalanı aynı kalacak) ... */
+
 /* ---------- Responsive tweaks -------------------------------------- */
 @media (max-width: 767.98px) {
   .formDataListScreen {

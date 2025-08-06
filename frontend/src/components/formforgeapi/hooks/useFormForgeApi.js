@@ -1,16 +1,16 @@
 // path: frontend/src/components/formforgeapi/hooks/useFormForgeApi.js
 
-import { useState, useCallback, useMemo, useContext } from "react";
+// GÜNCELLEME: `useMemo` import'u kaldırıldı.
+import { useState, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import FormForgeApiApi from "../api/FormForgeApiApi";
 import AuthContext from "../../../auth/AuthContext";
 
 export default function useFormForgeApi() {
   const navigate = useNavigate();
-  
   const { user } = useContext(AuthContext);
 
-  // --- STATE MANAGEMENT ---
+  // --- STATE MANAGEMENT --- (DEĞİŞİKLİK YOK)
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [forms, setForms] = useState([]);
@@ -18,11 +18,10 @@ export default function useFormForgeApi() {
   const [currentForm, setCurrentForm] = useState(null);
   const [submissions, setSubmissions] = useState([]);
   const [departments, setDepartments] = useState([]);
-
   const [selectedSubmission, setSelectedSubmission] = useState(null);
   const [isViewModalOpen, setViewModalOpen] = useState(false);
 
-  // --- API İŞLEMLERİ (CALLBACKS) ---
+  // --- API İŞLEMLERİ (CALLBACKS) --- (DEĞİŞİKLİK YOK)
   const handleError = (err, message = "Bir hata oluştu.") => {
     const errorMessage = err.response?.data?.detail || err.message || message;
     setError(errorMessage);
@@ -163,7 +162,7 @@ export default function useFormForgeApi() {
     }
   }, []);
 
-  // --- EYLEM YÖNETİCİLERİ (ACTION HANDLERS) ---
+  // --- EYLEM YÖNETİCİLERİ (ACTION HANDLERS) --- (DEĞİŞİKLİK YOK)
   const handleViewClick = useCallback((submission) => {
     setSelectedSubmission(submission);
     setViewModalOpen(true);
@@ -174,65 +173,16 @@ export default function useFormForgeApi() {
     alert(`ID: ${submission.id} olan veri düzenlenecek.`);
   }, []);
 
-  // --- TÜRETİLMİŞ VERİ (MEMOIZED) ---
-  const submissionColumns = useMemo(() => {
-    if (!currentForm?.fields) return [];
-
-    const dynamicColumns = currentForm.fields
-      .sort((a, b) => a.order - b.order)
-      .map((field) => ({
-        Header: field.label,
-        accessor: (row) => {
-          const valueObj = row.values.find(v => v.form_field === field.id);
-          return valueObj ? valueObj.value : "—";
-        },
-        id: `field_${field.id}`,
-      }));
-
-    const staticColumns = [
-      {
-        Header: "Gönderen",
-        // DÜZELTME: CustomUser modelinizde 'username' olmadığı için 'email' kullanılıyor.
-        accessor: (row) => row.created_by?.email || "Bilinmiyor",
-        id: 'created_by'
-      },
-      {
-        Header: "Gönderim Tarihi",
-        accessor: 'created_at',
-        Cell: ({ value }) => new Date(value).toLocaleString(),
-        id: 'created_at'
-      },
-      {
-        Header: "Eylemler",
-        id: "actions",
-        Cell: ({ row }) => (
-          <div className="d-flex gap-2">
-            <button
-              className="btn btn-sm btn-outline-info"
-              onClick={() => handleViewClick(row.original)}
-            >
-              Görüntüle
-            </button>
-            {user && user.id === row.original.created_by?.id && (
-              <button
-                className="btn btn-sm btn-outline-primary"
-                onClick={() => handleEditClick(row.original)}
-              >
-                Düzenle
-              </button>
-            )}
-          </div>
-        ),
-      },
-    ];
-
-    return [...dynamicColumns, ...staticColumns];
-  }, [currentForm, user, handleViewClick, handleEditClick]);
-
+  // --- KALDIRILAN BÖLÜM ---
+  // `submissionColumns` `useMemo` bloğu buradan kaldırıldı.
+  // Bu mantık artık `useSubmissionColumns` hook'unun sorumluluğunda.
+  
+  // --- GÜNCELLENEN BÖLÜM ---
   // Hook'un dışarıya açtığı arayüz
   return {
     loading,
     error,
+    user,
     forms,
     archivedForms,
     currentForm,
@@ -248,9 +198,13 @@ export default function useFormForgeApi() {
     fetchSubmissions,
     createSubmission,
     fetchDepartments,
-    submissionColumns,
     isViewModalOpen,
     setViewModalOpen,
-    selectedSubmission
+    selectedSubmission,
+    // `submissionColumns` yerine `actionHandlers` objesini dışarı aktarıyoruz.
+    actionHandlers: {
+      handleViewClick,
+      handleEditClick
+    }
   };
 }

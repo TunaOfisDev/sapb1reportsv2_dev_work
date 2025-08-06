@@ -122,6 +122,14 @@
   cursor: not-allowed;
 }
 
+.formFillScreen__control[multiple] {
+  height: auto; /* Yüksekliğin içeriğe göre ayarlanmasını sağlar */
+  min-height: 120px; /* Yaklaşık 5 satırlık bir minimum yükseklik verir */
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+
 /* ---------- Responsive tweaks ------------------------------------- */
 @media (max-width: 767.98px) {
   .formFillScreen {

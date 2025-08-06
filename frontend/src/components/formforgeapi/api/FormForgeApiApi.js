@@ -25,8 +25,8 @@ const urls = {
   
   // YENİ EKLENEN FORM EYLEMLERİ (ACTIONS)
   archiveForm:        (id) => `${MODULE}/forms/${id}/archive/`,
-  unarchiveForm:      (id) => `${MODULE}/forms/${id}/unarchive/`, // YENİ URL
-  createFormVersion:  (id) => `${MODULE}/forms/${id}/create_version/`,
+  unarchiveForm:      (id) => `${MODULE}/forms/${id}/unarchive/`,
+  createFormVersion:  (id) => `${MODULE}/forms/${id}/create-version/`,
 
   // FormField
   formFields:         () => `${MODULE}/form_fields/`,
@@ -69,9 +69,9 @@ const FormForgeApiApi = {
   deleteForm:          (id)       => remove(urls.formDetail(id)), // Bu artık kullanılmayacak ama referans olarak kalabilir
 
   // YENİ EKLENEN FORM EYLEMLERİ
-  archiveForm:         (id)       => create(urls.archiveForm(id), {}), // Arşivleme bir POST isteği
-  unarchiveForm:       (id) => create(urls.unarchiveForm(id), {}), // YENİ METOD
-  createFormVersion:   (id)       => create(urls.createFormVersion(id), {}), // Versiyonlama bir POST isteği
+  archiveForm:         (id) => create(urls.archiveForm(id), {}),
+  unarchiveForm:       (id) => create(urls.unarchiveForm(id), {}),
+  createFormVersion:   (id) => create(urls.createFormVersion(id), {}),
 
   /* FormField */
   getFormFields:       (params)   => list(urls.formFields(), params),

@@ -54,9 +54,9 @@ class FormViewSet(viewsets.ModelViewSet):
         """Yeni bir form oluşturulduğunda durumunu 'PUBLISHED' olarak ayarlar."""
         serializer.save(created_by=self.request.user, status=Form.FormStatus.PUBLISHED)
         
+    # GÜNCELLENDİ: url_path eklendi
     @action(detail=True, methods=['post'], url_path='archive')
     def archive(self, request, pk=None):
-        """Belirtilen ID'ye sahip formu arşive kaldırır."""
         try:
             form = self.get_object()
             form.status = Form.FormStatus.ARCHIVED
@@ -65,9 +65,9 @@ class FormViewSet(viewsets.ModelViewSet):
         except Form.DoesNotExist:
             return Response({'error': 'Form not found'}, status=status.HTTP_404_NOT_FOUND)
     
+    # GÜNCELLENDİ: url_path eklendi
     @action(detail=True, methods=['post'], url_path='unarchive')
     def unarchive(self, request, pk=None):
-        """Belirtilen ID'ye sahip formu arşivden çıkarıp yeniden yayınlar."""
         try:
             form = self.get_object()
             form.status = Form.FormStatus.PUBLISHED
@@ -76,12 +76,9 @@ class FormViewSet(viewsets.ModelViewSet):
         except Form.DoesNotExist:
             return Response({'error': 'Form not found'}, status=status.HTTP_404_NOT_FOUND)
             
+    # GÜNCELLENDİ: url_path'in tireli olduğundan emin oluyoruz
     @action(detail=True, methods=['post'], url_path='create-version')
     def create_version(self, request, pk=None):
-        """
-        Mevcut bir formdan yeni bir versiyon oluşturur.
-        Eski versiyonu arşivler ve yeni versiyonu oluşturup döner.
-        """
         try:
             new_form = formforgeapi_service.create_new_form_version(pk, request.user)
             serializer = self.get_serializer(new_form)

@@ -3,11 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { DndContext, PointerSensor, useSensor, useSensors, closestCenter } from '@dnd-kit/core';
-import { Controller } from 'react-hook-form';
 
 import useFormForgeApi from '../../hooks/useFormForgeApi';
 import useFormForgeDesigner from '../../hooks/useFormForgeDesigner';
-import useFormForgePreview from '../../hooks/useFormForgePreview';
 
 import FieldPalette from '../palette/FieldPalette';
 import FormCanvas from '../canvas/FormCanvas';
@@ -16,10 +14,8 @@ import FieldPropsDrawer from '../properties/FieldPropsDrawer';
 import styles from '../../css/FormBuilderScreen.module.css';
 import previewStyles from '../../css/FormFillScreen.module.css';
 
-// Önizleme Arayüzünü Render Eden Yardımcı Bileşen (multiselect düzeltmesi dahil)
+// Önizleme Arayüzünü Render Eden STATİK ve GÖRSEL Yardımcı Bileşen
 const PreviewRenderer = ({ form }) => {
-  const { control, errors, handlePreviewSubmit } = useFormForgePreview(form);
-
   if (!form?.fields || form.fields.length === 0) {
     return (
       <div className={previewStyles.formFillScreen} style={{background: 'white', padding: '2rem', textAlign: 'center'}}>
@@ -30,59 +26,51 @@ const PreviewRenderer = ({ form }) => {
 
   const renderField = (field) => {
     const fieldId = String(field.id);
+    const commonProps = {
+      id: fieldId,
+      className: previewStyles.formFillScreen__control,
+      disabled: true, // Bütün alanları devre dışı bırakır
+    };
+
     return (
       <div key={fieldId} className={previewStyles.formFillScreen__group}>
         <label htmlFor={fieldId} className={previewStyles.formFillScreen__label}>
           {field.label} {field.is_required && '*'}
         </label>
-        <Controller
-          name={fieldId}
-          control={control}
-          rules={{ required: field.is_required ? 'Bu alan zorunludur.' : false }}
-          render={({ field: controllerField }) => {
-            const commonProps = {
-              ...controllerField,
-              id: fieldId,
-              className: `${previewStyles.formFillScreen__control} ${errors[fieldId] ? previewStyles['formFillScreen__control--invalid'] : ''}`,
-            };
-            switch (field.field_type) {
-              case 'textarea':
-                return <textarea {...commonProps} />;
-              case 'multiselect':
-                return (
-                  <select {...commonProps} multiple={true}>
-                    {field.options.map(opt => <option key={opt.id} value={opt.label}>{opt.label}</option>)}
-                  </select>
-                );
-              case 'singleselect':
-                return (
-                  <select {...commonProps}>
-                    <option value="">Seçiniz...</option>
-                    {field.options.map(opt => <option key={opt.id} value={opt.label}>{opt.label}</option>)}
-                  </select>
-                );
-              case 'checkbox':
-                 return ( <label><input type="checkbox" {...commonProps} checked={!!commonProps.value} /> {field.label}</label> );
-              case 'radio':
-                return field.options.map(opt => ( <label key={opt.id} className={previewStyles.formFillScreen__inlineLabel}><input {...commonProps} type="radio" value={opt.label} /> {opt.label}</label> ));
-              default:
-                return <input type={field.field_type} {...commonProps} />;
-            }
-          }}
-        />
-        {errors[fieldId] && <p className={previewStyles.formFillScreen__error}>{errors[fieldId].message}</p>}
+        {(() => {
+          switch (field.field_type) {
+            case 'textarea':
+              return <textarea {...commonProps} />;
+            case 'multiselect':
+              return (
+                <select {...commonProps} multiple>
+                  {field.options.map(opt => <option key={opt.id} value={opt.label}>{opt.label}</option>)}
+                </select>
+              );
+            case 'singleselect':
+              return (
+                <select {...commonProps}>
+                  <option value="">Seçiniz...</option>
+                  {field.options.map(opt => <option key={opt.id} value={opt.label}>{opt.label}</option>)}
+                </select>
+              );
+            case 'checkbox':
+               return ( <div style={{marginTop: '0.5rem'}}><label><input type="checkbox" {...commonProps} /> {field.label}</label></div> );
+            case 'radio':
+              return <div style={{marginTop: '0.5rem'}}>{field.options.map(opt => ( <label key={opt.id} className={previewStyles.formFillScreen__inlineLabel}><input type="radio" name={fieldId} {...commonProps} /> {opt.label}</label> ))}</div>;
+            default:
+              return <input type={field.field_type} {...commonProps} />;
+          }
+        })()}
       </div>
     );
   };
 
   return (
     <div className={previewStyles.formFillScreen} style={{background: 'white', padding: '2rem'}}>
-      <form onSubmit={handlePreviewSubmit} className={previewStyles.formFillScreen__form}>
+      <div className={previewStyles.formFillScreen__form}>
         {form.fields.sort((a, b) => a.order - b.order).map(renderField)}
-        <button type="submit" className={previewStyles.formFillScreen__submit}>
-          Gönder (Önizleme)
-        </button>
-      </form>
+      </div>
     </div>
   );
 };

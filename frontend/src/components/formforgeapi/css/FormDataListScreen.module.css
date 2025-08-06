@@ -38,6 +38,27 @@
   overflow: hidden; /* DataTable <table> köşelerde taşmasın */
 }
 
+
+.formDataListScreen__header {
+  margin-bottom: 1.25rem;
+}
+
+.formDataListScreen__meta {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.meta__badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: #eef2ff;
+  color: #4338ca;
+  border-radius: 9999px;
+}
+
 /* ---------- Responsive tweaks -------------------------------------- */
 @media (max-width: 767.98px) {
   .formDataListScreen {

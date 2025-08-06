@@ -12,13 +12,42 @@ class Department(models.Model):
         return self.name
 
 class Form(models.Model):
+    # YENİ: Form durumları için TextChoices ekliyoruz
+    class FormStatus(models.TextChoices):
+        DRAFT = 'DRAFT', _('Taslak')
+        PUBLISHED = 'PUBLISHED', _('Dağıtımda')
+        ARCHIVED = 'ARCHIVED', _('Arşivlenmiş')
+
     title = models.CharField(_("Form Başlığı"), max_length=255)
     description = models.TextField(_("Form Açıklaması"), blank=True)
     department = models.ForeignKey(Department, verbose_name=_("Departman"), on_delete=models.CASCADE)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("Oluşturan Kullanıcı"), on_delete=models.CASCADE)
+    
+    # YENİ: Status alanı eklendi
+    status = models.CharField(
+        _("Durum"),
+        max_length=10,
+        choices=FormStatus.choices,
+        default=FormStatus.PUBLISHED
+    )
+
+    # YENİ: Versiyonlama için alanlar
+    parent_form = models.ForeignKey(
+        'self', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='versions',
+        verbose_name=_("Ana Form")
+    )
+    version = models.PositiveIntegerField(_("Versiyon"), default=1)
+    
     created_at = models.DateTimeField(_("Oluşturulma Tarihi"), auto_now_add=True)
     updated_at = models.DateTimeField(_("Güncellenme Tarihi"), auto_now=True)
 
+    class Meta:
+        ordering = ['-version'] # İsteğe bağlı: Versiyona göre sırala
+        
     def __str__(self):
         return self.title
 

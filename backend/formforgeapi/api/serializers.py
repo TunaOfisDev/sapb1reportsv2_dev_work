@@ -90,8 +90,17 @@ class FormSerializer(serializers.ModelSerializer):
     fields = FormFieldSerializer(many=True, read_only=True)
     department_name = serializers.CharField(source='department.name', read_only=True)
     created_by_username = serializers.CharField(source='created_by.username', read_only=True)
+    # YENİ: status alanını okunabilir formatta almak için
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    # YENİ: Versiyonları iç içe göstermek için
+    versions = serializers.StringRelatedField(many=True) 
 
     class Meta:
         model = Form
-        fields = ['id', 'title', 'description', 'department', 'department_name', 'created_by', 'created_by_username', 'fields', 'created_at', 'updated_at']
+        fields = [
+            'id', 'title', 'description', 'department', 'department_name', 
+            'created_by', 'created_by_username', 'fields', 
+            'status', 'status_display', 'parent_form', 'version', 'versions',
+            'created_at', 'updated_at'
+        ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'created_by_username']

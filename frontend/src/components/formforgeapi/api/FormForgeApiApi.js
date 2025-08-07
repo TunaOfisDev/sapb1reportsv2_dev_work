@@ -36,6 +36,7 @@ const urls = {
   // Submission / Value
   submissions:       () => `${MODULE}/form_submissions/`,
   submissionDetail:  (id) => `${MODULE}/form_submissions/${id}/`,
+  submissionHistory:  (id) => `${MODULE}/form_submissions/${id}/history/`,
   values:            () => `${MODULE}/submission_values/`,
   valueDetail:       (id) => `${MODULE}/submission_values/${id}/`,
 };
@@ -86,6 +87,7 @@ const FormForgeApiApi = {
   createFormSubmission: (data)     => create(urls.submissions(), data),
   // GÜNCELLEME: Bu fonksiyon, backend'deki yeni versiyonlama mantığını tetikleyecektir.
   updateFormSubmission: (id, data) => update(urls.submissionDetail(id), data),
+  getSubmissionHistory: (id)       => detail(urls.submissionHistory(id)),
   deleteFormSubmission: (id)       => remove(urls.submissionDetail(id)),
 
   /* SubmissionValue */

@@ -125,7 +125,7 @@ export default function useFormForgeApi() {
     setLoading(true);
     setError(null);
     try {
-      const response = await FormForgeApiApi.getFormSubmissions({ form: formId });
+      const response = await FormForgeApiApi.getFormSubmissions({ form: formId, is_active: true });
       setSubmissions(response.data.results || []);
     } catch (err) {
       handleError(err, "Form verileri getirilirken bir hata oluştu.");
@@ -228,8 +228,9 @@ export default function useFormForgeApi() {
     submissionToEdit,
     // Eylemler
     actionHandlers: {
-      handleViewClick,
-      handleEditClick
+      // DÜZELTME: İsimleri 'useSubmissionColumns' hook'unun beklediğiyle eşleştiriyoruz.
+      handleView: handleViewClick,
+      handleEdit: handleEditClick
     }
   };
 }

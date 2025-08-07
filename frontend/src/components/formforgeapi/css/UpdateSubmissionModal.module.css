@@ -76,7 +76,7 @@
 .updateModal__body {
   padding: var(--padding);
   flex: 1 1 auto; /* Esneyerek alanı doldurur */
-  overflow-y: auto;
+  overflow-y: auto; /* Dikey scrollbar sadece gerektiğinde görünür */
 }
 
 .updateModal__form {

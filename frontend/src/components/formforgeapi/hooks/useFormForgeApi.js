@@ -65,61 +65,62 @@ export default function useFormForgeApi() {
     }
   }, []);
 
-  const createForm = useCallback(async (formData) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await FormForgeApiApi.createForm(formData);
-      navigate(`/formforgeapi/builder/${response.data.id}`);
-    } catch (err) {
-      handleError(err, "Form oluşturulurken bir hata oluştu.");
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate]);
+  // ... (createForm, archiveForm, unarchiveForm, createNewVersion fonksiyonları aynı kalır)
+    const createForm = useCallback(async (formData) => {
+        setLoading(true);
+        setError(null);
+        try {
+        const response = await FormForgeApiApi.createForm(formData);
+        navigate(`/formforgeapi/builder/${response.data.id}`);
+        } catch (err) {
+        handleError(err, "Form oluşturulurken bir hata oluştu.");
+        } finally {
+        setLoading(false);
+        }
+    }, [navigate]);
 
-  const archiveForm = useCallback(async (id) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await FormForgeApiApi.archiveForm(id);
-      setForms((prevForms) => prevForms.filter((form) => form.id !== id));
-      fetchForms('ARCHIVED'); 
-    } catch (err) {
-      handleError(err, "Form arşivlenirken bir hata oluştu.");
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchForms]);
+    const archiveForm = useCallback(async (id) => {
+        setLoading(true);
+        setError(null);
+        try {
+        await FormForgeApiApi.archiveForm(id);
+        setForms((prevForms) => prevForms.filter((form) => form.id !== id));
+        fetchForms('ARCHIVED'); 
+        } catch (err) {
+        handleError(err, "Form arşivlenirken bir hata oluştu.");
+        } finally {
+        setLoading(false);
+        }
+    }, [fetchForms]);
 
-  const unarchiveForm = useCallback(async (id) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await FormForgeApiApi.unarchiveForm(id);
-      setArchivedForms((prevForms) => prevForms.filter((form) => form.id !== id));
-      fetchForms('PUBLISHED');
-    } catch (err) {
-      handleError(err, "Form arşivden çıkarılırken bir hata oluştu.");
-    } finally {
-      setLoading(false);
-    }
-  }, [fetchForms]);
+    const unarchiveForm = useCallback(async (id) => {
+        setLoading(true);
+        setError(null);
+        try {
+        await FormForgeApiApi.unarchiveForm(id);
+        setArchivedForms((prevForms) => prevForms.filter((form) => form.id !== id));
+        fetchForms('PUBLISHED');
+        } catch (err) {
+        handleError(err, "Form arşivden çıkarılırken bir hata oluştu.");
+        } finally {
+        setLoading(false);
+        }
+    }, [fetchForms]);
 
-  const createNewVersion = useCallback(async (id) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await FormForgeApiApi.createFormVersion(id);
-      const newFormId = response.data.id;
-      navigate(`/formforgeapi/builder/${newFormId}`);
-      return newFormId;
-    } catch (err) {
-      handleError(err, "Yeni form versiyonu oluşturulurken hata oluştu.");
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate]);
+    const createNewVersion = useCallback(async (id) => {
+        setLoading(true);
+        setError(null);
+        try {
+        const response = await FormForgeApiApi.createFormVersion(id);
+        const newFormId = response.data.id;
+        navigate(`/formforgeapi/builder/${newFormId}`);
+        return newFormId;
+        } catch (err) {
+        handleError(err, "Yeni form versiyonu oluşturulurken hata oluştu.");
+        } finally {
+        setLoading(false);
+        }
+    }, [navigate]);
 
   const fetchSubmissions = useCallback(async (formId) => {
     setLoading(true);
@@ -146,13 +147,15 @@ export default function useFormForgeApi() {
         })),
       };
       await FormForgeApiApi.createFormSubmission(payload);
-      fetchSubmissions(formId); // Listeyi anında tazele
+      // DÜZELTME: Başarılı gönderim sonrası veri listesi sayfasına yönlendir.
+      navigate(`/formforgeapi/data/${formId}`);
     } catch (err) {
       handleError(err, "Form gönderilirken bir hata oluştu.");
     } finally {
       setLoading(false);
     }
-  }, [fetchSubmissions]);
+    // DÜZELTME: useCallback'in bağımlılık dizisine 'navigate' eklendi.
+  }, [navigate]);
   
   const updateSubmission = useCallback(async (submissionId, formId, submissionData) => {
     setLoading(true);
@@ -165,13 +168,15 @@ export default function useFormForgeApi() {
         })),
       };
       await FormForgeApiApi.updateFormSubmission(submissionId, payload);
-      fetchSubmissions(formId); // Listeyi anında tazele
+      // DÜZELTME: Başarılı güncelleme sonrası veri listesi sayfasına yönlendir.
+      navigate(`/formforgeapi/data/${formId}`);
     } catch (err) {
       handleError(err, "Form güncellenirken bir hata oluştu.");
     } finally {
       setLoading(false);
     }
-  }, [fetchSubmissions]);
+    // DÜZELTME: useCallback'in bağımlılık dizisine 'navigate' eklendi.
+  }, [navigate]);
 
   const fetchDepartments = useCallback(async () => {
     setLoading(true);
@@ -199,36 +204,12 @@ export default function useFormForgeApi() {
 
   // --- HOOK'UN DIŞARIYA AÇTIĞI ARAYÜZ ---
   return {
-    loading,
-    error,
-    user,
-    forms,
-    archivedForms,
-    currentForm,
-    submissions,
-    departments,
-    fetchForms,
-    fetchForm,
-    createForm,
-    archiveForm,
-    unarchiveForm,
-    createNewVersion,
-    deleteForm: archiveForm,
-    fetchSubmissions,
-    createSubmission,
-    updateSubmission,
-    fetchDepartments,
-    // View Modal
-    isViewModalOpen,
-    setViewModalOpen,
-    selectedSubmission,
-    // Update Modal
-    isUpdateModalOpen,
-    setUpdateModalOpen,
-    submissionToEdit,
-    // Eylemler
+    loading, error, user, forms, archivedForms, currentForm, submissions, departments,
+    fetchForms, fetchForm, createForm, archiveForm, unarchiveForm, createNewVersion,
+    deleteForm: archiveForm, fetchSubmissions, createSubmission, updateSubmission, fetchDepartments,
+    isViewModalOpen, setViewModalOpen, selectedSubmission,
+    isUpdateModalOpen, setUpdateModalOpen, submissionToEdit,
     actionHandlers: {
-      // DÜZELTME: İsimleri 'useSubmissionColumns' hook'unun beklediğiyle eşleştiriyoruz.
       handleView: handleViewClick,
       handleEdit: handleEditClick
     }

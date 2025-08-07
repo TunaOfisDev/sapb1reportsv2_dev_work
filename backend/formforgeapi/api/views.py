@@ -99,16 +99,46 @@ class FormSubmissionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsCreatorOrReadOnly]
 
     def get_queryset(self):
-        """Gönderimleri forma göre filtreler ve performansı artırmak için ilgili verileri önceden çeker."""
-        queryset = self.queryset.select_related('created_by').prefetch_related('values__form_field')
+        """
+        Gönderimleri forma göre filtreler ve varsayılan olarak SADECE AKTİF versiyonları listeler.
+        """
+        queryset = self.queryset.select_related('created_by', 'parent_submission').prefetch_related('values__form_field', 'versions')
+        
+        # URL'de 'all_versions=true' parametresi yoksa, sadece aktif olanları göster
+        if self.request.query_params.get('all_versions') != 'true':
+            queryset = queryset.filter(is_active=True)
+
         form_id = self.request.query_params.get('form')
         if form_id:
             return queryset.filter(form_id=form_id)
-        return queryset.none() # Form ID belirtilmemişse hiçbir şey döndürme
+        
+        return queryset.none()
 
     def perform_create(self, serializer):
         """Yeni gönderim oluşturulduğunda `created_by` alanını ayarlar."""
         serializer.save(created_by=self.request.user)
+
+    # GÜNCELLEME: 'update' metodu override edildi.
+    def update(self, request, *args, **kwargs):
+        """
+        Standart güncelleme yerine, yeni bir gönderim versiyonu oluşturur.
+        """
+        original_submission_id = kwargs.get('pk')
+        values_data = request.data.get('values', [])
+        user = request.user
+
+        try:
+            new_submission = formforgeapi_service.update_submission_and_create_new_version(
+                original_submission_id, values_data, user
+            )
+            serializer = self.get_serializer(new_submission)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except FormSubmission.DoesNotExist:
+            return Response({"error": "Submission not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 class SubmissionValueViewSet(viewsets.ModelViewSet):
     """Form gönderimlerindeki her bir alanın değerini (SubmissionValue) yönetir."""

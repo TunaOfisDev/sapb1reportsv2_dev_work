@@ -25,7 +25,6 @@ const FormDataListScreen = () => {
     actionHandlers
   } = useFormForgeApi();
 
-  // Stil sınıflarını hook'a enjekte etmek için hazırlıyoruz.
   const columnClassNames = {
     cellContent: styles.formDataListScreen__cellContent,
     buttonInfo: `${styles.formDataListScreen__actionButton} ${styles.formDataListScreen__actionButton_info}`,
@@ -47,7 +46,6 @@ const FormDataListScreen = () => {
 
   return (
     <div className={styles.formDataListScreen}>
-      {/* ... (Başlık ve diğer JSX kodları aynı) ... */}
       <div style={{ marginBottom: '1.5rem' }}>
         <Link to="/formforgeapi">&larr; Form Listesine Geri Dön</Link>
       </div>
@@ -56,6 +54,20 @@ const FormDataListScreen = () => {
         <h1 className={styles.formDataListScreen__title}>
           "{currentForm.title}" Formuna Ait Veriler
         </h1>
+
+        {/* --- GEÇİCİ HATA AYIKLAMA KODU --- */}
+        <pre style={{ 
+          background: 'lightyellow', 
+          padding: '10px', 
+          border: '1px solid black', 
+          marginTop: '1rem',
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-all'
+        }}>
+          AuthContext'ten Gelen User Objesi: {JSON.stringify(user, null, 2)}
+        </pre>
+        {/* --- HATA AYIKLAMA KODU SONU --- */}
+
         <div className={styles.formDataListScreen__meta}>
           <span className={styles.meta__badge}>Versiyon: V{currentForm.version}</span>
           <span className={styles.meta__badge}>Durum: {currentForm.status_display}</span>

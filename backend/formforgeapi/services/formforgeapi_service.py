@@ -4,6 +4,7 @@ from django.db import transaction
 from rest_framework.response import Response
 from rest_framework import status
 from django.db import transaction
+import json
 import re
 
 def get_department_list():
@@ -83,3 +84,55 @@ def create_new_form_version(original_form_id, user):
             option.save()
             
     return new_form
+
+
+@transaction.atomic
+def update_submission_and_create_new_version(original_submission_id, values_data, user):
+    """
+    Mevcut bir gönderiyi günceller. Aslında eskiyi pasif hale getirir ve yeni bir versiyon oluşturur.
+    """
+    # 1. Orijinal (güncellenmek istenen) gönderiyi bul.
+    original_submission = FormSubmission.objects.select_related('parent_submission').get(pk=original_submission_id)
+    
+    # 2. Ana gönderimi belirle. Eğer bu ilk güncelleme ise, ana gönderi kendisidir.
+    root_submission = original_submission.parent_submission or original_submission
+    
+    # 3. Bu ana gönderiye bağlı tüm versiyonları bul ve mevcut aktif olanı pasif yap.
+    latest_version_qs = FormSubmission.objects.filter(parent_submission=root_submission, is_active=True)
+    latest_version_qs.update(is_active=False)
+    # Eğer bu ilk güncelleme ise, orijinal gönderiyi de pasif yap
+    if not original_submission.parent_submission:
+        original_submission.is_active = False
+        original_submission.save()
+
+    # 4. Yeni versiyon numarasını hesapla.
+    new_version_number = root_submission.versions.count() + 2 # +1 kendisi, +1 yeni versiyon
+
+    # 5. Yeni FormSubmission kaydını oluştur.
+    new_submission = FormSubmission.objects.create(
+        form=original_submission.form,
+        created_by=user, # Güncellemeyi yapan kullanıcı yeni versiyonun sahibi olur
+        parent_submission=root_submission,
+        version=new_version_number,
+        is_active=True
+    )
+
+    # 6. Yeni gönderim için yeni SubmissionValue'ları oluştur.
+    field_types = {field.id: field.field_type for field in new_submission.form.fields.all()}
+    for value_data in values_data:
+        field_id = value_data.get('form_field')
+        value = value_data.get('value')
+        
+        if field_types.get(field_id) == FormField.FieldTypes.MULTI_SELECT and isinstance(value, list):
+            value_to_save = json.dumps(value, ensure_ascii=False)
+        else:
+            value_to_save = str(value) if value is not None else ''
+
+        if field_id:
+            SubmissionValue.objects.create(
+                submission=new_submission,
+                form_field_id=field_id,
+                value=value_to_save
+            )
+            
+    return new_submission

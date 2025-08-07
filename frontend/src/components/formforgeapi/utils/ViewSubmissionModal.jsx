@@ -2,11 +2,9 @@
 
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import styles from '../css/ViewSubmissionModal.module.css'; // Sizin BEM CSS dosyanız
+import styles from '../css/ViewSubmissionModal.module.css';
 
-// Bu bileşen, reactstrap'e HİÇBİR bağımlılığı olmayan, sıfırdan bir modal oluşturur.
 const ViewSubmissionModal = ({ isOpen, onClose, submission }) => {
-  // 'Escape' tuşuna basıldığında modal'ı kapatmak için
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.keyCode === 27) {
@@ -21,17 +19,12 @@ const ViewSubmissionModal = ({ isOpen, onClose, submission }) => {
     };
   }, [isOpen, onClose]);
 
-  // Eğer modal açık değilse veya veri yoksa, render etme.
   if (!isOpen || !submission) {
     return null;
   }
 
-  // ReactDOM.createPortal kullanarak modal'ı <body>'nin sonuna render ediyoruz.
-  // Bu, onu tüm kapsayıcı div'lerin CSS etkisinden kurtarır.
   return ReactDOM.createPortal(
-    // Overlay (arka plan)
     <div className={styles.viewModal__overlay} onClick={onClose}>
-      {/* Modal içeriği - Tıklamanın overlay'e geçmesini engeller */}
       <div className={styles.viewModal} onClick={(e) => e.stopPropagation()}>
         
         <div className={styles.viewModal__header}>
@@ -47,7 +40,9 @@ const ViewSubmissionModal = ({ isOpen, onClose, submission }) => {
               submission.values.map(item => (
                 <React.Fragment key={item.form_field}>
                   <dt className={styles.viewModal__dataLabel}>{item.form_field_label || 'Alan'}</dt>
-                  <dd className={styles.viewModal__dataValue}>{item.value || "—"}</dd>
+                  <dd className={styles.viewModal__dataValue}>
+                    {Array.isArray(item.value) ? item.value.join(', ') : (item.value || "—")}
+                  </dd>
                 </React.Fragment>
               ))
             ) : (
@@ -56,6 +51,14 @@ const ViewSubmissionModal = ({ isOpen, onClose, submission }) => {
           </div>
           <hr className={styles.viewModal__divider} />
           <div className={styles.viewModal__dataGrid}>
+            <dt className={styles.viewModal__dataLabel}>Versiyon</dt>
+            <dd className={styles.viewModal__dataValue}>V{submission.version}</dd>
+            {submission.parent_submission && (
+                 <React.Fragment>
+                    <dt className={styles.viewModal__dataLabel}>Ana Gönderim ID</dt>
+                    <dd className={styles.viewModal__dataValue}>{submission.parent_submission}</dd>
+                 </React.Fragment>
+            )}
             <dt className={styles.viewModal__dataLabel}>Gönderen</dt>
             <dd className={styles.viewModal__dataValue}>{submission.created_by?.email}</dd>
             <dt className={styles.viewModal__dataLabel}>Tarih</dt>
@@ -64,13 +67,17 @@ const ViewSubmissionModal = ({ isOpen, onClose, submission }) => {
         </div>
 
         <div className={styles.viewModal__footer}>
-          <button type="button" className="btn btn-secondary" onClick={onClose}>
+          <button 
+            type="button" 
+            className={`${styles.button} ${styles.button_secondary}`} 
+            onClick={onClose}
+          >
             Kapat
           </button>
         </div>
       </div>
     </div>,
-    document.body // Portal'ın hedefi: document.body
+    document.body
   );
 };
 

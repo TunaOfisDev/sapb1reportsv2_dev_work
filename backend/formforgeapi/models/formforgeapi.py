@@ -79,14 +79,28 @@ class FormField(models.Model):
 class FormSubmission(models.Model):
     form = models.ForeignKey(Form, verbose_name=_("Form"), on_delete=models.CASCADE, related_name='submissions')
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("Gönderen Kullanıcı"), on_delete=models.CASCADE)
+    
+    # --- YENİ ALANLAR: GÖNDERİM VERSİYONLAMA ---
+    parent_submission = models.ForeignKey(
+        'self', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True,
+        related_name='versions',
+        verbose_name=_("Ana Gönderim")
+    )
+    version = models.PositiveIntegerField(_("Versiyon"), default=1)
+    is_active = models.BooleanField(_("Aktif Versiyon"), default=True)
+    # --- YENİ ALANLAR SONU ---
+    
     created_at = models.DateTimeField(_("Oluşturulma Tarihi"), auto_now_add=True)
     updated_at = models.DateTimeField(_("Güncellenme Tarihi"), auto_now=True)
 
     def __str__(self):
-        # Hatalı 'username' yerine, CustomUser modelinizin 'email' alanını kullanıyoruz.
-        # created_by alanı null olabilir, bu yüzden bir kontrol ekledik.
         user_info = self.created_by.email if self.created_by else 'Anonim Kullanıcı'
-        return f"{self.form.title} - {user_info}"
+        return f"{self.form.title} - {user_info} (V{self.version})"
+
+
 
 
 class SubmissionValue(models.Model):

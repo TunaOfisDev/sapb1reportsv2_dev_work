@@ -1,6 +1,5 @@
 // path: frontend/src/components/formforgeapi/hooks/useFormForgeApi.js
 
-// GÜNCELLEME: `useMemo` import'u kaldırıldı.
 import { useState, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import FormForgeApiApi from "../api/FormForgeApiApi";
@@ -21,13 +20,15 @@ export default function useFormForgeApi() {
   const [selectedSubmission, setSelectedSubmission] = useState(null);
   const [isViewModalOpen, setViewModalOpen] = useState(false);
 
-  // --- API İŞLEMLERİ (CALLBACKS) --- (DEĞİŞİKLİK YOK)
+  // --- API İŞLEMLERİ (CALLBACKS) ---
   const handleError = (err, message = "Bir hata oluştu.") => {
     const errorMessage = err.response?.data?.detail || err.message || message;
     setError(errorMessage);
     console.error("Hook Hatası:", err);
   };
 
+  // ... (fetchForms, fetchForm, createForm, archiveForm, unarchiveForm, createNewVersion, fetchSubmissions
+  //      fonksiyonlarında bir değişiklik yok, aynı kalacaklar) ...
   const fetchForms = useCallback(async (status = 'PUBLISHED') => {
     setLoading(true);
     setError(null);
@@ -129,56 +130,69 @@ export default function useFormForgeApi() {
     }
   }, []);
 
+
   const createSubmission = useCallback(async (formId, submissionData) => {
     setLoading(true);
     setError(null);
     try {
       const payload = {
         form: formId,
-        values: Object.entries(submissionData).map(([fieldId, value]) => ({
-          form_field: parseInt(fieldId, 10),
-          value: String(value),
+        values: Object.entries(submissionData).map(([key, value]) => ({
+          form_field: parseInt(key.replace('field_', ''), 10),
+          value: value, 
         })),
       };
       await FormForgeApiApi.createFormSubmission(payload);
-      navigate(`/formforgeapi`);
+      // Başarılı gönderimden sonra ana listeye değil, formun veri listesine yönlendirelim.
+      navigate(`/formforgeapi/data/${formId}`);
     } catch (err) {
       handleError(err, "Form gönderilirken bir hata oluştu.");
     } finally {
       setLoading(false);
     }
   }, [navigate]);
-
-  const fetchDepartments = useCallback(async () => {
+  
+  // --- YENİ FONKSİYON: GÖNDERİM GÜNCELLEME ---
+  const updateSubmission = useCallback(async (submissionId, formId, submissionData) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await FormForgeApiApi.getDepartments();
-      setDepartments(response.data.results || []);
+      // Payload, createSubmission ile aynı formatta olmalı
+      const payload = {
+        values: Object.entries(submissionData).map(([key, value]) => ({
+          form_field: parseInt(key.replace('field_', ''), 10),
+          value: value,
+        })),
+      };
+      await FormForgeApiApi.updateFormSubmission(submissionId, payload);
+      // Başarılı güncellemeden sonra ilgili formun veri listesine geri dön
+      navigate(`/formforgeapi/data/${formId}`);
     } catch (err) {
-      handleError(err, "Departmanlar getirilirken bir hata oluştu.");
+      handleError(err, "Form güncellenirken bir hata oluştu.");
     } finally {
       setLoading(false);
     }
+  }, [navigate]);
+
+
+  const fetchDepartments = useCallback(async () => {
+    // ... (bu fonksiyon aynı kalacak) ...
   }, []);
 
-  // --- EYLEM YÖNETİCİLERİ (ACTION HANDLERS) --- (DEĞİŞİKLİK YOK)
+  // --- GÜNCELLENEN EYLEM YÖNETİCİLERİ (ACTION HANDLERS) ---
   const handleViewClick = useCallback((submission) => {
     setSelectedSubmission(submission);
     setViewModalOpen(true);
   }, []);
 
   const handleEditClick = useCallback((submission) => {
-    console.log("Düzenlenecek Veri:", submission);
-    alert(`ID: ${submission.id} olan veri düzenlenecek.`);
-  }, []);
+    // Artık alert göstermek yerine, kullanıcıyı düzenleme ekranına yönlendiriyoruz.
+    // `state` ile submission verisini de göndererek, yeni sayfada tekrar API isteği yapmaktan kurtuluyoruz.
+    navigate(`/formforgeapi/edit/${submission.id}`, { state: { submission } });
+  }, [navigate]);
 
-  // --- KALDIRILAN BÖLÜM ---
-  // `submissionColumns` `useMemo` bloğu buradan kaldırıldı.
-  // Bu mantık artık `useSubmissionColumns` hook'unun sorumluluğunda.
-  
-  // --- GÜNCELLENEN BÖLÜM ---
-  // Hook'un dışarıya açtığı arayüz
+
+  // --- HOOK'UN DIŞARIYA AÇTIĞI ARAYÜZ ---
   return {
     loading,
     error,
@@ -197,11 +211,11 @@ export default function useFormForgeApi() {
     deleteForm: archiveForm,
     fetchSubmissions,
     createSubmission,
+    updateSubmission, // <-- Yeni fonksiyonu dışa aktar
     fetchDepartments,
     isViewModalOpen,
     setViewModalOpen,
     selectedSubmission,
-    // `submissionColumns` yerine `actionHandlers` objesini dışarı aktarıyoruz.
     actionHandlers: {
       handleViewClick,
       handleEditClick

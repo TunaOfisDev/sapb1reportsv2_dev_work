@@ -1,5 +1,4 @@
 // path: frontend/src/components/formforgeapi/components/page-level/FormDataListScreen.jsx
-
 import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
@@ -22,31 +21,17 @@ const FormDataListScreen = () => {
 
     // 1. Ana veri ve eylem yönetimi için hook (form listesi, güncelleme vb.)
     const {
-        currentForm,
-        loading: formLoading,
-        error: formError,
-        user,
-        fetchForm,
-        fetchSubmissions,
-        submissions,
-        updateSubmission,
-        isViewModalOpen,
-        setViewModalOpen,
-        selectedSubmission,
-        isUpdateModalOpen,
-        setUpdateModalOpen,
-        submissionToEdit,
+        currentForm, loading: formLoading, error: formError, user,
+        fetchForm, fetchSubmissions, submissions, updateSubmission,
+        isViewModalOpen, setViewModalOpen, selectedSubmission,
+        isUpdateModalOpen, setUpdateModalOpen, submissionToEdit,
         actionHandlers: formActionHandlers,
     } = useFormForgeApi();
 
     // 2. Sadece gönderi geçmişi modalının mantığı için ayrılmış hook
     const {
-        isHistoryModalOpen,
-        submissionHistory,
-        selectedSubmission: selectedSubmissionForHistory,
-        openHistoryModal,
-        closeHistoryModal,
-        isLoading: historyLoading,
+        isHistoryModalOpen, submissionHistory, selectedSubmission: selectedSubmissionForHistory,
+        openHistoryModal, closeHistoryModal, isLoading: historyLoading,
     } = useHistoryFormForgeApi();
 
     // İki hook'tan gelen eylem handler'larını birleştiriyoruz.
@@ -63,13 +48,14 @@ const FormDataListScreen = () => {
         buttonSecondary: `${styles.formDataListScreen__actionButton} ${styles.formDataListScreen__actionButton_secondary}`,
     };
 
-    // Sütun tanımlarını oluştururken birleştirilmiş eylem listesini gönderiyoruz.
-    // Bu 'submissionColumns' hem ana tablo hem de geçmiş modalı için kullanılacak.
+    // Ana Tablo için Sütunlar (Tüm butonları içerir)
     const submissionColumns = useSubmissionColumns(
-        currentForm,
-        user,
-        allActionHandlers,
-        columnClassNames
+        currentForm, user, allActionHandlers, columnClassNames, 'mainList'
+    );
+
+    // Geçmiş Modalı için Sütunlar (Sadece 'Görüntüle' butonunu içerir)
+    const historyColumns = useSubmissionColumns(
+        currentForm, user, allActionHandlers, columnClassNames, 'historyModal'
     );
 
     useEffect(() => {
@@ -109,13 +95,13 @@ const FormDataListScreen = () => {
 
             {/* Görüntüleme Modalı */}
             {selectedSubmission && (
-                <ViewSubmissionModal
+                 <ViewSubmissionModal
                     isOpen={isViewModalOpen}
                     onClose={() => setViewModalOpen(false)}
                     submission={selectedSubmission}
                 />
             )}
-
+           
             {/* Düzenleme Modalı */}
             {submissionToEdit && (
                 <UpdateSubmissionModal
@@ -127,14 +113,14 @@ const FormDataListScreen = () => {
                 />
             )}
 
-            {/* Geçmiş Modalı (Artık 'columns' prop'unu alıyor) */}
+            {/* Geçmiş Modalı (Artık 'historyColumns'u kullanıyor) */}
             <SubmissionHistoryModal
                 isOpen={isHistoryModalOpen}
                 onClose={closeHistoryModal}
                 submission={selectedSubmissionForHistory}
                 history={submissionHistory}
                 isLoading={historyLoading}
-                columns={submissionColumns} 
+                columns={historyColumns} 
             />
         </div>
     );

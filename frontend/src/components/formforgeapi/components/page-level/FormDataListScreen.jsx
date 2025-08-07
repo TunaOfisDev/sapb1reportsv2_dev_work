@@ -6,11 +6,13 @@ import useFormForgeApi from '../../hooks/useFormForgeApi';
 import { useSubmissionColumns } from '../../hooks/useSubmissionColumns';
 import DataTable from '../reusable/DataTable';
 import ViewSubmissionModal from '../../utils/ViewSubmissionModal';
+import UpdateSubmissionModal from '../../utils/UpdateSubmissionModal'; // Düzenleme modal'ını import ediyoruz
 import styles from '../../css/FormDataListScreen.module.css';
 
 const FormDataListScreen = () => {
   const { formId } = useParams();
 
+  // Gerekli tüm state ve fonksiyonları hook'tan alıyoruz
   const {
     currentForm,
     loading,
@@ -19,12 +21,17 @@ const FormDataListScreen = () => {
     fetchForm,
     fetchSubmissions,
     submissions,
+    updateSubmission,
     isViewModalOpen,
     setViewModalOpen,
     selectedSubmission,
+    isUpdateModalOpen,
+    setUpdateModalOpen,
+    submissionToEdit,
     actionHandlers
   } = useFormForgeApi();
 
+  // Stil sınıflarını hook'a enjekte etmek için hazırlıyoruz
   const columnClassNames = {
     cellContent: styles.formDataListScreen__cellContent,
     buttonInfo: `${styles.formDataListScreen__actionButton} ${styles.formDataListScreen__actionButton_info}`,
@@ -54,20 +61,6 @@ const FormDataListScreen = () => {
         <h1 className={styles.formDataListScreen__title}>
           "{currentForm.title}" Formuna Ait Veriler
         </h1>
-
-        {/* --- GEÇİCİ HATA AYIKLAMA KODU --- */}
-        <pre style={{ 
-          background: 'lightyellow', 
-          padding: '10px', 
-          border: '1px solid black', 
-          marginTop: '1rem',
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'break-all'
-        }}>
-          AuthContext'ten Gelen User Objesi: {JSON.stringify(user, null, 2)}
-        </pre>
-        {/* --- HATA AYIKLAMA KODU SONU --- */}
-
         <div className={styles.formDataListScreen__meta}>
           <span className={styles.meta__badge}>Versiyon: V{currentForm.version}</span>
           <span className={styles.meta__badge}>Durum: {currentForm.status_display}</span>
@@ -81,11 +74,23 @@ const FormDataListScreen = () => {
         <DataTable columns={submissionColumns} data={submissions} />
       </div>
 
+      {/* Görüntüleme Modalı */}
       {selectedSubmission && (
         <ViewSubmissionModal
           isOpen={isViewModalOpen}
           onClose={() => setViewModalOpen(false)}
           submission={selectedSubmission}
+        />
+      )}
+
+      {/* Düzenleme Modalı */}
+      {submissionToEdit && (
+        <UpdateSubmissionModal
+          isOpen={isUpdateModalOpen}
+          onClose={() => setUpdateModalOpen(false)}
+          submission={submissionToEdit}
+          formSchema={currentForm}
+          onUpdate={updateSubmission}
         />
       )}
     </div>

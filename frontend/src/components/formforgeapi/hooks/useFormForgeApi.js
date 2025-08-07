@@ -3,13 +3,13 @@
 import { useState, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import FormForgeApiApi from "../api/FormForgeApiApi";
-import AuthContext from "../../../auth/AuthContext";
+import { AuthContext } from "../../../auth/AuthContext";
 
 export default function useFormForgeApi() {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
 
-  // --- STATE MANAGEMENT --- (DEĞİŞİKLİK YOK)
+  // --- STATE MANAGEMENT ---
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [forms, setForms] = useState([]);
@@ -17,8 +17,14 @@ export default function useFormForgeApi() {
   const [currentForm, setCurrentForm] = useState(null);
   const [submissions, setSubmissions] = useState([]);
   const [departments, setDepartments] = useState([]);
+  
+  // View Modal State
   const [selectedSubmission, setSelectedSubmission] = useState(null);
   const [isViewModalOpen, setViewModalOpen] = useState(false);
+  
+  // Update Modal State
+  const [submissionToEdit, setSubmissionToEdit] = useState(null);
+  const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
 
   // --- API İŞLEMLERİ (CALLBACKS) ---
   const handleError = (err, message = "Bir hata oluştu.") => {
@@ -27,8 +33,6 @@ export default function useFormForgeApi() {
     console.error("Hook Hatası:", err);
   };
 
-  // ... (fetchForms, fetchForm, createForm, archiveForm, unarchiveForm, createNewVersion, fetchSubmissions
-  //      fonksiyonlarında bir değişiklik yok, aynı kalacaklar) ...
   const fetchForms = useCallback(async (status = 'PUBLISHED') => {
     setLoading(true);
     setError(null);
@@ -130,7 +134,6 @@ export default function useFormForgeApi() {
     }
   }, []);
 
-
   const createSubmission = useCallback(async (formId, submissionData) => {
     setLoading(true);
     setError(null);
@@ -143,21 +146,18 @@ export default function useFormForgeApi() {
         })),
       };
       await FormForgeApiApi.createFormSubmission(payload);
-      // Başarılı gönderimden sonra ana listeye değil, formun veri listesine yönlendirelim.
-      navigate(`/formforgeapi/data/${formId}`);
+      fetchSubmissions(formId); // Listeyi anında tazele
     } catch (err) {
       handleError(err, "Form gönderilirken bir hata oluştu.");
     } finally {
       setLoading(false);
     }
-  }, [navigate]);
+  }, [fetchSubmissions]);
   
-  // --- YENİ FONKSİYON: GÖNDERİM GÜNCELLEME ---
   const updateSubmission = useCallback(async (submissionId, formId, submissionData) => {
     setLoading(true);
     setError(null);
     try {
-      // Payload, createSubmission ile aynı formatta olmalı
       const payload = {
         values: Object.entries(submissionData).map(([key, value]) => ({
           form_field: parseInt(key.replace('field_', ''), 10),
@@ -165,32 +165,37 @@ export default function useFormForgeApi() {
         })),
       };
       await FormForgeApiApi.updateFormSubmission(submissionId, payload);
-      // Başarılı güncellemeden sonra ilgili formun veri listesine geri dön
-      navigate(`/formforgeapi/data/${formId}`);
+      fetchSubmissions(formId); // Listeyi anında tazele
     } catch (err) {
       handleError(err, "Form güncellenirken bir hata oluştu.");
     } finally {
       setLoading(false);
     }
-  }, [navigate]);
-
+  }, [fetchSubmissions]);
 
   const fetchDepartments = useCallback(async () => {
-    // ... (bu fonksiyon aynı kalacak) ...
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await FormForgeApiApi.getDepartments();
+      setDepartments(response.data.results || []);
+    } catch (err) {
+      handleError(err, "Departmanlar getirilirken bir hata oluştu.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  // --- GÜNCELLENEN EYLEM YÖNETİCİLERİ (ACTION HANDLERS) ---
+  // --- EYLEM YÖNETİCİLERİ (ACTION HANDLERS) ---
   const handleViewClick = useCallback((submission) => {
     setSelectedSubmission(submission);
     setViewModalOpen(true);
   }, []);
 
   const handleEditClick = useCallback((submission) => {
-    // Artık alert göstermek yerine, kullanıcıyı düzenleme ekranına yönlendiriyoruz.
-    // `state` ile submission verisini de göndererek, yeni sayfada tekrar API isteği yapmaktan kurtuluyoruz.
-    navigate(`/formforgeapi/edit/${submission.id}`, { state: { submission } });
-  }, [navigate]);
-
+    setSubmissionToEdit(submission);
+    setUpdateModalOpen(true);
+  }, []);
 
   // --- HOOK'UN DIŞARIYA AÇTIĞI ARAYÜZ ---
   return {
@@ -211,11 +216,17 @@ export default function useFormForgeApi() {
     deleteForm: archiveForm,
     fetchSubmissions,
     createSubmission,
-    updateSubmission, // <-- Yeni fonksiyonu dışa aktar
+    updateSubmission,
     fetchDepartments,
+    // View Modal
     isViewModalOpen,
     setViewModalOpen,
     selectedSubmission,
+    // Update Modal
+    isUpdateModalOpen,
+    setUpdateModalOpen,
+    submissionToEdit,
+    // Eylemler
     actionHandlers: {
       handleViewClick,
       handleEditClick

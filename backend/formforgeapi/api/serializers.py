@@ -1,3 +1,4 @@
+# backend/formforgeapi/api/serializers.py
 import json
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
@@ -127,7 +128,11 @@ class FormSubmissionSerializer(serializers.ModelSerializer):
     Form gönderimlerini ve iç içe değerlerini yöneten ana serializer.
     Hem normal listeleme hem de 'history' action'ı için kullanılır.
     """
-    values = SubmissionValueSerializer(many=True, required=False)
+    # DÜZELTME: values alanı 'read_only=True' olarak ayarlandı.
+    # Bu, DRF'in yazma (create/update) işlemlerinde bu alanı kendi doğrulamasından geçirmesini engeller.
+    # Yazma mantığı tamamen aşağıdaki 'create' metodu tarafından yönetilecektir.
+    values = SubmissionValueSerializer(many=True, read_only=True)
+    
     created_by = SimpleUserSerializer(read_only=True)
     versions = serializers.StringRelatedField(many=True, read_only=True)
     is_owner = serializers.SerializerMethodField()

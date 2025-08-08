@@ -1,7 +1,8 @@
 // path: frontend/src/components/formforgeapi/components/page-level/FormBuilderScreen.jsx
 
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+// DÜZELTME: useNavigate yanına Link eklendi.
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { DndContext, PointerSensor, useSensor, useSensors, closestCenter } from '@dnd-kit/core';
 
 import useFormForgeApi from '../../hooks/useFormForgeApi';
@@ -57,7 +58,7 @@ const PreviewRenderer = ({ form }) => {
             case 'checkbox':
                return ( <div style={{marginTop: '0.5rem'}}><label><input type="checkbox" {...commonProps} /> {field.label}</label></div> );
             case 'radio':
-              return <div style={{marginTop: '0.5rem'}}>{field.options.map(opt => ( <label key={opt.id} className={previewStyles.formFillScreen__inlineLabel}><input type="radio" name={fieldId} {...commonProps} /> {opt.label}</label> ))}</div>;
+             return <div style={{marginTop: '0.5rem'}}>{field.options.map(opt => ( <label key={opt.id} className={previewStyles.formFillScreen__inlineLabel}><input type="radio" name={fieldId} {...commonProps} /> {opt.label}</label> ))}</div>;
             default:
               return <input type={field.field_type} {...commonProps} />;
           }
@@ -120,6 +121,11 @@ const FormBuilderScreen = () => {
   if (isNewMode) {
     return (
       <div style={{ padding: '2rem', maxWidth: '500px', margin: 'auto' }}>
+        {/* YENİ EKLENEN GERİ DÖN LİNKİ */}
+        <div style={{ marginBottom: '1.5rem' }}>
+            <Link to="/formforgeapi">&larr; Form Listesine Geri Dön</Link>
+        </div>
+
         <h2>Yeni Form Oluştur</h2>
         <form onSubmit={handleCreateForm}>
           <div className="mb-3">
@@ -157,7 +163,12 @@ const FormBuilderScreen = () => {
     >
       <div className={`${styles.formBuilderScreen} ${styles[`formBuilderScreen--${designer.viewMode}`]}`}>
         <header className={styles.formBuilderScreen__header}>
-          <h1 className={styles.formBuilderScreen__logo}>{currentForm.title}</h1>
+            {/* YENİ EKLENEN GERİ DÖN LİNKİ (HEADER İÇİN) */}
+            <div className={styles.formBuilderScreen__navigation}>
+                <Link to="/formforgeapi" className={styles.formBuilderScreen__backLink}>&larr; Geri</Link>
+                <h1 className={styles.formBuilderScreen__logo}>{currentForm.title}</h1>
+            </div>
+
           <div className={styles.formBuilderScreen__viewToggle}>
             <button
                 onClick={() => designer.setViewMode('design')}

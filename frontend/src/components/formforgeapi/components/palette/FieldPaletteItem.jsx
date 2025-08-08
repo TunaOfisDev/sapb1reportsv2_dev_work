@@ -1,8 +1,6 @@
 // path: frontend/src/components/formforgeapi/components/palette/FieldPaletteItem.jsx
 // NOT: Bu dosya @dnd-kit kullanacak şekilde güncellenmiştir.
-
 import React from 'react';
-// DEĞİŞTİ: react-beautiful-dnd yerine @dnd-kit/core'dan useDraggable import edildi.
 import { useDraggable } from '@dnd-kit/core';
 import styles from '../../css/FieldPalette.module.css';
 

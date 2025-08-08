@@ -3,7 +3,8 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.db.models import Q # DÜZELTME: Q objesi için import eklendi.
+from django.db.models import Q
+from django.contrib.auth import get_user_model
 
 from ..models import Department, Form, FormField, FormSubmission, SubmissionValue
 from .serializers import (
@@ -11,19 +12,38 @@ from .serializers import (
     FormSerializer, 
     FormFieldSerializer, 
     FormSubmissionSerializer, 
-    SubmissionValueSerializer
+    SubmissionValueSerializer,
+    SimpleUserSerializer
 )
 from ..services import formforgeapi_service
 from ..permissions import IsCreatorOrReadOnly
 from rest_framework.permissions import IsAuthenticated
 
+# ==============================================================================
+# YARDIMCI VIEWSET'LER
+# ==============================================================================
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    CustomUser modeline göre güncellendi.
+    Servis katmanını kullanarak kullanıcıları departman ve pozisyon bilgileriyle listeler.
+    """
+    serializer_class = SimpleUserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        """Veriyi servis katmanındaki optimize edilmiş fonksiyondan alır."""
+        return formforgeapi_service.get_user_list()
+
 class DepartmentViewSet(viewsets.ModelViewSet):
+    """formforgeapi içindeki departmanları yönetir."""
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return formforgeapi_service.get_department_list()
+# ==============================================================================
+# ANA VIEWSET'LER
+# ==============================================================================
 
 class FormViewSet(viewsets.ModelViewSet):
     queryset = Form.objects.all()
@@ -43,16 +63,12 @@ class FormViewSet(viewsets.ModelViewSet):
         
     @action(detail=True, methods=['post'], url_path='archive')
     def archive(self, request, pk=None):
-        form = self.get_object()
-        form.status = Form.FormStatus.ARCHIVED
-        form.save()
+        form = self.get_object(); form.status = Form.FormStatus.ARCHIVED; form.save()
         return Response({'status': 'form archived'}, status=status.HTTP_200_OK)
     
     @action(detail=True, methods=['post'], url_path='unarchive')
     def unarchive(self, request, pk=None):
-        form = self.get_object()
-        form.status = Form.FormStatus.PUBLISHED
-        form.save()
+        form = self.get_object(); form.status = Form.FormStatus.PUBLISHED; form.save()
         return Response({'status': 'form unarchived'}, status=status.HTTP_200_OK)
             
     @action(detail=True, methods=['post'], url_path='create-version')
@@ -66,9 +82,6 @@ class FormFieldViewSet(viewsets.ModelViewSet):
     serializer_class = FormFieldSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return formforgeapi_service.get_formfield_list()
-
     @action(detail=False, methods=['post'], url_path='update-order')
     def update_order(self, request):
         return formforgeapi_service.update_formfield_order(request.data)
@@ -79,32 +92,19 @@ class FormSubmissionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsCreatorOrReadOnly]
 
     def get_queryset(self):
-        """
-        Gönderimleri forma göre filtreler.
-        DÜZELTME: is_active filtresi sadece 'list' eylemi için uygulanır.
-        Bu, 'history' gibi 'detail' eylemlerinin pasif kayıtları da bulmasını sağlar.
-        """
         queryset = self.queryset.select_related('created_by', 'parent_submission').prefetch_related('values__form_field', 'versions')
-        
-        # Sadece ana listeleme görünümünde aktif olanları filtrele
         if self.action == 'list':
             if self.request.query_params.get('all_versions') != 'true':
                 queryset = queryset.filter(is_active=True)
-
         form_id = self.request.query_params.get('form')
-        if form_id:
-            return queryset.filter(form_id=form_id)
-        
-        # 'retrieve', 'update', 'history' gibi eylemler için bu noktaya gelinir
-        # ve bu eylemler pk'ya göre çalıştığı için tüm queryset üzerinde çalışabilir.
-        # Eğer bir form_id yoksa ve eylem 'list' ise, güvenlik için boş döndür.
-        if self.action == 'list':
-             return queryset.none()
-
+        if form_id: return queryset.filter(form_id=form_id)
+        if self.action == 'list': return queryset.none()
         return queryset
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
+        # 'created_by' bilgisi context üzerinden serializer'ın create metoduna zaten gidiyor.
+        # Bu yüzden burada tekrar göndermeye gerek yok.
+        serializer.save()
 
     def update(self, request, *args, **kwargs):
         original_submission_id = kwargs.get('pk')
@@ -120,34 +120,21 @@ class FormSubmissionViewSet(viewsets.ModelViewSet):
             return Response({"error": "Submission not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
-
 
     @action(detail=True, methods=['get'])
     def history(self, request, pk=None):
-        """
-        Belirli bir gönderinin tüm versiyon geçmişini döndürür.
-        """
         try:
             submission = self.get_object()
             root_submission = submission.parent_submission or submission
-            
-            # DÜZELTME: 'models.Q' yerine 'Q' kullanılıyor.
             history_qs = FormSubmission.objects.filter(
                 Q(id=root_submission.id) | Q(parent_submission=root_submission)
             ).order_by('version')
-            
-            # DÜZELTME: Frontend'in detaylı tablo isteği için ana serializer kullanılıyor.
             serializer = self.get_serializer(history_qs, many=True)
             return Response(serializer.data)
-            
         except FormSubmission.DoesNotExist:
-            return Response({"error": "Gönderi bulunamadı."}, status=404)
+            return Response({"error": "Gönderi bulunamadı."}, status=status.HTTP_404_NOT_FOUND)
 
 class SubmissionValueViewSet(viewsets.ModelViewSet):
     queryset = SubmissionValue.objects.all()
     serializer_class = SubmissionValueSerializer
     permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return formforgeapi_service.get_submissionvalue_list()

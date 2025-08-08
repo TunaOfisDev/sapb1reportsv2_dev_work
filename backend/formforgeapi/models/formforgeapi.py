@@ -2,6 +2,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+from ..utils.formfields import FieldTypes
 
 class Department(models.Model):
     name = models.CharField(_("Departman Adı"), max_length=255)
@@ -12,7 +13,6 @@ class Department(models.Model):
         return self.name
 
 class Form(models.Model):
-    # YENİ: Form durumları için TextChoices ekliyoruz
     class FormStatus(models.TextChoices):
         DRAFT = 'DRAFT', _('Taslak')
         PUBLISHED = 'PUBLISHED', _('Dağıtımda')
@@ -23,7 +23,6 @@ class Form(models.Model):
     department = models.ForeignKey(Department, verbose_name=_("Departman"), on_delete=models.CASCADE)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("Oluşturan Kullanıcı"), on_delete=models.CASCADE)
     
-    # YENİ: Status alanı eklendi
     status = models.CharField(
         _("Durum"),
         max_length=10,
@@ -31,7 +30,6 @@ class Form(models.Model):
         default=FormStatus.PUBLISHED
     )
 
-    # YENİ: Versiyonlama için alanlar
     parent_form = models.ForeignKey(
         'self', 
         on_delete=models.SET_NULL, 
@@ -46,27 +44,25 @@ class Form(models.Model):
     updated_at = models.DateTimeField(_("Güncellenme Tarihi"), auto_now=True)
 
     class Meta:
-        ordering = ['-version'] # İsteğe bağlı: Versiyona göre sırala
+        ordering = ['-version']
         
     def __str__(self):
         return self.title
 
 
 class FormField(models.Model):
-    class FieldTypes(models.TextChoices):
-        TEXT          = 'text',         _('Metin')
-        NUMBER        = 'number',       _('Sayı')
-        EMAIL         = 'email',        _('E-posta')
-        TEXTAREA      = 'textarea',     _('Metin Alanı')
-        SINGLE_SELECT = 'singleselect', _('Tekli Seçim')
-        MULTI_SELECT  = 'multiselect',  _('Çoklu Seçim')
-        CHECKBOX      = 'checkbox',     _('Onay Kutusu')
-        RADIO         = 'radio',        _('Radyo Düğmesi')
-        DATE          = 'date',         _('Tarih')
-
+    # GÜNCELLEME: İç içe tanımlanmış 'FieldTypes' sınıfı buradan kaldırıldı.
+    
     form = models.ForeignKey(Form, verbose_name=_("Form"), on_delete=models.CASCADE, related_name='fields')
     label = models.CharField(_("Etiket"), max_length=255)
-    field_type = models.CharField(_("Alan Tipi"), max_length=20, choices=FieldTypes.choices)
+    
+    # GÜNCELLEME: Alan tipi, artık import edilen FieldTypes'ı kullanıyor ve max_length artırıldı.
+    field_type = models.CharField(
+        _("Alan Tipi"), 
+        max_length=30, # 'departmentpicker' gibi uzun isimler için artırıldı
+        choices=FieldTypes.choices
+    )
+    
     is_required = models.BooleanField(_("Zorunlu"), default=False)
     is_master = models.BooleanField(_("Ana Alan"), default=False)
     order = models.IntegerField(_("Sıralama"), default=0)
@@ -80,7 +76,6 @@ class FormSubmission(models.Model):
     form = models.ForeignKey(Form, verbose_name=_("Form"), on_delete=models.CASCADE, related_name='submissions')
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_("Gönderen Kullanıcı"), on_delete=models.CASCADE)
     
-    # --- YENİ ALANLAR: GÖNDERİM VERSİYONLAMA ---
     parent_submission = models.ForeignKey(
         'self', 
         on_delete=models.SET_NULL, 
@@ -91,7 +86,6 @@ class FormSubmission(models.Model):
     )
     version = models.PositiveIntegerField(_("Versiyon"), default=1)
     is_active = models.BooleanField(_("Aktif Versiyon"), default=True)
-    # --- YENİ ALANLAR SONU ---
     
     created_at = models.DateTimeField(_("Oluşturulma Tarihi"), auto_now_add=True)
     updated_at = models.DateTimeField(_("Güncellenme Tarihi"), auto_now=True)
@@ -99,9 +93,6 @@ class FormSubmission(models.Model):
     def __str__(self):
         user_info = self.created_by.email if self.created_by else 'Anonim Kullanıcı'
         return f"{self.form.title} - {user_info} (V{self.version})"
-
-
-
 
 class SubmissionValue(models.Model):
     submission = models.ForeignKey(FormSubmission, verbose_name=_("Form Gönderimi"), on_delete=models.CASCADE, related_name='values')
@@ -111,7 +102,6 @@ class SubmissionValue(models.Model):
     updated_at = models.DateTimeField(_("Güncellenme Tarihi"), auto_now=True)
 
     def __str__(self):
-        # Bu metot daha açıklayıcı hale getirildi.
         user_info = self.submission.created_by.email if self.submission.created_by else 'Anonim'
         return f"{self.submission.form.title} | {self.form_field.label}: {self.value} ({user_info})"
 

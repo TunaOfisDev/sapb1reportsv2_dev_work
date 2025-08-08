@@ -1,144 +1,147 @@
 // path: frontend/src/components/formforgeapi/components/properties/FieldPropsDrawer.jsx
 
-import React, { useState, useEffect } from 'react'; // useState ve useEffect eklendi
+import React, { useState, useEffect } from 'react';
 import styles from '../../css/FieldPropsDrawer.module.css';
-import FieldProperty from './FieldProperty';
-import { FIELD_TYPE_OPTIONS } from '../../constants';
-import { addOption, updateOption, removeOption } from '../../utils/optionUtils';
+// DEĞİŞİKLİK: 'FIELD_TYPE_OPTIONS' yerine 'ALL_FIELD_OPTIONS' ve 'FIELDS_WITH_OPTIONS' import edildi.
+import { ALL_FIELD_OPTIONS, FIELDS_WITH_OPTIONS } from '../../constants';
 
 const FieldPropsDrawer = ({ field, onClose, onUpdate, onDelete }) => {
-  // YENİ: Bileşen içinde düzenlenmekte olan alan için geçici bir state tutuyoruz.
+  // Seçili olan alanın özelliklerini düzenlemek için yerel bir state tutuyoruz.
   const [editedField, setEditedField] = useState(field);
 
-  // Prop olarak gelen 'field' değiştiğinde (yeni bir alan seçildiğinde),
-  // iç state'imizi güncelliyoruz.
+  // Dışarıdan gelen 'field' prop'u değiştiğinde (yeni bir alan seçildiğinde)
+  // yerel state'imizi güncelliyoruz.
   useEffect(() => {
     setEditedField(field);
   }, [field]);
 
-  // Eğer hiçbir alan seçilmemişse veya state henüz oluşmamışsa, paneli render etme.
+  // Eğer hiçbir alan seçilmemişse veya state henüz oluşmamışsa,
+  // sadece bir yer tutucu gösteriyoruz.
   if (!editedField) {
-    return null;
+    return (
+      <aside className={`${styles.drawer} ${styles.drawerPlaceholder}`}>
+        <p>Özelliklerini düzenlemek için bir alan seçin.</p>
+      </aside>
+    );
   }
 
-  // DEĞİŞTİ: Bu fonksiyon artık doğrudan ana state'i değil, yerel 'editedField' state'ini güncelliyor.
-  const handlePropertyChange = (propName, value) => {
-    setEditedField(prev => ({ ...prev, [propName]: value }));
+  // Input, select, checkbox gibi alanlardaki her değişikliği yerel state'e yazar.
+  const handlePropertyChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
+    const updatedField = { ...editedField, [name]: newValue };
+    setEditedField(updatedField);
+    // Değişiklikleri anında ana state'e yansıtıyoruz.
+    onUpdate(updatedField);
   };
 
-  const handleOptionChange = (newOptions) => {
-    setEditedField(prev => ({ ...prev, options: newOptions }));
+  // --- Seçenek Yönetimi Fonksiyonları ---
+  const handleAddOption = () => {
+    const newOption = { id: `temp_option_${Date.now()}`, label: '', order: editedField.options.length };
+    const updatedField = { ...editedField, options: [...editedField.options, newOption] };
+    setEditedField(updatedField);
+    onUpdate(updatedField);
+  };
+
+  const handleUpdateOption = (optionId, newLabel) => {
+    const updatedOptions = editedField.options.map(opt =>
+      opt.id === optionId ? { ...opt, label: newLabel } : opt
+    );
+    const updatedField = { ...editedField, options: updatedOptions };
+    setEditedField(updatedField);
+    onUpdate(updatedField);
+  };
+
+  const handleRemoveOption = (optionId) => {
+    const updatedOptions = editedField.options.filter(opt => opt.id !== optionId);
+    const updatedField = { ...editedField, options: updatedOptions };
+    setEditedField(updatedField);
+    onUpdate(updatedField);
   };
   
-  const handleAddOptionClick = () => {
-    const newFieldState = addOption(editedField);
-    handleOptionChange(newFieldState.options);
-  };
-
-  const handleUpdateOptionClick = (optionId, newLabel) => {
-    const newFieldState = updateOption(editedField, optionId, newLabel);
-    handleOptionChange(newFieldState.options);
-  };
-
-  const handleRemoveOptionClick = (optionId) => {
-    const newFieldState = removeOption(editedField, optionId);
-    handleOptionChange(newFieldState.options);
-  };
-
-  const handleDeleteFieldClick = () => {
-    onDelete(editedField.id);
-  };
-
-  // YENİ: Kaydet butonu için fonksiyon. Değişiklikleri ana hook'a bu fonksiyon gönderir.
-  const handleSaveChanges = () => {
-    onUpdate(editedField);
-  };
-  
-  const hasOptions = ['singleselect', 'multiselect', 'radio'].includes(editedField?.field_type);
+  // DEĞİŞİKLİK: 'options' gerektiren alanları constants'taki merkezi listeden kontrol ediyoruz.
+  const hasOptions = FIELDS_WITH_OPTIONS.includes(editedField?.field_type);
 
   return (
-    <>
-      <div className={`${styles.fieldPropsDrawer} ${styles['fieldPropsDrawer--open']}`}>
-        <div className={styles.fieldPropsDrawer__header}>
-          <h3 className={styles.fieldPropsDrawer__title}>Alan Özellikleri</h3>
-          <button onClick={onClose} className={styles.fieldPropsDrawer__close}>&times;</button>
+    <aside className={`${styles.drawer} ${styles.drawerOpen}`}>
+      <div className={styles.drawerHeader}>
+        <h3 className={styles.drawerTitle}>Alan Özellikleri</h3>
+        <button onClick={onClose} className={styles.drawerCloseButton}>&times;</button>
+      </div>
+
+      <div className={styles.drawerBody}>
+        {/* Alan Etiketi */}
+        <div className={styles.formGroup}>
+          <label htmlFor="label">Etiket</label>
+          <input
+            type="text" id="label" name="label"
+            className={styles.formControl}
+            value={editedField.label}
+            onChange={handlePropertyChange}
+          />
         </div>
 
-        <div className={styles.fieldPropsDrawer__body}>
-          <FieldProperty label="Alan Etiketi" htmlFor={`prop-label-${editedField.id}`}>
-            {/* DEĞİŞTİ: Değerler artık 'editedField' state'inden geliyor */}
-            <input
-              id={`prop-label-${editedField.id}`}
-              type="text"
-              className={styles.fieldPropsDrawer__control}
-              value={editedField.label}
-              onChange={(e) => handlePropertyChange('label', e.target.value)}
-            />
-          </FieldProperty>
+        {/* Alan Tipi */}
+        <div className={styles.formGroup}>
+          <label htmlFor="field_type">Alan Tipi</label>
+          <select
+            id="field_type" name="field_type"
+            className={styles.formControl}
+            value={editedField.field_type}
+            onChange={handlePropertyChange}
+          >
+            {/* DEĞİŞİKLİK: Dropdown artık yeni ve tam listeyi kullanıyor. */}
+            {ALL_FIELD_OPTIONS.map(opt => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
 
-          <FieldProperty label="Alan Tipi" htmlFor={`prop-type-${editedField.id}`}>
-            <select
-              id={`prop-type-${editedField.id}`}
-              className={styles.fieldPropsDrawer__control}
-              value={editedField.field_type}
-              onChange={(e) => handlePropertyChange('field_type', e.target.value)}
-            >
-              {FIELD_TYPE_OPTIONS.map(opt => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-          </FieldProperty>
-
-          <div className={styles.fieldPropsDrawer__group}>
-            <label className={styles.fieldPropsDrawer__inlineLabel}>
-              <input
-                type="checkbox"
-                checked={editedField.is_required}
-                onChange={(e) => handlePropertyChange('is_required', e.target.checked)}
-              />
-              Zorunlu Alan
-            </label>
-          </div>
-
-          {hasOptions && (
-            <div className={styles.fieldPropsDrawer__group}>
-              <label className={styles.fieldPropsDrawer__label}>Seçenekler</label>
-              {editedField.options.map((option, index) => (
-                <div key={option.id} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.25rem' }}>
+        {/* Zorunlu Alan Checkbox */}
+        <div className={styles.formGroupCheck}>
+          <input
+            type="checkbox" id="is_required" name="is_required"
+            checked={!!editedField.is_required}
+            onChange={handlePropertyChange}
+          />
+          <label htmlFor="is_required">Bu alan zorunlu</label>
+        </div>
+        
+        {/* Seçenekler Bölümü (sadece ilgili alanlar için görünür) */}
+        {hasOptions && (
+          <div className={styles.formGroup}>
+            <label>Seçenekler</label>
+            <div className={styles.optionsContainer}>
+              {editedField.options?.map((option, index) => (
+                <div key={option.id || index} className={styles.optionItem}>
                   <input
                     type="text"
-                    className={styles.fieldPropsDrawer__control}
+                    className={styles.formControl}
                     placeholder={`Seçenek ${index + 1}`}
                     value={option.label}
-                    onChange={(e) => handleUpdateOptionClick(option.id, e.target.value)}
+                    onChange={(e) => handleUpdateOption(option.id, e.target.value)}
                   />
-                  <button onClick={() => handleRemoveOptionClick(option.id)} title="Seçeneği Sil" className={styles.fieldPropsDrawer__btnSecondary}>
+                  <button onClick={() => handleRemoveOption(option.id)} className={styles.optionButton}>
                     &times;
                   </button>
                 </div>
               ))}
-              <button onClick={handleAddOptionClick} className={styles.fieldPropsDrawer__btn}>
-                + Seçenek Ekle
-              </button>
             </div>
-          )}
-        </div>
-
-        <div className={styles.fieldPropsDrawer__footer}>
-          <button onClick={handleDeleteFieldClick} className={styles.fieldPropsDrawer__btnSecondary} style={{color: '#d92d20', marginRight: 'auto'}}>
-            Alanı Sil
-          </button>
-          {/* YENİ: KAYDET BUTONU */}
-          <button onClick={handleSaveChanges} className={styles.fieldPropsDrawer__btnPrimary}>
-            Değişiklikleri Kaydet
-          </button>
-        </div>
+            <button onClick={handleAddOption} className={styles.addButton}>
+              + Seçenek Ekle
+            </button>
+          </div>
+        )}
       </div>
-      <div
-        className={`${styles.fieldPropsDrawer__backdrop} ${styles['fieldPropsDrawer--open']}`}
-        onClick={onClose}
-      />
-    </>
+
+      <div className={styles.drawerFooter}>
+        <button onClick={() => onDelete(editedField.id)} className={styles.deleteButton}>
+          Alanı Sil
+        </button>
+      </div>
+    </aside>
   );
 };
 

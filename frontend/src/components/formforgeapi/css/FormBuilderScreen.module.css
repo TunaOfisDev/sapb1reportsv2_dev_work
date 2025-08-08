@@ -1,109 +1,140 @@
-/* FormBuilderScreen.module.css  --------------------------------------- */
-/* BLOCK-LEVEL TOKENS  (yalnızca .formBuilderScreen için geçerlidir) */
+/* FormBuilderScreen.module.css - MODERN KURUMSAL TASARIM */
+
+/* ==========================================================================
+   1. Blok Seviyesi Değişkenler (Tokens)
+   ========================================================================== */
 .formBuilderScreen {
-  --fbs-bg:              #f7f9fa;
-  --fbs-border:          #e6e8ec;
-  --fbs-shadow-light:    0 1px 2px rgba(0, 0, 0, 0.04);
-  --fbs-header-height:   56px;
-
-  --fbs-primary:         #0a6ed1;
-  --fbs-primary-hover:   #0d7aea;
-
-  --fbs-radius:          4px;
-  --fbs-z:               20;
+  --fbs-bg:               #f8f9fa; /* Açık gri ana arka plan */
+  --fbs-header-bg:        #ffffff;
+  --fbs-palette-bg:       #1e293b; /* Koyu lacivert/gri sol panel */
+  --fbs-border:           #dee2e6;
+  --fbs-shadow:           0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -2px rgba(0,0,0,.1);
+  --fbs-header-height:    60px;
+  
+  /* Ana Renkler */
+  --fbs-primary:          #3b82f6; /* Daha canlı bir mavi */
+  --fbs-primary-hover:    #2563eb;
+  --fbs-text-light:       #f8fafc; /* Beyaza yakın */
+  --fbs-text-dark:        #334155; /* Koyu gri */
+  
+  --fbs-radius:           6px;
+  --fbs-z-header:         50;
+  --fbs-z-palette:        40;
 }
 
-/* ---------- Root (viewport–wide container) -------------------------- */
+/* ==========================================================================
+   2. Ana Yerleşim (Layout)
+   ========================================================================== */
 .formBuilderScreen {
   display: flex;
   flex-direction: column;
-  height: 100dvh;                   /* tam görünüm yüksekliği */
+  height: 100dvh;
   background: var(--fbs-bg);
+  color: var(--fbs-text-dark);
 }
 
-/* ---------- Header / top bar --------------------------------------- */
+.formBuilderScreen__layout {
+  flex: 1 1 auto;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   3. Header (Üst Bar)
+   ========================================================================== */
 .formBuilderScreen__header {
   flex: 0 0 var(--fbs-header-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1rem;
-  background: #ffffff;
+  padding: 0 1.5rem;
+  background: var(--fbs-header-bg);
   border-bottom: 1px solid var(--fbs-border);
-  box-shadow: var(--fbs-shadow-light);
-  z-index: var(--fbs-z);
+  box-shadow: var(--fbs-shadow);
+  z-index: var(--fbs-z-header);
+}
+
+.formBuilderScreen__navigation {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.formBuilderScreen__backLink {
+  font-size: 0.875rem;
+  color: #64748b;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.formBuilderScreen__backLink:hover {
+  color: var(--fbs-primary);
 }
 
 .formBuilderScreen__logo {
-  font-size: 1rem;
+  font-size: 1.125rem;
   font-weight: 600;
 }
 
 .formBuilderScreen__viewToggle {
   display: flex;
   gap: 0.25rem;
+  background-color: var(--fbs-bg);
+  padding: 0.25rem;
+  border-radius: var(--fbs-radius);
 }
 
 .formBuilderScreen__toggleBtn {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.8125rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
   font-weight: 500;
-  border: 1px solid var(--fbs-border);
+  border: none;
   border-radius: var(--fbs-radius);
-  background: #ffffff;
+  background: transparent;
+  color: #475569;
   cursor: pointer;
-  transition: background 150ms linear, color 150ms linear, border 150ms linear;
+  transition: all 200ms ease;
 }
 
 .formBuilderScreen__toggleBtn--active {
-  background: var(--fbs-primary);
-  color: #ffffff;
-  border-color: var(--fbs-primary);
+  background: var(--fbs-header-bg);
+  color: var(--fbs-primary);
+  box-shadow: var(--fbs-shadow);
 }
 
-.formBuilderScreen__toggleBtn:not(.formBuilderScreen__toggleBtn--active):hover {
-  background: #f3f4f6;
-}
-
-/* ---------- Main two/three-column layout --------------------------- */
-.formBuilderScreen__layout {
-  flex: 1 1 auto;
-  display: flex;
-  overflow: hidden;                 /* çocuk bileşenlerin taşmasını engeller */
-}
-
-/* Slotlar: FieldPalette / Canvas / FieldPropsDrawer */
+/* ==========================================================================
+   4. Slotlar (Sol Panel, Ana Alan, Sağ Panel)
+   ========================================================================== */
 .formBuilderScreen__paletteSlot {
-  /* genişlik FieldPalette.module.css tarafında tanımlı (240 px) */
   flex: 0 0 auto;
+  background: var(--fbs-palette-bg);
+  z-index: var(--fbs-z-palette);
+  box-shadow: var(--fbs-shadow);
+  /* Scroll (Kaydırma) Düzeltmesi */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }
 
 .formBuilderScreen__canvasSlot {
   flex: 1 1 0;
-  display: flex;
-  flex-direction: column;
   overflow-y: auto;
-  padding: 1.25rem;
+  padding: 2rem;
   overscroll-behavior: contain;
 }
 
 .formBuilderScreen__drawerSlot {
-  /* genişlik FieldPropsDrawer.module.css tarafında tanımlı (320 px) */
   flex: 0 0 auto;
+  background: var(--fbs-header-bg);
+  border-left: 1px solid var(--fbs-border);
 }
 
-/* ---------- Preview mode (only canvas visible) --------------------- */
-.formBuilderScreen--preview
-  .formBuilderScreen__paletteSlot,
-.formBuilderScreen--preview
-  .formBuilderScreen__drawerSlot {
-  display: none;                    /* sadece ortadaki canlı form kalır */
-}
-
-.formBuilderScreen--preview
-  .formBuilderScreen__canvasSlot {
-  padding-left: 2rem;
-  padding-right: 2rem;
+/* ==========================================================================
+   5. Önizleme Modu
+   ========================================================================== */
+.formBuilderScreen--preview .formBuilderScreen__paletteSlot,
+.formBuilderScreen--preview .formBuilderScreen__drawerSlot {
+  display: none;
 }
 
 /* ---------- Mobile / tablet tweaks --------------------------------- */

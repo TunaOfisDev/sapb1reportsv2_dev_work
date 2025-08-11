@@ -1,12 +1,15 @@
 // path: frontend/src/components/formforgeapi/components/page-level/FormFillScreen.jsx
+
 import React, { useEffect } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
-import { useForm, Controller } from 'react-hook-form';
-import Select from 'react-select'; // react-select kütüphanesini import ediyoruz
+import { useForm } from 'react-hook-form';
 
 // Custom Hooks
 import useFormForgeApi from '../../hooks/useFormForgeApi';
-import { useUserFormForgeApi } from '../../hooks/useUserFormForgeApi'; // Yeni hook'umuzu import ediyoruz
+import { useUserFormForgeApi } from '../../hooks/useUserFormForgeApi';
+
+// GÜNCELLEME: Artık sadece yönlendirici bileşeni import ediyoruz.
+import FormFieldRenderer from '../form-fields/FormFieldRenderer';
 
 // Styles
 import styles from '../../css/FormFillScreen.module.css';
@@ -20,29 +23,19 @@ const FormFillScreen = () => {
     const isEditMode = !!submissionId;
 
     // --- HOOK'LARI HAZIRLAMA ---
-    // 1. Ana form ve gönderim işlemleri için hook
     const {
-        currentForm,
-        loading: formLoading,
-        error: formError,
-        fetchForm,
-        createSubmission,
-        updateSubmission
+        currentForm, loading: formLoading, error: formError,
+        fetchForm, createSubmission, updateSubmission
     } = useFormForgeApi();
 
-    // 2. Sadece kullanıcı listesi işlemleri için ayrılmış yeni hook
     const {
-        userList,
-        loading: usersLoading,
-        fetchUserList
+        userList, loading: usersLoading, fetchUserList
     } = useUserFormForgeApi();
     
-    // 3. Form state yönetimi için react-hook-form
     const { control, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm();
 
     // --- VERİ ÇEKME VE FORMU DOLDURMA ---
     useEffect(() => {
-        // İster yeni form ister düzenleme modu olsun, kullanıcı listesini her zaman çekiyoruz.
         fetchUserList();
         
         if (isEditMode && submissionToEdit) {
@@ -52,12 +45,13 @@ const FormFillScreen = () => {
         }
     }, [formId, submissionId, isEditMode, submissionToEdit, fetchForm, fetchUserList]);
 
-    // Düzenleme modunda formu doldurmak için useEffect
     useEffect(() => {
         if (isEditMode && submissionToEdit) {
             const defaultValues = {};
             submissionToEdit.values.forEach(item => {
-                defaultValues[`field_${item.form_field}`] = item.value;
+                // GÜNCELLEME: userpicker gibi obje değerlerini doğru almak için
+                const value = (typeof item.value === 'object' && item.value !== null) ? item.value.id : item.value;
+                defaultValues[`field_${item.form_field}`] = value;
             });
             reset(defaultValues);
         }
@@ -70,85 +64,10 @@ const FormFillScreen = () => {
         } else {
             await createSubmission(formId, data);
         }
-        // Başarılı gönderim sonrası yönlendirme artık hook'un içinde yapılıyor.
     };
 
-    // --- ALAN RENDER ETME FONKSİYONU ---
-    const renderField = (field) => {
-        const fieldName = `field_${field.id}`;
-        return (
-            <div key={field.id} className={styles.formFillScreen__group}>
-                <label htmlFor={fieldName} className={styles.formFillScreen__label}>
-                    {field.label} {field.is_required && '*'}
-                </label>
-                <Controller
-                    name={fieldName}
-                    control={control}
-                    rules={{ required: field.is_required ? 'Bu alan zorunludur.' : false }}
-                    render={({ field: controllerField }) => {
-                        const commonProps = {
-                            ...controllerField,
-                            id: fieldName,
-                            className: `${styles.formFillScreen__control} ${errors[fieldName] ? styles['formFillScreen__control--invalid'] : ''}`,
-                        };
-                        switch (field.field_type) {
-                            case 'userpicker':
-                                return (
-                                    <Select
-                                        inputId={fieldName}
-                                        options={userList}
-                                        isLoading={usersLoading}
-                                        placeholder="Kullanıcı seçiniz..."
-                                        onChange={(selectedOption) => controllerField.onChange(selectedOption ? selectedOption.value : null)}
-                                        value={userList.find(c => c.value === controllerField.value) || null}
-                                        onBlur={controllerField.onBlur}
-                                        ref={controllerField.ref}
-                                        isClearable
-                                    />
-                                );
-                            case 'textarea': 
-                                return <textarea {...commonProps} />;
-                            case 'multiselect':
-                                return (
-                                    <div className={styles.formFillScreen__checkboxGroup}>
-                                        {field.options.map(opt => {
-                                            const currentValue = controllerField.value || [];
-                                            return (
-                                                <div className={styles.formFillScreen__checkItem} key={opt.id}>
-                                                    <input
-                                                        type="checkbox"
-                                                        id={`${fieldName}-${opt.id}`}
-                                                        onBlur={controllerField.onBlur}
-                                                        onChange={() => {
-                                                            const newValue = currentValue.includes(opt.label)
-                                                                ? currentValue.filter(val => val !== opt.label)
-                                                                : [...currentValue, opt.label];
-                                                            controllerField.onChange(newValue);
-                                                        }}
-                                                        checked={currentValue.includes(opt.label)}
-                                                    />
-                                                    <label htmlFor={`${fieldName}-${opt.id}`}>{opt.label}</label>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                );
-                            case 'singleselect':
-                                return (
-                                    <select {...commonProps}>
-                                        <option value="">Seçiniz...</option>
-                                        {field.options.map(opt => <option key={opt.id} value={opt.label}>{opt.label}</option>)}
-                                    </select>
-                                );
-                            default:
-                                return <input type={field.field_type} {...commonProps} />;
-                        }
-                    }}
-                />
-                {errors[fieldName] && <p className={styles.formFillScreen__error}>{errors[fieldName].message}</p>}
-            </div>
-        );
-    };
+    // KALDIRILDI: Devasa 'renderField' fonksiyonu ve içindeki switch-case yapısı
+    // artık burada değil. Bu sorumluluk FormFieldRenderer'a ait.
 
     // --- ANA RENDER ---
     if (formLoading && !currentForm) return <div>Form Yükleniyor...</div>;
@@ -171,7 +90,18 @@ const FormFillScreen = () => {
             )}
 
             <form onSubmit={handleSubmit(onSubmit)} className={styles.formFillScreen__form}>
-                {currentForm.fields.sort((a,b) => a.order - b.order).map(renderField)}
+                {currentForm.fields.sort((a,b) => a.order - b.order).map(field => (
+                    // GÜNCELLEME: Tüm render mantığı artık bu tek bileşen tarafından yönetiliyor.
+                    // Gerekli tüm propları (control, errors, userList vb.) ona iletiyoruz.
+                    <FormFieldRenderer
+                        key={field.id}
+                        field={field}
+                        control={control}
+                        errors={errors}
+                        userList={userList}
+                        usersLoading={usersLoading}
+                    />
+                ))}
                 <button type="submit" disabled={isSubmitting} className={styles.formFillScreen__submit}>
                     {isSubmitting ? 'Kaydediliyor...' : (isEditMode ? 'Güncelle' : 'Gönder')}
                 </button>

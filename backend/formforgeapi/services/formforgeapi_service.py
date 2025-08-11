@@ -176,6 +176,35 @@ def update_submission_and_create_new_version(original_submission_id, values_data
 
 
 @transaction.atomic
+def update_formfield_order(data): # <<<--- FONKSİYON ADININ BU OLDUĞUNDAN EMİN OL
+    """
+    Form alanlarının sırasını toplu olarak günceller.
+    Gelen veri: [{'id': 1, 'order': 0}, {'id': 2, 'order': 1}, ...]
+    """
+    updated_instances = []
+    # Gelen verinin bir liste olduğundan emin olalım
+    if not isinstance(data, list):
+        raise DRFValidationError("Beklenen veri formatı liste değil.")
+
+    for item in data:
+        # Her bir item'ın 'id' ve 'order' içerdiğinden emin olalım
+        if 'id' not in item or 'order' not in item:
+            continue # veya hata fırlat
+        
+        # Sadece `order` alanını güncellemek için boş bir FormField instance'ı oluşturuyoruz.
+        instance = FormField(id=item['id'], order=item['order'])
+        updated_instances.append(instance)
+
+    try:
+        # bulk_update ile tek bir veritabanı sorgusunda tüm sıralamayı güncelle
+        FormField.objects.bulk_update(updated_instances, ['order'])
+        return Response({"message": "Sıralama başarıyla güncellendi."}, status=status.HTTP_200_OK)
+    except Exception as e:
+        # Hata durumunda daha anlamlı bir mesaj döndür
+        raise DRFValidationError(f"Sıralama güncellenirken bir veritabanı hatası oluştu: {str(e)}")
+
+
+@transaction.atomic
 def create_new_form_version(original_form_id, user):
     original_form = Form.objects.get(pk=original_form_id)
     base_title = re.sub(r'_V\d+$', '', original_form.title)

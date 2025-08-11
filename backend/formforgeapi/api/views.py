@@ -1,6 +1,7 @@
 # path: backend/formforgeapi/api/views.py
 
 from rest_framework import viewsets, status
+from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models import Q
@@ -20,14 +21,34 @@ from ..permissions import IsCreatorOrReadOnly
 from rest_framework.permissions import IsAuthenticated
 
 # ==============================================================================
-# YARDIMCI VIEWSET'LER
+# BAĞIMSIZ API VIEW'LERİ (VIEWSET DIŞI)
+# ==============================================================================
+
+class UpdateFormFieldOrderView(APIView):
+    """
+    Form alanlarının sırasını toplu olarak günceller.
+    ModelViewSet'ten bağımsız olduğu için metod çakışması (405 hatası) riski taşımaz.
+    Sadece POST isteklerini kabul eder.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        """Sıralama verisini alır ve servis katmanına iletir."""
+        order_data = request.data
+        try:
+            return formforgeapi_service.update_formfield_order(order_data)
+        except Exception as e:
+            return Response(
+                {"error": f"Internal server error: {str(e)}"}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+# ==============================================================================
+# VIEWSET'LER
 # ==============================================================================
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    CustomUser modeline göre güncellendi.
-    Servis katmanını kullanarak kullanıcıları departman ve pozisyon bilgileriyle listeler.
-    """
+    """Kullanıcıları listeler (frontend'deki 'userpicker' için)."""
     serializer_class = SimpleUserSerializer
     permission_classes = [IsAuthenticated]
 
@@ -41,11 +62,8 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     serializer_class = DepartmentSerializer
     permission_classes = [IsAuthenticated]
 
-# ==============================================================================
-# ANA VIEWSET'LER
-# ==============================================================================
-
 class FormViewSet(viewsets.ModelViewSet):
+    """Form şemalarını ve versiyonlarını yönetir."""
     queryset = Form.objects.all()
     serializer_class = FormSerializer
     permission_classes = [IsAuthenticated]
@@ -63,12 +81,16 @@ class FormViewSet(viewsets.ModelViewSet):
         
     @action(detail=True, methods=['post'], url_path='archive')
     def archive(self, request, pk=None):
-        form = self.get_object(); form.status = Form.FormStatus.ARCHIVED; form.save()
+        form = self.get_object()
+        form.status = Form.FormStatus.ARCHIVED
+        form.save()
         return Response({'status': 'form archived'}, status=status.HTTP_200_OK)
     
     @action(detail=True, methods=['post'], url_path='unarchive')
     def unarchive(self, request, pk=None):
-        form = self.get_object(); form.status = Form.FormStatus.PUBLISHED; form.save()
+        form = self.get_object()
+        form.status = Form.FormStatus.PUBLISHED
+        form.save()
         return Response({'status': 'form unarchived'}, status=status.HTTP_200_OK)
             
     @action(detail=True, methods=['post'], url_path='create-version')
@@ -78,15 +100,13 @@ class FormViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class FormFieldViewSet(viewsets.ModelViewSet):
+    """Tekil form alanlarını yönetir (oluşturma, silme, güncelleme). Sıralama işlemi hariç."""
     queryset = FormField.objects.all()
     serializer_class = FormFieldSerializer
     permission_classes = [IsAuthenticated]
 
-    @action(detail=False, methods=['post'], url_path='update-order')
-    def update_order(self, request):
-        return formforgeapi_service.update_formfield_order(request.data)
-
 class FormSubmissionViewSet(viewsets.ModelViewSet):
+    """Form gönderimlerini ve versiyonlarını yönetir."""
     queryset = FormSubmission.objects.all()
     serializer_class = FormSubmissionSerializer
     permission_classes = [IsAuthenticated, IsCreatorOrReadOnly]
@@ -102,8 +122,7 @@ class FormSubmissionViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        # 'created_by' bilgisi context üzerinden serializer'ın create metoduna zaten gidiyor.
-        # Bu yüzden burada tekrar göndermeye gerek yok.
+        # Tüm mantık serializer'ın create metodunda, o da servisi çağırıyor.
         serializer.save()
 
     def update(self, request, *args, **kwargs):
@@ -135,6 +154,7 @@ class FormSubmissionViewSet(viewsets.ModelViewSet):
             return Response({"error": "Gönderi bulunamadı."}, status=status.HTTP_404_NOT_FOUND)
 
 class SubmissionValueViewSet(viewsets.ModelViewSet):
+    """(Genellikle direkt kullanılmaz) Form gönderimlerindeki tekil değerleri yönetir."""
     queryset = SubmissionValue.objects.all()
     serializer_class = SubmissionValueSerializer
     permission_classes = [IsAuthenticated]

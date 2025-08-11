@@ -2,21 +2,30 @@
 
 import React, { useState, useEffect } from 'react';
 import styles from '../../css/FieldPropsDrawer.module.css';
-// DEĞİŞİKLİK: 'FIELD_TYPE_OPTIONS' yerine 'ALL_FIELD_OPTIONS' ve 'FIELDS_WITH_OPTIONS' import edildi.
 import { ALL_FIELD_OPTIONS, FIELDS_WITH_OPTIONS } from '../../constants';
+import { useDebounce } from '../../hooks/useDebounce'; // YENİ: Debounce hook'unu import et
 
 const FieldPropsDrawer = ({ field, onClose, onUpdate, onDelete }) => {
-  // Seçili olan alanın özelliklerini düzenlemek için yerel bir state tutuyoruz.
   const [editedField, setEditedField] = useState(field);
+  
+  // YENİ: editedField state'ini 500ms gecikmeyle takip eden debounced bir değer oluştur.
+  const debouncedField = useDebounce(editedField, 500);
 
-  // Dışarıdan gelen 'field' prop'u değiştiğinde (yeni bir alan seçildiğinde)
-  // yerel state'imizi güncelliyoruz.
   useEffect(() => {
     setEditedField(field);
   }, [field]);
 
-  // Eğer hiçbir alan seçilmemişse veya state henüz oluşmamışsa,
-  // sadece bir yer tutucu gösteriyoruz.
+  // YENİ: Bu effect, SADECE kullanıcı yazmayı bıraktıktan sonra çalışır.
+  useEffect(() => {
+    // `debouncedField` değiştiğinde ve `onUpdate` prop'u mevcutsa,
+    // ve bu eski bir field değilse, değişikliği ana hook'a gönder.
+    if (debouncedField && onUpdate && debouncedField.id === field?.id) {
+      onUpdate(debouncedField);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedField, onUpdate]); // Sadece debouncedField veya onUpdate değiştiğinde çalışır
+
+
   if (!editedField) {
     return (
       <aside className={`${styles.drawer} ${styles.drawerPlaceholder}`}>
@@ -25,41 +34,33 @@ const FieldPropsDrawer = ({ field, onClose, onUpdate, onDelete }) => {
     );
   }
 
-  // Input, select, checkbox gibi alanlardaki her değişikliği yerel state'e yazar.
+  // GÜNCELLEME: Bu fonksiyon artık SADECE yerel state'i güncelliyor. API isteğini tetiklemiyor.
   const handlePropertyChange = (e) => {
     const { name, value, type, checked } = e.target;
     const newValue = type === 'checkbox' ? checked : value;
-    const updatedField = { ...editedField, [name]: newValue };
-    setEditedField(updatedField);
-    // Değişiklikleri anında ana state'e yansıtıyoruz.
-    onUpdate(updatedField);
+    setEditedField(prev => ({ ...prev, [name]: newValue }));
   };
 
-  // --- Seçenek Yönetimi Fonksiyonları ---
+  const handleOptionChange = (newOptions) => {
+    setEditedField(prev => ({ ...prev, options: newOptions }));
+  };
+
+  // ... (Diğer handle fonksiyonları da sadece setEditedField kullanacak şekilde kalabilir)
   const handleAddOption = () => {
     const newOption = { id: `temp_option_${Date.now()}`, label: '', order: editedField.options.length };
-    const updatedField = { ...editedField, options: [...editedField.options, newOption] };
-    setEditedField(updatedField);
-    onUpdate(updatedField);
+    handleOptionChange([...editedField.options, newOption]);
   };
-
   const handleUpdateOption = (optionId, newLabel) => {
     const updatedOptions = editedField.options.map(opt =>
       opt.id === optionId ? { ...opt, label: newLabel } : opt
     );
-    const updatedField = { ...editedField, options: updatedOptions };
-    setEditedField(updatedField);
-    onUpdate(updatedField);
+    handleOptionChange(updatedOptions);
   };
-
   const handleRemoveOption = (optionId) => {
     const updatedOptions = editedField.options.filter(opt => opt.id !== optionId);
-    const updatedField = { ...editedField, options: updatedOptions };
-    setEditedField(updatedField);
-    onUpdate(updatedField);
+    handleOptionChange(updatedOptions);
   };
-  
-  // DEĞİŞİKLİK: 'options' gerektiren alanları constants'taki merkezi listeden kontrol ediyoruz.
+
   const hasOptions = FIELDS_WITH_OPTIONS.includes(editedField?.field_type);
 
   return (
@@ -68,7 +69,6 @@ const FieldPropsDrawer = ({ field, onClose, onUpdate, onDelete }) => {
         <h3 className={styles.drawerTitle}>Alan Özellikleri</h3>
         <button onClick={onClose} className={styles.drawerCloseButton}>&times;</button>
       </div>
-
       <div className={styles.drawerBody}>
         {/* Alan Etiketi */}
         <div className={styles.formGroup}>
@@ -76,7 +76,7 @@ const FieldPropsDrawer = ({ field, onClose, onUpdate, onDelete }) => {
           <input
             type="text" id="label" name="label"
             className={styles.formControl}
-            value={editedField.label}
+            value={editedField.label || ''} // Kontrolsüz bileşenden kontrollüye geçiş hatasını önle
             onChange={handlePropertyChange}
           />
         </div>
@@ -90,7 +90,6 @@ const FieldPropsDrawer = ({ field, onClose, onUpdate, onDelete }) => {
             value={editedField.field_type}
             onChange={handlePropertyChange}
           >
-            {/* DEĞİŞİKLİK: Dropdown artık yeni ve tam listeyi kullanıyor. */}
             {ALL_FIELD_OPTIONS.map(opt => (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
@@ -109,7 +108,7 @@ const FieldPropsDrawer = ({ field, onClose, onUpdate, onDelete }) => {
           <label htmlFor="is_required">Bu alan zorunlu</label>
         </div>
         
-        {/* Seçenekler Bölümü (sadece ilgili alanlar için görünür) */}
+        {/* Seçenekler Bölümü */}
         {hasOptions && (
           <div className={styles.formGroup}>
             <label>Seçenekler</label>
@@ -135,7 +134,6 @@ const FieldPropsDrawer = ({ field, onClose, onUpdate, onDelete }) => {
           </div>
         )}
       </div>
-
       <div className={styles.drawerFooter}>
         <button onClick={() => onDelete(editedField.id)} className={styles.deleteButton}>
           Alanı Sil

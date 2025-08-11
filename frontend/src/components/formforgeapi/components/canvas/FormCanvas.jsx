@@ -1,31 +1,43 @@
 // path: frontend/src/components/formforgeapi/components/canvas/FormCanvas.jsx
 
 import React from 'react';
+import { useDroppable } from '@dnd-kit/core';
+import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import styles from '../../css/FormCanvas.module.css';
-import CanvasSection from './CanvasSection';
+import FormFieldCard from '../cards/FormFieldCard';
 
 const FormCanvas = ({ layout, selectedFieldId, onSelectField }) => {
-  // DEĞİŞİKLİK: isCanvasEmpty ? ... : ... mantığını kaldırıyoruz.
-  // Layout boş bile olsa, içindeki section ve row'ların render edilmesine izin veriyoruz
-  // ki "bırakma alanı" her zaman DOM'da mevcut olsun.
+  const { setNodeRef } = useDroppable({ id: 'canvas-drop-area' });
 
-  // Eğer layout henüz yüklenmediyse (boş dizi ise) hiçbir şey gösterme.
-  if (!layout || layout.length === 0) {
-    // Veya bir yükleniyor durumu gösterilebilir. Şimdilik boş bırakalım.
-    return <main className={styles.formCanvas}></main>;
+  // Şimdilik basitlik adına tek bir satır ve bölüm varsayıyoruz.
+  const mainRow = layout[0]?.rows[0];
+
+  if (!mainRow) {
+    return (
+      <div ref={setNodeRef} className={`${styles.canvas} ${styles.canvasEmpty}`}>
+        <p>Başlamak için sol panelden bir alan sürükleyin.</p>
+      </div>
+    );
   }
 
+  // Sıralanabilir elemanların ID listesi
+  const fieldIds = mainRow.fields.map(f => f.id);
+
   return (
-    <main className={styles.formCanvas}>
-      {layout.map(section => (
-        <CanvasSection
-          key={section.id}
-          section={section}
-          selectedFieldId={selectedFieldId}
-          onSelectField={onSelectField}
-        />
-      ))}
-    </main>
+    <div ref={setNodeRef} className={styles.canvas}>
+      <SortableContext items={fieldIds} strategy={rectSortingStrategy}>
+        <div className={styles.canvasGrid}>
+          {mainRow.fields.map(field => (
+            <FormFieldCard
+              key={field.id}
+              field={field}
+              isSelected={selectedFieldId === field.id}
+              onSelect={onSelectField}
+            />
+          ))}
+        </div>
+      </SortableContext>
+    </div>
   );
 };
 

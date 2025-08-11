@@ -1,77 +1,91 @@
-// YENİ DOSYA: frontend/src/components/formforgeapi/components/canvas/FormPreview.jsx
+// path: frontend/src/components/formforgeapi/components/canvas/FormPreview.jsx
 
 import React from 'react';
-import { Controller } from 'react-hook-form';
-import useFormForgePreview from '../../hooks/useFormForgePreview';
-import styles from '../../css/FormFillScreen.module.css'; // FormFillScreen stillerini kullanabiliriz
+import styles from '../../css/FormFillScreen.module.css'; // Stil için FormFillScreen'in CSS'ini kullanıyoruz.
+import { FIELD_TYPES } from '../../constants'; // Alan tiplerini almak için
 
+/**
+ * Form Önizleme Bileşeni
+ * --------------------------------------------------------------------
+ * Bu bileşen, formun anlık bir görsel önizlemesini render eder.
+ * Herhangi bir form gönderme veya state yönetimi mantığı içermez.
+ * Sadece kendisine verilen 'form' prop'undaki veriyi ekrana çizer.
+ */
 const FormPreview = ({ form }) => {
-  // Bu hook, react-hook-form'u bizim için yönetir
-  const { control, errors, handlePreviewSubmit } = useFormForgePreview(form);
 
+  // Alanları render eden yardımcı fonksiyon
   const renderField = (field) => {
-    const fieldId = String(field.id);
+    const fieldId = `preview-${field.id}`;
+    
+    // Tüm alanlar için ortak, devre dışı bırakılmış proplar
+    const commonProps = {
+      id: fieldId,
+      className: styles.formFillScreen__control,
+      disabled: true, // Tüm alanlar tıklanamaz/değiştirilemez
+    };
+
     return (
       <div key={fieldId} className={styles.formFillScreen__group}>
         <label htmlFor={fieldId} className={styles.formFillScreen__label}>
-          {field.label} {field.is_required && '*'}
+          {field.label} {field.is_required && <span style={{color: 'red'}}>*</span>}
         </label>
-        <Controller
-          name={fieldId}
-          control={control}
-          rules={{ required: field.is_required ? 'Bu alan zorunludur.' : false }}
-          render={({ field: controllerField }) => {
-            const commonProps = {
-              ...controllerField,
-              id: fieldId,
-              className: `${styles.formFillScreen__control} ${errors[fieldId] ? styles['formFillScreen__control--invalid'] : ''}`,
-            };
-            switch (field.field_type) {
-              case 'textarea':
-                return <textarea {...commonProps} />;
-              case 'singleselect':
-                return (
-                  <select {...commonProps}>
-                    <option value="">Seçiniz...</option>
-                    {field.options.map(opt => <option key={opt.id} value={opt.label}>{opt.label}</option>)}
-                  </select>
-                );
-              case 'checkbox':
-                 return (
-                    <label className={styles.formFillScreen__inlineLabel}>
-                        <input type="checkbox" {...commonProps} checked={!!commonProps.value} />
-                        {field.label}
-                    </label>
-                 );
-              case 'radio':
-                return field.options.map(opt => (
-                    <label key={opt.id} className={styles.formFillScreen__inlineLabel}>
-                        <input {...commonProps} type="radio" value={opt.label} />
-                        {opt.label}
-                    </label>
-                ));
-              default: // text, number, email, date
-                return <input type={field.field_type} {...commonProps} />;
-            }
-          }}
-        />
-        {errors[fieldId] && <p className={styles.formFillScreen__error}>{errors[fieldId].message}</p>}
+        
+        {/* Alan tipine göre doğru HTML elementini render et */}
+        {(() => {
+          switch (field.field_type) {
+            case FIELD_TYPES.TEXTAREA:
+              return <textarea {...commonProps} />;
+            
+            case FIELD_TYPES.SINGLE_SELECT:
+              return (
+                <select {...commonProps}>
+                  <option value="">Seçiniz...</option>
+                  {(field.options || []).map(opt => <option key={opt.id}>{opt.label}</option>)}
+                </select>
+              );
+
+            case FIELD_TYPES.MULTI_SELECT:
+              return (
+                <div className={styles.formFillScreen__checkboxGroup}>
+                  {(field.options || []).map(opt => (
+                    <div className={styles.formFillScreen__checkItem} key={opt.id}>
+                      <input type="checkbox" disabled id={`${fieldId}-${opt.id}`} />
+                      <label htmlFor={`${fieldId}-${opt.id}`}>{opt.label}</label>
+                    </div>
+                  ))}
+                </div>
+              );
+
+            // Diğer tüm alan tipleri için standart bir input göster
+            default:
+              return <input type={field.field_type} {...commonProps} />;
+          }
+        })()}
       </div>
     );
   };
   
-  if (!form?.fields) {
-    return <p>Önizleme için forma alan ekleyin.</p>
+  // Eğer form veya form alanları henüz yoksa bir mesaj göster
+  if (!form?.fields || form.fields.length === 0) {
+    return (
+      <div className={styles.formFillScreen} style={{background: 'white', padding: '2rem', textAlign: 'center'}}>
+        <p>Önizleme için sol panelden bir alan ekleyin.</p>
+      </div>
+    );
   }
 
+  // Ana render fonksiyonu
   return (
     <div className={styles.formFillScreen} style={{background: 'white', padding: '2rem'}}>
-      <form onSubmit={handlePreviewSubmit} className={styles.formFillScreen__form}>
-        {form.fields.sort((a, b) => a.order - b.order).map(renderField)}
-        <button type="submit" className={styles.formFillScreen__submit}>
-          Gönder (Önizleme)
-        </button>
-      </form>
+      {/*
+        GÜNCELLEME: <form> etiketi ve 'Gönder' butonu kaldırıldı.
+        Artık sadece formun görsel bir önizlemesi var.
+        Sıralama işlemi, parent bileşen olan FormBuilderScreen'den gelen
+        'form.fields' dizisinin sırasına göre yapılıyor.
+      */}
+      <div className={styles.formFillScreen__form}>
+        {form.fields.map(renderField)}
+      </div>
     </div>
   );
 };

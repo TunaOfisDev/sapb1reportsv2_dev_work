@@ -1,7 +1,6 @@
 // path: frontend/src/components/formforgeapi/components/page-level/FormBuilderScreen.jsx
 
 import React, { useEffect, useState } from 'react';
-// DÜZELTME: useNavigate yanına Link eklendi.
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { DndContext, PointerSensor, useSensor, useSensors, closestCenter } from '@dnd-kit/core';
 
@@ -11,71 +10,10 @@ import useFormForgeDesigner from '../../hooks/useFormForgeDesigner';
 import FieldPalette from '../palette/FieldPalette';
 import FormCanvas from '../canvas/FormCanvas';
 import FieldPropsDrawer from '../properties/FieldPropsDrawer';
+// GÜNCELLEME: `FormPreview` bileşenini import ediyoruz.
+import FormPreview from '../canvas/FormPreview'; 
 
 import styles from '../../css/FormBuilderScreen.module.css';
-import previewStyles from '../../css/FormFillScreen.module.css';
-
-// Önizleme Arayüzünü Render Eden STATİK ve GÖRSEL Yardımcı Bileşen
-const PreviewRenderer = ({ form }) => {
-  if (!form?.fields || form.fields.length === 0) {
-    return (
-      <div className={previewStyles.formFillScreen} style={{background: 'white', padding: '2rem', textAlign: 'center'}}>
-        <p>Önizleme için forma alan ekleyin.</p>
-      </div>
-    );
-  }
-
-  const renderField = (field) => {
-    const fieldId = String(field.id);
-    const commonProps = {
-      id: fieldId,
-      className: previewStyles.formFillScreen__control,
-      disabled: true, // Bütün alanları devre dışı bırakır
-    };
-
-    return (
-      <div key={fieldId} className={previewStyles.formFillScreen__group}>
-        <label htmlFor={fieldId} className={previewStyles.formFillScreen__label}>
-          {field.label} {field.is_required && '*'}
-        </label>
-        {(() => {
-          switch (field.field_type) {
-            case 'textarea':
-              return <textarea {...commonProps} />;
-            case 'multiselect':
-              return (
-                <select {...commonProps} multiple>
-                  {field.options.map(opt => <option key={opt.id} value={opt.label}>{opt.label}</option>)}
-                </select>
-              );
-            case 'singleselect':
-              return (
-                <select {...commonProps}>
-                  <option value="">Seçiniz...</option>
-                  {field.options.map(opt => <option key={opt.id} value={opt.label}>{opt.label}</option>)}
-                </select>
-              );
-            case 'checkbox':
-               return ( <div style={{marginTop: '0.5rem'}}><label><input type="checkbox" {...commonProps} /> {field.label}</label></div> );
-            case 'radio':
-             return <div style={{marginTop: '0.5rem'}}>{field.options.map(opt => ( <label key={opt.id} className={previewStyles.formFillScreen__inlineLabel}><input type="radio" name={fieldId} {...commonProps} /> {opt.label}</label> ))}</div>;
-            default:
-              return <input type={field.field_type} {...commonProps} />;
-          }
-        })()}
-      </div>
-    );
-  };
-
-  return (
-    <div className={previewStyles.formFillScreen} style={{background: 'white', padding: '2rem'}}>
-      <div className={previewStyles.formFillScreen__form}>
-        {form.fields.sort((a, b) => a.order - b.order).map(renderField)}
-      </div>
-    </div>
-  );
-};
-
 
 // Ana FormBuilderScreen Bileşeni
 const FormBuilderScreen = () => {
@@ -121,7 +59,6 @@ const FormBuilderScreen = () => {
   if (isNewMode) {
     return (
       <div style={{ padding: '2rem', maxWidth: '500px', margin: 'auto' }}>
-        {/* YENİ EKLENEN GERİ DÖN LİNKİ */}
         <div style={{ marginBottom: '1.5rem' }}>
             <Link to="/formforgeapi">&larr; Form Listesine Geri Dön</Link>
         </div>
@@ -163,7 +100,6 @@ const FormBuilderScreen = () => {
     >
       <div className={`${styles.formBuilderScreen} ${styles[`formBuilderScreen--${designer.viewMode}`]}`}>
         <header className={styles.formBuilderScreen__header}>
-            {/* YENİ EKLENEN GERİ DÖN LİNKİ (HEADER İÇİN) */}
             <div className={styles.formBuilderScreen__navigation}>
                 <Link to="/formforgeapi" className={styles.formBuilderScreen__backLink}>&larr; Geri</Link>
                 <h1 className={styles.formBuilderScreen__logo}>{currentForm.title}</h1>
@@ -201,9 +137,19 @@ const FormBuilderScreen = () => {
                       layout={designer.layout}
                       selectedFieldId={designer.selectedFieldId}
                       onSelectField={designer.handleSelectField}
+                      onAddRow={designer.handleAddRow}
                   />
               ) : (
-                  <PreviewRenderer form={currentForm} />
+                  // GÜNCELLEME: Önizleme bileşeni, anlık güncellenen 'designer.layout' verisini kullanıyor.
+                  // 'fields' dizisini, layout'taki tüm alanları birleştirerek oluşturuyoruz.
+                  <FormPreview 
+                    form={{
+                        ...currentForm, // title, description gibi diğer form bilgilerini koru
+                        fields: designer.layout.flatMap(section => 
+                            section.rows.flatMap(row => row.fields)
+                        )
+                    }}
+                  />
               )}
             </div>
 

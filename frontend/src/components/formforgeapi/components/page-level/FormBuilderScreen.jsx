@@ -10,12 +10,10 @@ import useFormForgeDesigner from '../../hooks/useFormForgeDesigner';
 import FieldPalette from '../palette/FieldPalette';
 import FormCanvas from '../canvas/FormCanvas';
 import FieldPropsDrawer from '../properties/FieldPropsDrawer';
-// GÜNCELLEME: `FormPreview` bileşenini import ediyoruz.
-import FormPreview from '../canvas/FormPreview'; 
+import FormPreview from '../canvas/FormPreview';
 
 import styles from '../../css/FormBuilderScreen.module.css';
 
-// Ana FormBuilderScreen Bileşeni
 const FormBuilderScreen = () => {
   const { formId } = useParams();
   const navigate = useNavigate();
@@ -60,9 +58,8 @@ const FormBuilderScreen = () => {
     return (
       <div style={{ padding: '2rem', maxWidth: '500px', margin: 'auto' }}>
         <div style={{ marginBottom: '1.5rem' }}>
-            <Link to="/formforgeapi">&larr; Form Listesine Geri Dön</Link>
+          <Link to="/formforgeapi">&larr; Form Listesine Geri Dön</Link>
         </div>
-
         <h2>Yeni Form Oluştur</h2>
         <form onSubmit={handleCreateForm}>
           <div className="mb-3">
@@ -104,7 +101,6 @@ const FormBuilderScreen = () => {
                 <Link to="/formforgeapi" className={styles.formBuilderScreen__backLink}>&larr; Geri</Link>
                 <h1 className={styles.formBuilderScreen__logo}>{currentForm.title}</h1>
             </div>
-
           <div className={styles.formBuilderScreen__viewToggle}>
             <button
                 onClick={() => designer.setViewMode('design')}
@@ -140,11 +136,9 @@ const FormBuilderScreen = () => {
                       onAddRow={designer.handleAddRow}
                   />
               ) : (
-                  // GÜNCELLEME: Önizleme bileşeni, anlık güncellenen 'designer.layout' verisini kullanıyor.
-                  // 'fields' dizisini, layout'taki tüm alanları birleştirerek oluşturuyoruz.
                   <FormPreview 
                     form={{
-                        ...currentForm, // title, description gibi diğer form bilgilerini koru
+                        ...currentForm,
                         fields: designer.layout.flatMap(section => 
                             section.rows.flatMap(row => row.fields)
                         )

@@ -1,181 +1,180 @@
 // path: frontend/src/components/formforgeapi/hooks/useFormForgeDesigner.js
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { arrayMove } from '@dnd-kit/sortable';
 import FormForgeApiApi from "../api/FormForgeApiApi";
 import { createEmptyField } from "../constants";
 import { v4 as uuidv4 } from 'uuid';
 
+/**
+ * FormForge Tasarımcısı için tüm UI mantığını ve state'i yöneten merkezi hook.
+ * @param {object} form - Dışarıdan gelen, backend'den çekilmiş form nesnesi.
+ * @param {function} onFormUpdate - Bir alan oluşturulduğunda veya kritik bir hata olduğunda,
+ * ana formu yeniden çekmek için kullanılacak callback fonksiyonu.
+ */
 export default function useFormForgeDesigner(form, onFormUpdate) {
-  const [layout, setLayout] = useState([]);
-  const [selectedFieldId, setSelectedFieldId] = useState(null);
-  const [viewMode, setViewMode] = useState("design");
+    // --- STATE TANIMLARI ---
+    const [layout, setLayout] = useState([]); // Formun görsel düzenini tutar (seksiyonlar, satırlar, alanlar)
+    const [selectedFieldId, setSelectedFieldId] = useState(null); // Düzenlenmek üzere seçilen alanın ID'si
+    const [viewMode, setViewMode] = useState("design"); // 'design' | 'preview'
 
-  const selectedField = useMemo(() => {
-    if (!selectedFieldId || !layout) return null;
-    for (const section of layout) {
-      for (const row of section.rows) {
-        const field = row.fields.find(f => f.id === selectedFieldId);
-        if (field) return field;
-      }
-    }
-    return null;
-  }, [selectedFieldId, layout]);
-
-  useEffect(() => {
-    if (form?.fields && form.fields.length > 0) {
-      setLayout([{
-        id: `section-${form.id}`, title: "Form Alanları",
-        rows: [{ id: `row-${form.id}-1`, fields: [...form.fields].sort((a, b) => a.order - b.order) }],
-      }]);
-    } else if (form) { 
-      setLayout([{ id: `section-${form.id}`, title: "Form Alanları", rows: [{ id: `row-${form.id}-1`, fields: [] }] }]);
-    } else {
-      setLayout([]);
-    }
-  }, [form]);
-
-  const handleSelectField = useCallback((fieldId) => {
-    setSelectedFieldId(prevId => (prevId === fieldId ? null : fieldId));
-  }, []);
-
-  const handleUpdateField = useCallback(async (fieldData) => {
-    if (!form?.id || !fieldData?.id || String(fieldData.id).includes('temp_')) return;
-    setLayout(prevLayout => {
-      const newLayout = JSON.parse(JSON.stringify(prevLayout));
-      for (const section of newLayout) {
-        for (const row of section.rows) {
-          const fieldIndex = row.fields.findIndex(f => f.id === fieldData.id);
-          if (fieldIndex !== -1) {
-            row.fields[fieldIndex] = fieldData;
-            break; 
-          }
+    // --- EFFECT'LER ---
+    // Dışarıdan gelen 'form' prop'u değiştiğinde, layout'u yeniden oluşturur.
+    useEffect(() => {
+        if (form?.fields) {
+            const sortedFields = [...form.fields].sort((a, b) => a.order - b.order);
+            setLayout([{
+                id: `section-${form.id}`,
+                title: "Form Alanları",
+                rows: [{ id: `row-${form.id}-1`, fields: sortedFields }],
+            }]);
+        } else {
+            setLayout([]);
         }
-      }
-      return newLayout;
-    });
-    try {
-      await FormForgeApiApi.updateFormField(fieldData.id, fieldData);
-    } catch (error) {
-      console.error("Alan güncellenirken bir hata oluştu.", error);
-      onFormUpdate(form.id); 
-    }
-  }, [form?.id, onFormUpdate]);
+    }, [form]); // Sadece ana form nesnesi değiştiğinde tetiklenir.
 
-  const handleDeleteField = useCallback(async (fieldId) => {
-    if (!form?.id || !fieldId) return;
-    if (!window.confirm("Bu alanı silmek istediğinizden emin misiniz?")) return;
+    // --- MEMOIZED DEĞERLER ---
+    // Seçili alan nesnesini, her render'da tekrar hesaplamamak için useMemo ile alır.
+    const selectedField = useMemo(() => {
+        if (!selectedFieldId || !layout) return null;
+        for (const section of layout) {
+            for (const row of section.rows) {
+                const field = row.fields.find(f => f.id === selectedFieldId);
+                if (field) return field;
+            }
+        }
+        return null;
+    }, [selectedFieldId, layout]);
+
+    // --- CALLBACK FONKSİYONLARI ---
+
+    // Bir alana tıklandığında seçili alanı ayarlar.
+    const handleSelectField = useCallback((fieldId) => {
+        setSelectedFieldId(prevId => (prevId === fieldId ? null : fieldId));
+    }, []);
+
+    // Bir alanın özelliklerini günceller. (Label silinme sorunu burada çözüldü)
+    const handleUpdateField = useCallback(async (fieldData) => {
+        // 1. İyimser Güncelleme: Arayüzü anında yeni veriyle günceller.
+        setLayout(prevLayout =>
+            prevLayout.map(section => ({
+                ...section,
+                rows: section.rows.map(row => ({
+                    ...row,
+                    fields: row.fields.map(f => f.id === fieldData.id ? fieldData : f),
+                })),
+            }))
+        );
+
+        // 2. API Çağrısı: Arka planda değişikliği kaydeder.
+        if (String(fieldData.id).includes('temp_')) return; // Geçici alanları kaydetme
+        try {
+            await FormForgeApiApi.updateFormField(fieldData.id, fieldData);
+            // Başarılı olursa, tüm formu yeniden çekmeye gerek YOKTUR. Çünkü en güncel veri zaten bizde.
+        } catch (error) {
+            console.error("Alan güncellenirken bir hata oluştu.", error);
+            // Hata durumunda, veri tutarlılığı için formu sunucudan yeniden çek.
+            onFormUpdate(form.id); 
+        }
+    }, [form?.id, onFormUpdate]);
+
+    // Bir alanı siler.
+    const handleDeleteField = useCallback(async (fieldId) => {
+        if (!form?.id || !fieldId || !window.confirm("Bu alanı silmek istediğinizden emin misiniz?")) return;
+        
+        setLayout(prevLayout =>
+            prevLayout.map(section => ({
+                ...section,
+                rows: section.rows.map(row => ({
+                    ...row,
+                    fields: row.fields.filter(f => f.id !== fieldId),
+                })),
+            }))
+        );
+        setSelectedFieldId(null);
+
+        try {
+            await FormForgeApiApi.deleteFormField(fieldId);
+            await onFormUpdate(form.id); // Silme sonrası yeniden çekmek, sıralamayı garantiler.
+        } catch (error) {
+            console.error("Alan silinirken bir hata oluştu.", error);
+            onFormUpdate(form.id);
+        }
+    }, [form?.id, onFormUpdate]);
+
+    // Sürükle-bırak işlemini yönetir. (Anında güncelleme sorunu burada çözüldü)
+    const handleDragEnd = useCallback(async (event) => {
+        const { active, over } = event;
+        if (!over) return;
     
-    setLayout(prevLayout => {
-      const newLayout = JSON.parse(JSON.stringify(prevLayout));
-      newLayout.forEach(section => {
-        section.rows.forEach(row => {
-          row.fields = row.fields.filter(f => f.id !== fieldId);
+        let finalLayout = [];
+        setLayout(currentLayout => {
+            let newLayout = JSON.parse(JSON.stringify(currentLayout));
+            const findContainer = (id) => newLayout.flatMap(s => s.rows).find(r => r.id === id || r.fields.some(f => f.id === id));
+            const overContainer = findContainer(over.id);
+            if (!overContainer) return currentLayout;
+
+            if (active.data.current?.isPaletteItem) {
+                const newField = { ...createEmptyField({ type: active.data.current.fieldType }), form: form.id, id: `temp_${uuidv4()}` };
+                const overIndex = over.id === overContainer.id ? overContainer.fields.length : overContainer.fields.findIndex(f => f.id === over.id);
+                overContainer.fields.splice(overIndex, 0, newField);
+            } else {
+                const activeContainer = findContainer(active.id);
+                if (!activeContainer || active.id === over.id) return currentLayout;
+                
+                const activeIndex = activeContainer.fields.findIndex(f => f.id === active.id);
+                const [movedField] = activeContainer.fields.splice(activeIndex, 1);
+                const overIndex = over.id === overContainer.id ? overContainer.fields.length : overContainer.fields.findIndex(f => f.id === over.id);
+                overContainer.fields.splice(overIndex >= 0 ? overIndex : overContainer.fields.length, 0, movedField);
+            }
+            finalLayout = newLayout;
+            return newLayout;
         });
-      });
-      return newLayout;
-    });
 
-    try {
-      await FormForgeApiApi.deleteFormField(fieldId);
-      await onFormUpdate(form.id); // API'den güncel sıralamayı çek
-    } catch (error) {
-      console.error("Alan silinirken bir hata oluştu.", error);
-      onFormUpdate(form.id);
-    }
-  }, [form?.id, onFormUpdate]);
+        // API çağrılarını state güncellemesi bittikten sonra yap
+        try {
+            const allFields = finalLayout.flatMap(s => s.rows.flatMap(r => r.fields));
+            const payload = allFields.map((field, index) => ({ ...field, order: index }));
 
-  const handleAddRow = useCallback((sectionId) => {
-    setLayout(prevLayout => {
-      const newLayout = JSON.parse(JSON.stringify(prevLayout));
-      const section = newLayout.find(s => s.id === sectionId);
-      if (section) {
-        section.rows.push({ id: `row_${uuidv4()}`, fields: [] });
-      }
-      return newLayout;
-    });
-  }, []);
-  
-  const handleDragEnd = useCallback(async (event) => {
-    const { active, over } = event;
-    if (!over) return;
-
-    const originalLayout = JSON.parse(JSON.stringify(layout));
-    let newLayout = JSON.parse(JSON.stringify(layout));
-
-    const findContainer = (layout, id) => {
-      for (const section of layout) {
-        for (const row of section.rows) {
-          if (row.id === id || row.fields.some(f => f.id === id)) return row;
+            const newFieldPayload = payload.find(f => String(f.id).includes('temp_'));
+            
+            if (newFieldPayload) {
+                const { id, ...apiData } = newFieldPayload;
+                await FormForgeApiApi.createFormField(apiData);
+                await onFormUpdate(form.id); // Yeni alan eklendiğinde ID'leri almak için formu yeniden çek.
+            } else {
+                const orderPayload = payload.map(({ id, order }) => ({ id, order }));
+                await FormForgeApiApi.updateFormFieldOrder(orderPayload);
+                // Sıralama sonrası formu yeniden çekmeye gerek yok, UI zaten güncel.
+            }
+        } catch (error) {
+            console.error("Sürükle-bırak sonrası hata:", error);
+            onFormUpdate(form.id);
         }
-      }
-      return null;
+    }, [form, onFormUpdate]);
+
+    // Yeni bir satır ekler.
+    const handleAddRow = useCallback((sectionId) => {
+        setLayout(prevLayout =>
+            prevLayout.map(section => {
+                if (section.id === sectionId) {
+                    return { ...section, rows: [...section.rows, { id: `row_${uuidv4()}`, fields: [] }] };
+                }
+                return section;
+            })
+        );
+    }, []);
+
+    // --- HOOK'UN DIŞARIYA AÇTIĞI ARAYÜZ ---
+    return {
+        layout,
+        selectedFieldId,
+        viewMode,
+        setViewMode,
+        selectedField,
+        onDragEnd: handleDragEnd,
+        handleSelectField,
+        handleUpdateField,
+        handleDeleteField,
+        handleAddRow
     };
-
-    const isPaletteItem = active.data.current?.isPaletteItem === true;
-    const overContainer = findContainer(newLayout, over.id);
-    
-    if (!overContainer) return; // Geçerli bir bırakma alanı yoksa işlemi iptal et.
-
-    if (isPaletteItem) {
-      const fieldType = active.data.current.fieldType;
-      const newField = { ...createEmptyField({ type: fieldType }), form: form.id };
-      
-      const overIndex = over.id === overContainer.id
-        ? overContainer.fields.length
-        : overContainer.fields.findIndex(f => f.id === over.id);
-      
-      overContainer.fields.splice(overIndex, 0, newField);
-    } else {
-      const activeContainer = findContainer(newLayout, active.id);
-      if (!activeContainer || active.id === over.id) return;
-
-      const activeIndex = activeContainer.fields.findIndex(f => f.id === active.id);
-      const [movedField] = activeContainer.fields.splice(activeIndex, 1);
-
-      if (activeContainer.id === overContainer.id) {
-        const overIndex = overContainer.fields.findIndex(f => f.id === over.id);
-        overContainer.fields.splice(overIndex, 0, movedField);
-      } else {
-        const overIndex = over.id === overContainer.id
-          ? overContainer.fields.length
-          : overContainer.fields.findIndex(f => f.id === over.id);
-        overContainer.fields.splice(overIndex, 0, movedField);
-      }
-    }
-
-    setLayout(newLayout);
-
-    let currentOrder = 0;
-    const allFieldsInOrder = newLayout.flatMap(s => s.rows.flatMap(r => r.fields));
-    const payload = allFieldsInOrder.map(field => {
-        const fieldData = { ...field, order: currentOrder };
-        currentOrder++;
-        return fieldData;
-    });
-
-    const createPayload = payload.find(f => String(f.id).includes('temp_'));
-    const orderPayload = payload.filter(f => !String(f.id).includes('temp_')).map(f => ({ id: f.id, order: f.order }));
-
-    try {
-      if (createPayload) {
-        const { id, ...apiData } = createPayload;
-        await FormForgeApiApi.createFormField(apiData);
-      }
-      if (orderPayload.length > 0 && !isPaletteItem) { // Sadece sıralama değiştiyse
-          await FormForgeApiApi.updateFormFieldOrder(orderPayload);
-      }
-      // Her başarılı sürükle-bırak sonrası, yeni ID'leri ve doğru sıralamayı almak için formu yeniden çek.
-      await onFormUpdate(form.id);
-    } catch (error) {
-      console.error("Sürükle-bırak işlemi sonrası API hatası:", error);
-      setLayout(originalLayout);
-    }
-  }, [form, layout, onFormUpdate]);
-
-  return {
-    layout, selectedFieldId, viewMode, setViewMode, selectedField,
-    onDragEnd: handleDragEnd, handleSelectField, handleUpdateField, handleDeleteField,
-    handleAddRow
-  };
 }

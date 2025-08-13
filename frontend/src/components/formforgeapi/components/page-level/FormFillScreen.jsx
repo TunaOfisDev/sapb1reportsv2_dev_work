@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form';
 import useFormForgeApi from '../../hooks/useFormForgeApi';
 import { useUserFormForgeApi } from '../../hooks/useUserFormForgeApi';
 
-// GÜNCELLEME: Artık sadece yönlendirici bileşeni import ediyoruz.
+// Componentler
 import FormFieldRenderer from '../form-fields/FormFieldRenderer';
 
 // Styles
@@ -45,11 +45,12 @@ const FormFillScreen = () => {
         }
     }, [formId, submissionId, isEditMode, submissionToEdit, fetchForm, fetchUserList]);
 
+    // Düzenleme modunda, mevcut verilerle formu doldurur.
     useEffect(() => {
         if (isEditMode && submissionToEdit) {
             const defaultValues = {};
             submissionToEdit.values.forEach(item => {
-                // GÜNCELLEME: userpicker gibi obje değerlerini doğru almak için
+                // userpicker gibi obje değerlerini doğru almak için
                 const value = (typeof item.value === 'object' && item.value !== null) ? item.value.id : item.value;
                 defaultValues[`field_${item.form_field}`] = value;
             });
@@ -57,17 +58,23 @@ const FormFillScreen = () => {
         }
     }, [isEditMode, submissionToEdit, reset]);
 
-    // --- FORM GÖNDERİM MANTIĞI ---
-    const onSubmit = async (data) => {
-        if (isEditMode) {
-            await updateSubmission(submissionId, submissionToEdit.form, data);
-        } else {
-            await createSubmission(formId, data);
-        }
+    // --- GÜVENLİ FORM GÖNDERİM MANTIĞI ---
+    // Bu yapı, react-hook-form ile asenkron işlemler arasındaki olası
+    // "race condition" (yarış durumu) hatalarını engeller.
+    const onSubmit = (data) => {
+        const handleAsyncSubmit = async () => {
+            try {
+                if (isEditMode) {
+                    await updateSubmission(submissionId, submissionToEdit.form, data);
+                } else {
+                    await createSubmission(formId, data);
+                }
+            } catch (error) {
+                console.error("Form gönderim fonksiyonunda hata yakalandı:", error);
+            }
+        };
+        handleAsyncSubmit();
     };
-
-    // KALDIRILDI: Devasa 'renderField' fonksiyonu ve içindeki switch-case yapısı
-    // artık burada değil. Bu sorumluluk FormFieldRenderer'a ait.
 
     // --- ANA RENDER ---
     if (formLoading && !currentForm) return <div>Form Yükleniyor...</div>;
@@ -90,18 +97,19 @@ const FormFillScreen = () => {
             )}
 
             <form onSubmit={handleSubmit(onSubmit)} className={styles.formFillScreen__form}>
-                {currentForm.fields.sort((a,b) => a.order - b.order).map(field => (
-                    // GÜNCELLEME: Tüm render mantığı artık bu tek bileşen tarafından yönetiliyor.
-                    // Gerekli tüm propları (control, errors, userList vb.) ona iletiyoruz.
-                    <FormFieldRenderer
-                        key={field.id}
-                        field={field}
-                        control={control}
-                        errors={errors}
-                        userList={userList}
-                        usersLoading={usersLoading}
-                    />
-                ))}
+                {currentForm.fields
+                    .sort((a, b) => a.order - b.order)
+                    .map(field => (
+                        <FormFieldRenderer
+                            key={field.id}
+                            field={field}
+                            control={control}
+                            errors={errors}
+                            userList={userList}
+                            usersLoading={usersLoading}
+                        />
+                    ))
+                }
                 <button type="submit" disabled={isSubmitting} className={styles.formFillScreen__submit}>
                     {isSubmitting ? 'Kaydediliyor...' : (isEditMode ? 'Güncelle' : 'Gönder')}
                 </button>

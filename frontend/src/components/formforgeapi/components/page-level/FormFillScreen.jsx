@@ -45,12 +45,10 @@ const FormFillScreen = () => {
         }
     }, [formId, submissionId, isEditMode, submissionToEdit, fetchForm, fetchUserList]);
 
-    // Düzenleme modunda, mevcut verilerle formu doldurur.
     useEffect(() => {
         if (isEditMode && submissionToEdit) {
             const defaultValues = {};
             submissionToEdit.values.forEach(item => {
-                // userpicker gibi obje değerlerini doğru almak için
                 const value = (typeof item.value === 'object' && item.value !== null) ? item.value.id : item.value;
                 defaultValues[`field_${item.form_field}`] = value;
             });
@@ -59,8 +57,6 @@ const FormFillScreen = () => {
     }, [isEditMode, submissionToEdit, reset]);
 
     // --- GÜVENLİ FORM GÖNDERİM MANTIĞI ---
-    // Bu yapı, react-hook-form ile asenkron işlemler arasındaki olası
-    // "race condition" (yarış durumu) hatalarını engeller.
     const onSubmit = (data) => {
         const handleAsyncSubmit = async () => {
             try {

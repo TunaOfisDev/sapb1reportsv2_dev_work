@@ -17,12 +17,8 @@ export default function useFormForgeApi() {
     const [currentForm, setCurrentForm] = useState(null);
     const [submissions, setSubmissions] = useState([]);
     const [departments, setDepartments] = useState([]);
-
-    // View Modal State
     const [selectedSubmission, setSelectedSubmission] = useState(null);
     const [isViewModalOpen, setViewModalOpen] = useState(false);
-
-    // Update Modal State
     const [submissionToEdit, setSubmissionToEdit] = useState(null);
     const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
 
@@ -56,7 +52,6 @@ export default function useFormForgeApi() {
         setCurrentForm(null);
         try {
             const response = await FormForgeApiApi.getForm(id);
-            // Alanları 'order' a göre sıralanmış olarak al
             if (response.data.fields) {
                 response.data.fields.sort((a, b) => a.order - b.order);
             }
@@ -138,7 +133,48 @@ export default function useFormForgeApi() {
         }
     }, []);
 
-    // createSubmission ve updateSubmission fonksiyonları aynı kalır...
+    // YENİDEN EKLENDİ: Form gönderme ve güncelleme fonksiyonları
+    const createSubmission = useCallback(async (formId, submissionData) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const payload = {
+                form: formId,
+                values: Object.entries(submissionData).map(([key, value]) => ({
+                    form_field: parseInt(key.replace('field_', ''), 10),
+                    value: value,
+                })),
+            };
+            await FormForgeApiApi.createFormSubmission(payload);
+            navigate(`/formforgeapi/data/${formId}`);
+        } catch (err) {
+            handleError(err, "Form gönderilirken bir hata oluştu.");
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    }, [navigate]);
+
+    const updateSubmission = useCallback(async (submissionId, formId, submissionData) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const payload = {
+                values: Object.entries(submissionData).map(([key, value]) => ({
+                    form_field: parseInt(key.replace('field_', ''), 10),
+                    value: value,
+                })),
+            };
+            await FormForgeApiApi.updateFormSubmission(submissionId, payload);
+            navigate(`/formforgeapi/data/${formId}`);
+        } catch (err) {
+            handleError(err, "Form güncellenirken bir hata oluştu.");
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    }, [navigate]);
+
 
     const fetchDepartments = useCallback(async () => {
         setLoading(true);
@@ -153,7 +189,6 @@ export default function useFormForgeApi() {
         }
     }, []);
     
-    // --- SÜRÜKLE-BIRAK AKSİYONU (DÜZELTİLMİŞ) ---
     const onDragEnd = useCallback(async (result) => {
         if (!currentForm) return;
 
@@ -166,7 +201,6 @@ export default function useFormForgeApi() {
         const [movedField] = reorderedFields.splice(source.index, 1);
         reorderedFields.splice(destination.index, 0, movedField);
 
-        // İyimser Güncelleme: UI'ı anında yeni sıralama ile güncelle.
         setCurrentForm(prevForm => ({
             ...prevForm,
             fields: reorderedFields
@@ -178,18 +212,14 @@ export default function useFormForgeApi() {
         }));
 
         try {
-            // **DÜZELTME:** Hatalı 'updateOrder' fonksiyonu yerine, API dosyasında
-            // tanımlı olan doğru fonksiyon 'updateFormFieldOrder' çağrıldı.
             await FormForgeApiApi.updateFormFieldOrder(orderData);
         } catch (err) {
             handleError(err, "Alan sıralaması güncellenirken bir hata oluştu.");
-            // Hata durumunda, UI'ın sunucudaki son doğru durumla eşleşmesi için
-            // formu yeniden çekerek tutarlılığı sağlıyoruz.
             fetchForm(currentForm.id); 
         }
-    }, [currentForm, fetchForm]); // Hata durumunda fetchForm kullanıldığı için bağımlılıklara eklendi.
+    }, [currentForm, fetchForm]);
 
-    // --- EYLEM YÖNETİCİLERİ (ACTION HANDLERS) ---
+    // Eylem Yöneticileri
     const handleViewClick = useCallback((submission) => {
         setSelectedSubmission(submission);
         setViewModalOpen(true);
@@ -200,17 +230,37 @@ export default function useFormForgeApi() {
         setUpdateModalOpen(true);
     }, []);
 
-    // --- HOOK'UN DIŞARIYA AÇTIĞI ARAYÜZ ---
+    // --- HOOK'UN DIŞARIYA AÇTIĞI ARAYÜZ (EKSİKSİZ) ---
     return {
-        loading, error, user, forms, archivedForms, currentForm, submissions, departments,
-        fetchForms, fetchForm, createForm, archiveForm, unarchiveForm, createNewVersion,
-        fetchSubmissions, fetchDepartments,
-        onDragEnd, // Düzeltilmiş onDragEnd fonksiyonu
-        isViewModalOpen, setViewModalOpen, selectedSubmission,
-        isUpdateModalOpen, setUpdateModalOpen, submissionToEdit,
+        loading,
+        error,
+        user,
+        forms,
+        archivedForms,
+        currentForm,
+        submissions,
+        departments,
+        fetchForms,
+        fetchForm,
+        createForm,
+        archiveForm,
+        unarchiveForm,
+        createNewVersion,
+        fetchSubmissions,
+        fetchDepartments,
+        onDragEnd,
+        isViewModalOpen,
+        setViewModalOpen,
+        selectedSubmission,
+        isUpdateModalOpen,
+        setUpdateModalOpen,
+        submissionToEdit,
         actionHandlers: {
             handleView: handleViewClick,
             handleEdit: handleEditClick
-        }
+        },
+        // YENİDEN EKLENDİ: Form gönderme ve güncelleme fonksiyonları
+        createSubmission,
+        updateSubmission,
     };
 }

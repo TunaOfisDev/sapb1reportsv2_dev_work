@@ -31,6 +31,13 @@ done
 # Git işlemleri
 cd "$DEST_BASE"
 
+# YENİ: Git komutu çalıştırmadan önce reponun sağlığını kontrol et
+if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
+  echo "❌ HATA: Geçerli bir Git reposu değil veya bozuk. Lütfen manuel kontrol edin: $DEST_BASE"
+  echo "👉 Çözüm önerisi: 'rm -rf $GIT_META' komutu ile bozuk meta veriyi silip script'i yeniden çalıştırın."
+  exit 1
+fi
+
 echo "➕ Git stage başlatılıyor..."
 git add -A
 

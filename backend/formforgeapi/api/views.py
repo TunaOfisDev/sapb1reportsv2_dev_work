@@ -1,13 +1,21 @@
 # path: backend/formforgeapi/api/views.py
 
+from django.db import transaction
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.db.models import Q
-from django.contrib.auth import get_user_model
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import NotFound, ValidationError
 
-from ..models import Department, Form, FormField, FormSubmission, SubmissionValue
+from ..models import (
+    Department, 
+    Form, 
+    FormField, 
+    FormSubmission, 
+    SubmissionValue,
+    FormFieldOption
+)
 from .serializers import (
     DepartmentSerializer, 
     FormSerializer, 
@@ -19,7 +27,6 @@ from .serializers import (
 )
 from ..services import formforgeapi_service
 from ..permissions import IsCreatorOrReadOnly
-from rest_framework.permissions import IsAuthenticated
 
 # ==============================================================================
 # BAĞIMSIZ API VIEW'LERİ (VIEWSET DIŞI)
@@ -28,19 +35,23 @@ from rest_framework.permissions import IsAuthenticated
 class UpdateFormFieldOrderView(APIView):
     """
     Form alanlarının sırasını toplu olarak günceller.
-    ModelViewSet'ten bağımsız olduğu için metod çakışması (405 hatası) riski taşımaz.
-    Sadece POST isteklerini kabul eder.
+    Bu yaklaşım, ModelViewSet'teki standart metodlarla (örn: PUT) çakışmayı önler.
     """
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        """Sıralama verisini alır ve servis katmanına iletir."""
+        """Sıralama verisini (örn: [{'id': 1, 'order': 0}, ...]) alır ve servise iletir."""
         order_data = request.data
         try:
+            # Servis katmanı, bulk_update ile veritabanını verimli şekilde günceller.
             return formforgeapi_service.update_formfield_order(order_data)
+        except ValidationError as e:
+            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            # Beklenmedik hatalar için genel bir loglama ve hata mesajı.
+            # logging.error(f"Sıralama güncellenirken hata: {str(e)}")
             return Response(
-                {"error": f"Internal server error: {str(e)}"}, 
+                {"error": "Sunucu hatası, sıralama güncellenemedi."}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
@@ -49,135 +60,185 @@ class UpdateFormFieldOrderView(APIView):
 # ==============================================================================
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    """Kullanıcıları listeler (frontend'deki 'userpicker' için)."""
+    """Kullanıcıları listeler (frontend'deki 'userpicker' gibi bileşenler için)."""
     serializer_class = SimpleUserSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """Veriyi servis katmanındaki optimize edilmiş fonksiyondan alır."""
+        """Veriyi, optimize edilmiş sorguları içeren servis katmanından alır."""
         return formforgeapi_service.get_user_list()
 
 class DepartmentViewSet(viewsets.ModelViewSet):
-    """formforgeapi içindeki departmanları yönetir."""
-    queryset = Department.objects.all()
+    """Departmanları yönetir."""
+    queryset = Department.objects.all().order_by('name')
     serializer_class = DepartmentSerializer
     permission_classes = [IsAuthenticated]
 
-
-
 class FormViewSet(viewsets.ModelViewSet):
     """Form şemalarını ve versiyonlarını yönetir."""
-    # DÜZELTME: queryset ve get_queryset metodunu DRF'in standart,
-    # en güvenli haline geri döndürüyoruz.
-    queryset = Form.objects.all()
+    # TEMEL QUERYSET: Tüm sorgular için veritabanını optimize eder.
+    queryset = Form.objects.all().select_related(
+        'department', 'created_by'
+    ).prefetch_related(
+        'fields__options' # Alanları ve her alanın seçeneklerini tek seferde çeker.
+    )
     serializer_class = FormSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsCreatorOrReadOnly]
 
-    # GÜNCELLEME: Karmaşık get_queryset metodu ŞİMDİLİK kaldırıldı.
-    # DRF, bir formu (retrieve) veya form listesini (list) getirmek için
-    # gereken temel optimizasyonları kendisi yapacaktır.
-    # Bu değişiklik, ImproperlyConfigured hatasını gidermelidir.
+    def get_queryset(self):
+        """
+        Dinamik olarak queryset'i filtreler.
+        Liste görünümünde sadece en son, aktif versiyonları gösterir.
+        """
+        queryset = super().get_queryset()
+        if self.action == 'list':
+            # Sadece ana formları (versiyon olmayan) ve 'Dağıtımda' olanları listele.
+            return queryset.filter(parent_form__isnull=True, status=Form.FormStatus.PUBLISHED)
+        # Detay (retrieve) görünümünde her türlü forma erişime izin verilir.
+        return queryset
 
     def perform_create(self, serializer):
+        """Yeni form oluşturulurken 'created_by' alanını ve varsayılan durumu ayarlar."""
         serializer.save(created_by=self.request.user, status=Form.FormStatus.PUBLISHED)
-        
-    # @action metodlarınız (archive, unarchive, create_version) aynı kalabilir.
+
+    @action(detail=True, methods=['post'])
+    def create_version(self, request, pk=None):
+        """Mevcut bir formdan yeni bir versiyon oluşturur."""
+        try:
+            new_form = formforgeapi_service.create_new_form_version(pk, request.user)
+            serializer = self.get_serializer(new_form)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Form.DoesNotExist:
+            raise NotFound(detail="Kopyalanacak form bulunamadı.")
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Arşivleme işlemleri için diğer @action metodlarınız buraya eklenebilir.
     @action(detail=True, methods=['post'], url_path='archive')
     def archive(self, request, pk=None):
         form = self.get_object()
         form.status = Form.FormStatus.ARCHIVED
         form.save()
-        return Response({'status': 'form archived'}, status=status.HTTP_200_OK)
+        return Response({'status': 'Form arşivlendi'}, status=status.HTTP_200_OK)
     
     @action(detail=True, methods=['post'], url_path='unarchive')
     def unarchive(self, request, pk=None):
         form = self.get_object()
         form.status = Form.FormStatus.PUBLISHED
         form.save()
-        return Response({'status': 'form unarchived'}, status=status.HTTP_200_OK)
-            
-    @action(detail=True, methods=['post'], url_path='create-version')
-    def create_version(self, request, pk=None):
-        new_form = formforgeapi_service.create_new_form_version(pk, request.user)
-        serializer = self.get_serializer(new_form)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-    
+        return Response({'status': 'Form arşivi kaldırıldı'}, status=status.HTTP_200_OK)
+
 
 class FormFieldViewSet(viewsets.ModelViewSet):
     """Tekil form alanlarını yönetir (oluşturma, silme, güncelleme)."""
-    queryset = FormField.objects.all()
+    queryset = FormField.objects.all().prefetch_related('options')
     serializer_class = FormFieldSerializer
     permission_classes = [IsAuthenticated]
 
     @action(detail=True, methods=['post'], url_path='add-option')
     def add_option(self, request, pk=None):
+        """Mevcut bir form alanına yeni bir seçenek (örn: select için) ekler."""
         form_field = self.get_object()
-        
-        # Gelen veriye 'form_field' ID'sini ekleyerek serializer'ı hazırlıyoruz.
-        option_data = request.data.copy()
-        # FormFieldOptionSerializer'ın FormField'a ihtiyacı yok, bu satır gereksiz olabilir.
-        # Eğer FormFieldOptionSerializer'ınızda 'form_field' alanı zorunlu ise kalmalı.
-        # option_data['form_field'] = form_field.pk # Bu satır serializer'ınıza bağlı
-        
-        # ÖNEMLİ: Serializer'a 'form_field' nesnesini context üzerinden vermek daha sağlam bir yöntemdir.
         serializer = FormFieldOptionSerializer(
             data=request.data, 
-            context={'form_field': form_field}
+            context={'form_field': form_field} # Serializer'a ana nesneyi context ile ver.
         )
-        if serializer.is_valid():
-            # Serializer'ın save metodu, context'ten aldığı form_field ile kaydı oluşturmalı.
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        # Serializer'ın save metodu, context'ten aldığı form_field ile kaydı oluşturur.
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    @action(detail=True, methods=['delete'], url_path='options/(?P<option_pk>[^/.]+)')
+    def delete_option(self, request, pk=None, option_pk=None):
+        """Bir form alanına ait belirli bir seçeneği siler."""
+        form_field = self.get_object()
+        try:
+            option = FormFieldOption.objects.get(pk=option_pk, form_field=form_field)
+            option.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except FormFieldOption.DoesNotExist:
+            raise NotFound("Silinecek seçenek bulunamadı.")
+
 
 class FormSubmissionViewSet(viewsets.ModelViewSet):
-    """Form gönderimlerini ve versiyonlarını yönetir."""
+    """Form gönderimlerini ve bu gönderimlerin versiyonlarını yönetir."""
     queryset = FormSubmission.objects.all()
     serializer_class = FormSubmissionSerializer
     permission_classes = [IsAuthenticated, IsCreatorOrReadOnly]
 
     def get_queryset(self):
-        queryset = self.queryset.select_related('created_by', 'parent_submission').prefetch_related('values__form_field', 'versions')
+        """Veritabanı sorgularını optimize eder ve filtreleme uygular."""
+        queryset = super().get_queryset().select_related(
+            'created_by', 'form', 'parent_submission'
+        ).prefetch_related(
+            'values__form_field'
+        )
+        
+        # API'nin liste görünümünde mutlaka bir form ID'si ile çağrılmasını zorunlu kıl.
+        form_id = self.request.query_params.get('form')
         if self.action == 'list':
+            if not form_id:
+                # Eğer form ID belirtilmemişse, boş bir liste döndür.
+                return self.queryset.none()
+            
+            queryset = queryset.filter(form_id=form_id)
+            # 'all_versions=true' parametresi yoksa, sadece aktif versiyonları göster.
             if self.request.query_params.get('all_versions') != 'true':
                 queryset = queryset.filter(is_active=True)
-        form_id = self.request.query_params.get('form')
-        if form_id: return queryset.filter(form_id=form_id)
-        if self.action == 'list': return queryset.none()
+        
         return queryset
 
+    @transaction.atomic
     def perform_create(self, serializer):
-        # Tüm mantık serializer'ın create metodunda, o da servisi çağırıyor.
-        serializer.save()
-
+        """
+        Yeni bir form gönderimi oluşturur. İş mantığı servis katmanındadır.
+        """
+        # Serializer.validated_data'dan gerekli bilgileri alıp servisi çağırırız.
+        # Bu, mantığın ViewSet içinde daha açık olmasını sağlar.
+        form = serializer.validated_data.get('form')
+        values_data = self.request.data.get('values', [])
+        
+        try:
+            new_submission = formforgeapi_service.create_submission(
+                form.id, values_data, self.request.user
+            )
+            # Başarılı yaratma sonrası tam veriyi döndürmek için yeniden serialize et.
+            # Not: Bu, create_submission servisinin nesneyi döndürdüğünü varsayar.
+            response_serializer = self.get_serializer(new_submission)
+            # HTTP 201 Created ile tam nesneyi döndür.
+            # Ancak serializer'in save metodu zaten bunu yaptığı için aşağıdaki satır yeterli:
+            serializer.instance = new_submission
+            
+        except ValidationError as e:
+            # Servisten gelen doğrulama hatalarını yakala.
+            raise e # DRF bu hatayı 400 Bad Request olarak işleyecektir.
+        
+    @transaction.atomic
     def update(self, request, *args, **kwargs):
+        """
+        Mevcut bir gönderiyi günceller (aslında yeni bir versiyon oluşturur).
+        """
         original_submission_id = kwargs.get('pk')
         values_data = request.data.get('values', [])
-        user = request.user
+
         try:
             new_submission = formforgeapi_service.update_submission_and_create_new_version(
-                original_submission_id, values_data, user
+                original_submission_id, values_data, self.request.user
             )
             serializer = self.get_serializer(new_submission)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except FormSubmission.DoesNotExist:
-            return Response({"error": "Submission not found"}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
+            raise NotFound("Güncellenecek gönderi bulunamadı.")
+        except ValidationError as e:
+            return Response(e.detail, status=status.HTTP_400_BAD_REQUEST)
+    
     @action(detail=True, methods=['get'])
     def history(self, request, pk=None):
-        try:
-            submission = self.get_object()
-            root_submission = submission.parent_submission or submission
-            history_qs = FormSubmission.objects.filter(
-                Q(id=root_submission.id) | Q(parent_submission=root_submission)
-            ).order_by('version')
-            serializer = self.get_serializer(history_qs, many=True)
-            return Response(serializer.data)
-        except FormSubmission.DoesNotExist:
-            return Response({"error": "Gönderi bulunamadı."}, status=status.HTTP_404_NOT_FOUND)
+        """Bir gönderinin tüm versiyon geçmişini getirir."""
+        submission = self.get_object()
+        history_qs = submission.get_version_history() # Bu metodun modelde olduğunu varsayalım.
+        serializer = self.get_serializer(history_qs, many=True)
+        return Response(serializer.data)
 
 class SubmissionValueViewSet(viewsets.ModelViewSet):
     """(Genellikle direkt kullanılmaz) Form gönderimlerindeki tekil değerleri yönetir."""

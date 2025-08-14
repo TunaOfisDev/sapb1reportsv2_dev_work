@@ -18,6 +18,7 @@ const urls = {
   formFields:         () => `${MODULE}/form_fields/`,
   formFieldDetail:    (id) => `${MODULE}/form_fields/${id}/`,
   formFieldUpdateOrd: () => `${MODULE}/form_fields/update_order/`,
+  formFieldAddOption: (fieldId) => `${MODULE}/form_fields/${fieldId}/add-option/`,
   submissions:        () => `${MODULE}/form_submissions/`,
   submissionDetail:   (id) => `${MODULE}/form_submissions/${id}/`,
   submissionHistory:  (id) => `${MODULE}/form_submissions/${id}/history/`,
@@ -59,6 +60,7 @@ const FormForgeApiApi = {
   /* FormField */
   getFormFields:      (params)   => list(urls.formFields(), params),
   getFormField:       (id)       => detail(urls.formFieldDetail(id)),
+  addFormFieldOption: (fieldId, optionData) => create(urls.formFieldAddOption(fieldId), optionData),
   createFormField:    (data)     => create(urls.formFields(), data),
   updateFormField:    (id, data) => update(urls.formFieldDetail(id), data),
   deleteFormField:    (id)       => remove(urls.formFieldDetail(id)),

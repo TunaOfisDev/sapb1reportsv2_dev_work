@@ -6,34 +6,34 @@ import { createEmptyField } from "../constants";
 import { v4 as uuidv4 } from 'uuid';
 
 /**
- * FormForge Tasarımcısı için tüm UI mantığını ve state'i yöneten merkezi hook.
- * @param {object} form - Dışarıdan gelen, backend'den çekilmiş form nesnesi.
- * @param {function} onFormUpdate - Bir alan oluşturulduğunda veya kritik bir hata olduğunda,
- * ana formu yeniden çekmek için kullanılacak callback fonksiyonu.
+ * The central hook that manages all UI logic and state for the FormForge Designer.
+ * @param {object} form - The form object fetched from the backend.
+ * @param {function} onFormUpdate - A callback function to re-fetch the main form,
+ * used when a new field is created or a critical error occurs.
  */
 export default function useFormForgeDesigner(form, onFormUpdate) {
-    // --- STATE TANIMLARI ---
-    const [layout, setLayout] = useState([]); // Formun görsel düzenini tutar (seksiyonlar, satırlar, alanlar)
-    const [selectedFieldId, setSelectedFieldId] = useState(null); // Düzenlenmek üzere seçilen alanın ID'si
+    // --- STATE DEFINITIONS ---
+    const [layout, setLayout] = useState([]); // Holds the visual layout of the form (sections, rows, fields)
+    const [selectedFieldId, setSelectedFieldId] = useState(null); // The ID of the field selected for editing
     const [viewMode, setViewMode] = useState("design"); // 'design' | 'preview'
 
-    // --- EFFECT'LER ---
-    // Dışarıdan gelen 'form' prop'u değiştiğinde, layout'u yeniden oluşturur.
+    // --- EFFECTS ---
+    // Rebuilds the layout when the 'form' prop from outside changes.
     useEffect(() => {
         if (form?.fields) {
             const sortedFields = [...form.fields].sort((a, b) => a.order - b.order);
             setLayout([{
                 id: `section-${form.id}`,
-                title: "Form Alanları",
+                title: "Form Fields",
                 rows: [{ id: `row-${form.id}-1`, fields: sortedFields }],
             }]);
         } else {
             setLayout([]);
         }
-    }, [form]); // Sadece ana form nesnesi değiştiğinde tetiklenir.
+    }, [form]); // Only triggers when the main form object changes.
 
-    // --- MEMOIZED DEĞERLER ---
-    // Seçili alan nesnesini, her render'da tekrar hesaplamamak için useMemo ile alır.
+    // --- MEMOIZED VALUES ---
+    // Gets the selected field object without recalculating on every render.
     const selectedField = useMemo(() => {
         if (!selectedFieldId || !layout) return null;
         for (const section of layout) {
@@ -45,16 +45,16 @@ export default function useFormForgeDesigner(form, onFormUpdate) {
         return null;
     }, [selectedFieldId, layout]);
 
-    // --- CALLBACK FONKSİYONLARI ---
+    // --- CALLBACK FUNCTIONS ---
 
-    // Bir alana tıklandığında seçili alanı ayarlar.
+    // Sets the selected field when a field card is clicked.
     const handleSelectField = useCallback((fieldId) => {
         setSelectedFieldId(prevId => (prevId === fieldId ? null : fieldId));
     }, []);
 
-    // Bir alanın özelliklerini günceller. (Label silinme sorunu burada çözüldü)
+    // Updates a field's properties.
     const handleUpdateField = useCallback(async (fieldData) => {
-        // 1. İyimser Güncelleme: Arayüzü anında yeni veriyle günceller.
+        // Optimistically update the UI instantly with the new data.
         setLayout(prevLayout =>
             prevLayout.map(section => ({
                 ...section,
@@ -65,21 +65,56 @@ export default function useFormForgeDesigner(form, onFormUpdate) {
             }))
         );
 
-        // 2. API Çağrısı: Arka planda değişikliği kaydeder.
-        if (String(fieldData.id).includes('temp_')) return; // Geçici alanları kaydetme
+        // Call the API in the background to persist the change.
+        if (String(fieldData.id).includes('temp_')) return; // Don't save temporary fields
         try {
             await FormForgeApiApi.updateFormField(fieldData.id, fieldData);
-            // Başarılı olursa, tüm formu yeniden çekmeye gerek YOKTUR. Çünkü en güncel veri zaten bizde.
+            // On success, we DON'T need to re-fetch the form. Our local state is the source of truth.
         } catch (error) {
-            console.error("Alan güncellenirken bir hata oluştu.", error);
-            // Hata durumunda, veri tutarlılığı için formu sunucudan yeniden çek.
+            console.error("An error occurred while updating the field.", error);
+            // If there's an error, re-fetch the form from the server to ensure data consistency.
             onFormUpdate(form.id); 
         }
     }, [form?.id, onFormUpdate]);
 
-    // Bir alanı siler.
+    // **NEW AND CORRECTED FUNCTION FOR ADDING AN OPTION**
+    const handleAddOption = useCallback(async (fieldId) => {
+        const newOptionPayload = { label: '', value: '' }; // Clean data to send to the API
+
+        try {
+            // 1. Call the new, dedicated 'add-option' API endpoint.
+            const response = await FormForgeApiApi.addFormFieldOption(fieldId, newOptionPayload);
+            const newOptionFromServer = response.data; // The new option with its real ID from the backend
+
+            // 2. On success, update the UI with the confirmed data from the backend.
+            setLayout(prevLayout =>
+                prevLayout.map(section => ({
+                    ...section,
+                    rows: section.rows.map(row => ({
+                        ...row,
+                        fields: row.fields.map(field => {
+                            if (field.id === fieldId) {
+                                const currentOptions = field.options || [];
+                                // Add the new, real option to the list of existing options
+                                return {
+                                    ...field,
+                                    options: [...currentOptions, newOptionFromServer]
+                                };
+                            }
+                            return field;
+                        })
+                    }))
+                }))
+            );
+        } catch (error) {
+            console.error("API error while adding a new option:", error);
+            // A user notification (toast) could be shown here.
+        }
+    }, []); // This function has no external dependencies.
+
+    // Deletes a field.
     const handleDeleteField = useCallback(async (fieldId) => {
-        if (!form?.id || !fieldId || !window.confirm("Bu alanı silmek istediğinizden emin misiniz?")) return;
+        if (!form?.id || !fieldId || !window.confirm("Are you sure you want to delete this field?")) return;
         
         setLayout(prevLayout =>
             prevLayout.map(section => ({
@@ -94,14 +129,14 @@ export default function useFormForgeDesigner(form, onFormUpdate) {
 
         try {
             await FormForgeApiApi.deleteFormField(fieldId);
-            await onFormUpdate(form.id); // Silme sonrası yeniden çekmek, sıralamayı garantiler.
+            await onFormUpdate(form.id); // Re-fetching after delete ensures order is correct.
         } catch (error) {
-            console.error("Alan silinirken bir hata oluştu.", error);
+            console.error("An error occurred while deleting the field.", error);
             onFormUpdate(form.id);
         }
     }, [form?.id, onFormUpdate]);
 
-    // Sürükle-bırak işlemini yönetir. (Anında güncelleme sorunu burada çözüldü)
+    // Handles the drag-and-drop operation.
     const handleDragEnd = useCallback(async (event) => {
         const { active, over } = event;
         if (!over) return;
@@ -130,29 +165,27 @@ export default function useFormForgeDesigner(form, onFormUpdate) {
             return newLayout;
         });
 
-        // API çağrılarını state güncellemesi bittikten sonra yap
         try {
             const allFields = finalLayout.flatMap(s => s.rows.flatMap(r => r.fields));
             const payload = allFields.map((field, index) => ({ ...field, order: index }));
-
             const newFieldPayload = payload.find(f => String(f.id).includes('temp_'));
             
             if (newFieldPayload) {
                 const { id, ...apiData } = newFieldPayload;
                 await FormForgeApiApi.createFormField(apiData);
-                await onFormUpdate(form.id); // Yeni alan eklendiğinde ID'leri almak için formu yeniden çek.
+                await onFormUpdate(form.id); // Re-fetch to get the new ID.
             } else {
                 const orderPayload = payload.map(({ id, order }) => ({ id, order }));
                 await FormForgeApiApi.updateFormFieldOrder(orderPayload);
-                // Sıralama sonrası formu yeniden çekmeye gerek yok, UI zaten güncel.
+                // No need to re-fetch after sorting, the UI is already correct.
             }
         } catch (error) {
-            console.error("Sürükle-bırak sonrası hata:", error);
-            onFormUpdate(form.id);
+            console.error("Error after drag-and-drop:", error);
+            onFormUpdate(form.id); // Revert to the last known good state from the server on error.
         }
     }, [form, onFormUpdate]);
 
-    // Yeni bir satır ekler.
+    // Adds a new row.
     const handleAddRow = useCallback((sectionId) => {
         setLayout(prevLayout =>
             prevLayout.map(section => {
@@ -164,7 +197,7 @@ export default function useFormForgeDesigner(form, onFormUpdate) {
         );
     }, []);
 
-    // --- HOOK'UN DIŞARIYA AÇTIĞI ARAYÜZ ---
+    // --- HOOK'S PUBLIC INTERFACE ---
     return {
         layout,
         selectedFieldId,
@@ -175,6 +208,7 @@ export default function useFormForgeDesigner(form, onFormUpdate) {
         handleSelectField,
         handleUpdateField,
         handleDeleteField,
-        handleAddRow
+        handleAddRow,
+        handleAddOption, // The corrected function
     };
 }

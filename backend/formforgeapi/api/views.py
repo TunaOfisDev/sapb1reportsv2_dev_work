@@ -12,6 +12,7 @@ from .serializers import (
     DepartmentSerializer, 
     FormSerializer, 
     FormFieldSerializer, 
+    FormFieldOptionSerializer,
     FormSubmissionSerializer, 
     SubmissionValueSerializer,
     SimpleUserSerializer
@@ -62,23 +63,25 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     serializer_class = DepartmentSerializer
     permission_classes = [IsAuthenticated]
 
+
+
 class FormViewSet(viewsets.ModelViewSet):
     """Form şemalarını ve versiyonlarını yönetir."""
+    # DÜZELTME: queryset ve get_queryset metodunu DRF'in standart,
+    # en güvenli haline geri döndürüyoruz.
     queryset = Form.objects.all()
     serializer_class = FormSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        queryset = self.queryset.select_related('department', 'created_by').prefetch_related('fields', 'versions')
-        if self.action == 'list':
-            status_filter = self.request.query_params.get('status', Form.FormStatus.PUBLISHED)
-            if status_filter:
-                queryset = queryset.filter(status=status_filter)
-        return queryset
+    # GÜNCELLEME: Karmaşık get_queryset metodu ŞİMDİLİK kaldırıldı.
+    # DRF, bir formu (retrieve) veya form listesini (list) getirmek için
+    # gereken temel optimizasyonları kendisi yapacaktır.
+    # Bu değişiklik, ImproperlyConfigured hatasını gidermelidir.
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user, status=Form.FormStatus.PUBLISHED)
         
+    # @action metodlarınız (archive, unarchive, create_version) aynı kalabilir.
     @action(detail=True, methods=['post'], url_path='archive')
     def archive(self, request, pk=None):
         form = self.get_object()
@@ -98,12 +101,35 @@ class FormViewSet(viewsets.ModelViewSet):
         new_form = formforgeapi_service.create_new_form_version(pk, request.user)
         serializer = self.get_serializer(new_form)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    
 
 class FormFieldViewSet(viewsets.ModelViewSet):
-    """Tekil form alanlarını yönetir (oluşturma, silme, güncelleme). Sıralama işlemi hariç."""
+    """Tekil form alanlarını yönetir (oluşturma, silme, güncelleme)."""
     queryset = FormField.objects.all()
     serializer_class = FormFieldSerializer
     permission_classes = [IsAuthenticated]
+
+    @action(detail=True, methods=['post'], url_path='add-option')
+    def add_option(self, request, pk=None):
+        form_field = self.get_object()
+        
+        # Gelen veriye 'form_field' ID'sini ekleyerek serializer'ı hazırlıyoruz.
+        option_data = request.data.copy()
+        # FormFieldOptionSerializer'ın FormField'a ihtiyacı yok, bu satır gereksiz olabilir.
+        # Eğer FormFieldOptionSerializer'ınızda 'form_field' alanı zorunlu ise kalmalı.
+        # option_data['form_field'] = form_field.pk # Bu satır serializer'ınıza bağlı
+        
+        # ÖNEMLİ: Serializer'a 'form_field' nesnesini context üzerinden vermek daha sağlam bir yöntemdir.
+        serializer = FormFieldOptionSerializer(
+            data=request.data, 
+            context={'form_field': form_field}
+        )
+        if serializer.is_valid():
+            # Serializer'ın save metodu, context'ten aldığı form_field ile kaydı oluşturmalı.
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class FormSubmissionViewSet(viewsets.ModelViewSet):
     """Form gönderimlerini ve versiyonlarını yönetir."""

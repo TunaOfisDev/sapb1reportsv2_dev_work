@@ -3,37 +3,28 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../../css/FieldPropsDrawer.module.css';
 import { ALL_FIELD_OPTIONS, FIELDS_WITH_OPTIONS } from '../../constants';
-import { useDebounce } from '../../hooks/useDebounce'; // Debounce hook'unuzun doğru yolda olduğundan emin olun.
+import { useDebounce } from '../../hooks/useDebounce';
 
-// Bileşeni `React.memo` ile sarmak, gereksiz render'lara karşı ek bir koruma katmanıdır.
-const FieldPropsDrawer = React.memo(({ field, onClose, onUpdate, onDelete }) => {
-    // 1. YEREL STATE: Input değişikliklerini anında yakalamak için bileşenin kendi state'i.
+// DÜZELTME: Props listesine 'onAddOption' eklendi.
+const FieldPropsDrawer = React.memo(({ field, onClose, onUpdate, onDelete, onAddOption }) => {
+    // Yerel state ve debouncing mantığı, metin inputları için doğru şekilde çalışmaya devam ediyor.
     const [localField, setLocalField] = useState(field);
-    
-    // 2. DEBOUNCE: API'ye sürekli istek atmamak için yerel state'i gecikmeli takip et.
     const debouncedField = useDebounce(localField, 500);
 
-    // --- İŞTE KESİN ÇÖZÜM BURADA ---
     useEffect(() => {
-        // Bu effect, dışarıdan gelen `field` prop'unu dinler.
-        // ANCAK, sadece seçilen alanın ID'si değiştiğinde (yani kullanıcı FARKLI bir alana tıkladığında)
-        // yerel state'i sıfırlar. Bu, siz aynı alanda yazarken verinizin ezilmesini ENGELLER.
         if (field?.id !== localField?.id) {
             setLocalField(field);
         }
-    }, [field, localField?.id]); // Bağımlılık dizisi bu kontrolü sağlar.
+    }, [field, localField?.id]);
 
-    // 3. API'Yİ GÜNCELLEME: Sadece kullanıcı yazmayı bıraktığında çalışır.
     useEffect(() => {
-        // `debouncedField` değiştiğinde ve bu bir güncelleme ise `onUpdate`'i çağır.
         if (debouncedField && onUpdate && JSON.stringify(debouncedField) !== JSON.stringify(field)) {
             onUpdate(debouncedField);
         }
     }, [debouncedField, onUpdate, field]);
 
 
-    // Eğer bir alan seçilmemişse, yer tutucu gösterilir.
-    if (!field) { // Dışarıdan gelen `field` prop'una göre boş durum kontrolü yapılır.
+    if (!field) {
         return (
             <aside className={`${styles.drawer} ${styles.drawerPlaceholder}`}>
                 <p>Özelliklerini düzenlemek için bir alan seçin.</p>
@@ -42,7 +33,6 @@ const FieldPropsDrawer = React.memo(({ field, onClose, onUpdate, onDelete }) => 
     }
 
     // --- Handler Fonksiyonları ---
-    // Bu fonksiyon sadece yerel state'i günceller, çok hızlı çalışır.
     const handlePropertyChange = (e) => {
         const { name, value, type, checked } = e.target;
         const newValue = type === 'checkbox' ? checked : value;
@@ -52,12 +42,9 @@ const FieldPropsDrawer = React.memo(({ field, onClose, onUpdate, onDelete }) => 
     const handleOptionChange = (newOptions) => {
         setLocalField(prev => (prev ? { ...prev, options: newOptions } : null));
     };
-
-    const handleAddOption = () => {
-        const currentOptions = localField?.options || [];
-        const newOption = { id: `temp_option_${Date.now()}`, label: '', order: currentOptions.length };
-        handleOptionChange([...currentOptions, newOption]);
-    };
+    
+    // DÜZELTME: Bu fonksiyon artık kullanılmıyor, çünkü mantığı useFormForgeDesigner'a taşıdık.
+    // const handleAddOption = () => { ... };
     
     const handleUpdateOption = (optionId, newLabel) => {
         const updatedOptions = localField.options.map(opt =>
@@ -81,7 +68,7 @@ const FieldPropsDrawer = React.memo(({ field, onClose, onUpdate, onDelete }) => 
             </div>
 
             <div className={styles.drawerBody}>
-                {/* Input'lar artık `localField` state'ine bağlıdır. */}
+                {/* Alan Etiketi */}
                 <div className={styles.formGroup}>
                     <label htmlFor="label">Etiket</label>
                     <input
@@ -92,6 +79,7 @@ const FieldPropsDrawer = React.memo(({ field, onClose, onUpdate, onDelete }) => 
                     />
                 </div>
 
+                {/* Alan Tipi */}
                 <div className={styles.formGroup}>
                     <label htmlFor="field_type">Alan Tipi</label>
                     <select
@@ -106,6 +94,7 @@ const FieldPropsDrawer = React.memo(({ field, onClose, onUpdate, onDelete }) => 
                     </select>
                 </div>
 
+                {/* Zorunlu Alan Checkbox */}
                 <div className={styles.formGroupCheck}>
                     <input
                         type="checkbox" id="is_required" name="is_required"
@@ -115,6 +104,7 @@ const FieldPropsDrawer = React.memo(({ field, onClose, onUpdate, onDelete }) => 
                     <label htmlFor="is_required">Bu alan zorunlu</label>
                 </div>
                 
+                {/* Seçenekler Bölümü */}
                 {hasOptions && (
                     <div className={styles.formGroup}>
                         <label>Seçenekler</label>
@@ -132,13 +122,18 @@ const FieldPropsDrawer = React.memo(({ field, onClose, onUpdate, onDelete }) => 
                                 </div>
                             ))}
                         </div>
-                        <button onClick={handleAddOption} className={styles.addButton}>+ Seçenek Ekle</button>
+                        {/* DÜZELTME: Buton artık merkezi 'onAddOption' fonksiyonunu çağırıyor. */}
+                        <button onClick={() => onAddOption(field.id)} className={styles.addButton}>
+                            + Seçenek Ekle
+                        </button>
                     </div>
                 )}
             </div>
 
             <div className={styles.drawerFooter}>
-                <button onClick={() => onDelete(localField.id)} className={styles.deleteButton}>Alanı Sil</button>
+                <button onClick={() => onDelete(localField.id)} className={styles.deleteButton}>
+                    Alanı Sil
+                </button>
             </div>
         </aside>
     );

@@ -38,8 +38,13 @@ export default function useFormForgeDesigner(form, onFormUpdate) {
         setSelectedFieldId(prevId => (prevId === fieldId ? null : fieldId));
     }, []);
 
+    // YENİ: Alan seçimini kapatmak (drawer'ı kapatmak) için referansı sabit bir fonksiyon.
+    // Bu, FormBuilderScreen'de inline fonksiyon kullanımını engeller ve React.memo'nun doğru çalışmasını sağlar.
+    const handleCloseDrawer = useCallback(() => {
+        setSelectedFieldId(null);
+    }, []);
+
     const handleUpdateField = useCallback(async (fieldData) => {
-        // Optimistic UI update
         setLayout(prevLayout =>
             prevLayout.map(section => ({
                 ...section,
@@ -59,26 +64,29 @@ export default function useFormForgeDesigner(form, onFormUpdate) {
         }
     }, [form?.id, onFormUpdate]);
 
-    // --- YENİ VE DÜZELTİLMİŞ FONKSİYON ---
-    const handleAddOption = useCallback(async () => {
-        if (!selectedField) return;
+    const handleAddOption = useCallback(async (optionData) => {
+        if (!selectedField) {
+            console.error("No field selected to add an option to.");
+            return;
+        }
 
-        // Mevcut seçenek sayısını bularak yeni bir varsayılan etiket oluştur.
+        if (!optionData || !optionData.label || optionData.label.trim() === '') {
+            console.error("Option label cannot be empty.");
+            throw new Error("Seçenek etiketi boş olamaz.");
+        }
+
         const currentOptions = selectedField.options || [];
-        const newOptionLabel = `Yeni Seçenek ${currentOptions.length + 1}`;
-
-        // API'ye gönderilecek veri: Boş değil, varsayılan bir etiket içeriyor.
-        const newOptionPayload = {
-            label: newOptionLabel,
-            order: currentOptions.length // Sıralamayı da otomatik ayarla.
+        
+        const payload = {
+            label: optionData.label.trim(),
+            value: (optionData.value || '').trim() || optionData.label.trim(),
+            order: currentOptions.length,
         };
 
         try {
-            // API'yi çağır.
-            const response = await FormForgeApiApi.addFormFieldOption(selectedField.id, newOptionPayload);
-            const newOptionFromServer = response.data; // Gerçek ID'li yeni seçenek.
+            const response = await FormForgeApiApi.addFormFieldOption(selectedField.id, payload);
+            const newOptionFromServer = response.data;
 
-            // Arayüzü, sunucudan gelen kesin veri ile güncelle.
             setLayout(prevLayout =>
                 prevLayout.map(section => ({
                     ...section,
@@ -86,10 +94,9 @@ export default function useFormForgeDesigner(form, onFormUpdate) {
                         ...row,
                         fields: row.fields.map(field => {
                             if (field.id === selectedField.id) {
-                                // İlgili alana yeni seçeneği ekle.
                                 return {
                                     ...field,
-                                    options: [...currentOptions, newOptionFromServer]
+                                    options: [...(field.options || []), newOptionFromServer]
                                 };
                             }
                             return field;
@@ -99,14 +106,13 @@ export default function useFormForgeDesigner(form, onFormUpdate) {
             );
         } catch (error) {
             console.error("API error while adding a new option:", error);
-            // Burada kullanıcıya bir 'toast' bildirimi gösterilebilir.
+            throw error;
         }
-    }, [selectedField]); // Artık sadece 'selectedField'a bağımlı.
+    }, [selectedField]);
 
     const handleDeleteField = useCallback(async (fieldId) => {
         if (!form?.id || !fieldId || !window.confirm("Bu alanı silmek istediğinizden emin misiniz?")) return;
 
-        // Optimistic UI update
         setLayout(prevLayout =>
             prevLayout.map(section => ({
                 ...section,
@@ -116,7 +122,8 @@ export default function useFormForgeDesigner(form, onFormUpdate) {
                 })),
             }))
         );
-        setSelectedFieldId(null);
+        // Drawer'ı kapatmak için yeni fonksiyonu burada da kullanabiliriz.
+        handleCloseDrawer();
 
         try {
             await FormForgeApiApi.deleteFormField(fieldId);
@@ -125,9 +132,8 @@ export default function useFormForgeDesigner(form, onFormUpdate) {
             console.error("An error occurred while deleting the field.", error);
             onFormUpdate(form.id);
         }
-    }, [form?.id, onFormUpdate]);
-
-    // handleDragEnd ve handleAddRow fonksiyonlarınız aynı kalabilir...
+    }, [form?.id, onFormUpdate, handleCloseDrawer]);
+    
     const handleDragEnd = useCallback(async (event) => {
         const { active, over } = event;
         if (!over) return;
@@ -186,7 +192,7 @@ export default function useFormForgeDesigner(form, onFormUpdate) {
         );
     }, []);
 
-
+    // Dışarıya aktarılan fonksiyonlar listesine handleCloseDrawer eklendi.
     return {
         layout,
         selectedFieldId,
@@ -198,6 +204,7 @@ export default function useFormForgeDesigner(form, onFormUpdate) {
         handleUpdateField,
         handleDeleteField,
         handleAddRow,
-        handleAddOption, // Düzeltilmiş fonksiyon
+        handleAddOption,
+        handleCloseDrawer, // YENİ
     };
 }

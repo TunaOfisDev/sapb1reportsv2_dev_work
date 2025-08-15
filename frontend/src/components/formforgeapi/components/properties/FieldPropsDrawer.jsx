@@ -5,11 +5,13 @@ import styles from '../../css/FieldPropsDrawer.module.css';
 import { ALL_FIELD_OPTIONS, FIELDS_WITH_OPTIONS } from '../../constants';
 import { useDebounce } from '../../hooks/useDebounce';
 
-// DÜZELTME: Props listesine 'onAddOption' eklendi.
 const FieldPropsDrawer = React.memo(({ field, onClose, onUpdate, onDelete, onAddOption }) => {
-    // Yerel state ve debouncing mantığı, metin inputları için doğru şekilde çalışmaya devam ediyor.
     const [localField, setLocalField] = useState(field);
     const debouncedField = useDebounce(localField, 500);
+
+    const [newOption, setNewOption] = useState({ label: '', value: '' });
+    const [isAdding, setIsAdding] = useState(false);
+    const [addError, setAddError] = useState(null);
 
     useEffect(() => {
         if (field?.id !== localField?.id) {
@@ -23,7 +25,6 @@ const FieldPropsDrawer = React.memo(({ field, onClose, onUpdate, onDelete, onAdd
         }
     }, [debouncedField, onUpdate, field]);
 
-
     if (!field) {
         return (
             <aside className={`${styles.drawer} ${styles.drawerPlaceholder}`}>
@@ -32,19 +33,34 @@ const FieldPropsDrawer = React.memo(({ field, onClose, onUpdate, onDelete, onAdd
         );
     }
 
-    // --- Handler Fonksiyonları ---
     const handlePropertyChange = (e) => {
         const { name, value, type, checked } = e.target;
         const newValue = type === 'checkbox' ? checked : value;
         setLocalField(prev => (prev ? { ...prev, [name]: newValue } : null));
     };
 
+    const handleAddNewOptionClick = async () => {
+        if (isAdding || !newOption.label.trim()) return;
+
+        setIsAdding(true);
+        setAddError(null);
+        try {
+            await onAddOption(newOption);
+            
+            // DİKKAT: Bu satır, seri ekleme yapabilmeniz için kasıtlı olarak
+            // yorum satırı haline getirilmiştir. Input'u temizlemez.
+            // setNewOption({ label: '', value: '' }); 
+
+        } catch (error) {
+            setAddError(error.message || "Bir hata oluştu.");
+        } finally {
+            setIsAdding(false);
+        }
+    };
+    
     const handleOptionChange = (newOptions) => {
         setLocalField(prev => (prev ? { ...prev, options: newOptions } : null));
     };
-    
-    // DÜZELTME: Bu fonksiyon artık kullanılmıyor, çünkü mantığı useFormForgeDesigner'a taşıdık.
-    // const handleAddOption = () => { ... };
     
     const handleUpdateOption = (optionId, newLabel) => {
         const updatedOptions = localField.options.map(opt =>
@@ -122,10 +138,22 @@ const FieldPropsDrawer = React.memo(({ field, onClose, onUpdate, onDelete, onAdd
                                 </div>
                             ))}
                         </div>
-                        {/* DÜZELTME: Buton artık merkezi 'onAddOption' fonksiyonunu çağırıyor. */}
-                        <button onClick={() => onAddOption(field.id)} className={styles.addButton}>
-                            + Seçenek Ekle
-                        </button>
+                        <div className={styles.addOptionForm}>
+                            <input
+                                type="text"
+                                className={styles.formControl}
+                                placeholder="Yeni Seçenek Etiketi"
+                                value={newOption.label}
+                                onChange={(e) => {
+                                    setNewOption({ ...newOption, label: e.target.value });
+                                    setAddError(null);
+                                }}
+                            />
+                            <button onClick={handleAddNewOptionClick} className={styles.addButton} disabled={isAdding || !newOption.label.trim()}>
+                                {isAdding ? 'Ekleniyor...' : '+ Seçenek Ekle'}
+                            </button>
+                        </div>
+                        {addError && <p className={styles.errorMessage}>{addError}</p>}
                     </div>
                 )}
             </div>

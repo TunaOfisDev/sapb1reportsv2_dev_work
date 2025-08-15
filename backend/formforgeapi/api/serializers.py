@@ -47,15 +47,29 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 class FormFieldOptionSerializer(serializers.ModelSerializer):
+    label = serializers.CharField(allow_blank=False, allow_null=False)
     class Meta:
         model = FormFieldOption
-        # 'form_field' alanını fields listesinden çıkarın, çünkü onu biz vereceğiz.
-        fields = ["id", "label", "value", "order"] 
+        fields = ["id", "label", "order"]
         read_only_fields = ["id"]
 
+    def validate_label(self, value):
+        if not value.strip():
+            raise serializers.ValidationError("Seçenek etiketi boş olamaz.")
+        return value.strip()
+
+    # --- EKLENMESİ GEREKEN CREATE METODU ---
     def create(self, validated_data):
-        # View'den context ile gönderdiğimiz form_field'ı burada alıp kullanıyoruz.
-        form_field = self.context['form_field']
+        """
+        Bu metot, ViewSet'ten context ile gönderilen 'form_field' nesnesini kullanarak
+        yeni FormFieldOption kaydını doğru alana bağlar.
+        """
+        form_field = self.context.get('form_field')
+        if not form_field:
+            # Bu bir güvenlik kontrolüdür, normalde her zaman dolu gelmelidir.
+            raise serializers.ValidationError("Seçenek oluşturmak için ana form alanı belirtilmelidir.")
+        
+        # Yeni seçeneği oluştur ve veritabanına kaydet.
         option = FormFieldOption.objects.create(form_field=form_field, **validated_data)
         return option
 
@@ -125,17 +139,11 @@ class SubmissionValueSerializer(serializers.ModelSerializer):
 class FormSubmissionSerializer(serializers.ModelSerializer):
     values = SubmissionValueSerializer(many=True, read_only=True)
     created_by = SimpleUserSerializer(read_only=True)
-    
-    # DÜZELTME: Bu satıra 'source' parametresi eklendi.
-    # Bu, serializer'a API'de alan adının 'versions' olarak kalacağını,
-    # ama veriyi modeldeki 'submission_versions' ilişkisinden çekeceğini söyler.
-    versions = serializers.StringRelatedField(many=True, read_only=True, source='submission_versions')
-    
+    versions = serializers.StringRelatedField(many=True, read_only=True)
     is_owner = serializers.SerializerMethodField()
 
     class Meta:
         model = FormSubmission
-        # 'fields' listesi aynı kalabilir, çünkü alanın API'deki adı hala 'versions' olacak.
         fields = ['id', 'form', 'created_by', 'values', 'created_at', 'updated_at', 'parent_submission', 'version', 'is_active', 'versions', 'is_owner']
         read_only_fields = ['id', 'created_by', 'created_at', 'updated_at', 'versions', 'is_owner']
 

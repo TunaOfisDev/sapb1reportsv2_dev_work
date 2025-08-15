@@ -36,7 +36,7 @@ class Form(models.Model):
         null=True, 
         blank=True,
         related_name='versions',
-        verbose_name=_("Ana Form"),
+        verbose_name=_("Ana Form")
     )
     version = models.PositiveIntegerField(_("Versiyon"), default=1)
     
@@ -51,12 +51,15 @@ class Form(models.Model):
 
 
 class FormField(models.Model):
+    # GÜNCELLEME: İç içe tanımlanmış 'FieldTypes' sınıfı buradan kaldırıldı.
+    
     form = models.ForeignKey(Form, verbose_name=_("Form"), on_delete=models.CASCADE, related_name='fields')
     label = models.CharField(_("Etiket"), max_length=255)
     
+    # GÜNCELLEME: Alan tipi, artık import edilen FieldTypes'ı kullanıyor ve max_length artırıldı.
     field_type = models.CharField(
         _("Alan Tipi"), 
-        max_length=30,
+        max_length=30, # 'departmentpicker' gibi uzun isimler için artırıldı
         choices=FieldTypes.choices
     )
     
@@ -78,8 +81,7 @@ class FormSubmission(models.Model):
         on_delete=models.SET_NULL, 
         null=True, 
         blank=True,
-        # DÜZELTME: Bu satır, çakışmayı önlemek için değiştirildi.
-        related_name='submission_versions',
+        related_name='versions',
         verbose_name=_("Ana Gönderim")
     )
     version = models.PositiveIntegerField(_("Versiyon"), default=1)

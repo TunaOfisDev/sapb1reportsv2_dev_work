@@ -24,8 +24,9 @@ const FormBuilderScreen = () => {
         departments, fetchDepartments
     } = useFormForgeApi();
 
-    // useFormForgeDesigner hook'u, tüm tasarım mantığını içeren 'designer' nesnesini döndürür.
-    const designer = useFormForgeDesigner(currentForm, fetchForm);
+    // GÜNCELLEME: Hook'tan dönen değerler burada doğru şekilde "destructure" edildi.
+    // İhtiyacımız olan değişkenleri doğrudan alıyoruz, geri kalanları 'designer' objesinde bırakıyoruz.
+    const { selectedField, handleCloseDrawer, actions, ...designer } = useFormForgeDesigner(currentForm, fetchForm);
 
     const [newFormTitle, setNewFormTitle] = useState('');
     const [newFormDept, setNewFormDept] = useState('');
@@ -53,7 +54,7 @@ const FormBuilderScreen = () => {
         })
     );
     
-    // Yeni form oluşturma ekranı (değişiklik yok)
+    // Yeni form oluşturma ekranı
     if (isNewMode) {
         return (
             <div style={{ padding: '2rem', maxWidth: '500px', margin: 'auto' }}>
@@ -85,7 +86,6 @@ const FormBuilderScreen = () => {
         );
     }
     
-    // Yüklenme ve hata durumları (değişiklik yok)
     if (loading && !currentForm) return <div>Yükleniyor...</div>;
     if (error) return <div className="alert alert-danger">Hata: {error}</div>;
     if (!currentForm) return <div>Form bulunamadı veya yüklenemedi.</div>;
@@ -151,14 +151,12 @@ const FormBuilderScreen = () => {
 
                     {designer.viewMode === 'design' && (
                         <div className={styles.formBuilderScreen__drawerSlot}>
-                            <FieldPropsDrawer
-                                field={designer.selectedField}
-                                // DEĞİŞİKLİK: 'onClose' prop'u artık hook'tan gelen sabit referanslı fonksiyonu kullanıyor.
-                                // Bu, FieldPropsDrawer'ın gereksiz yere render olmasını engeller.
-                                onClose={designer.handleCloseDrawer}
-                                onUpdate={designer.handleUpdateField}
-                                onDelete={designer.handleDeleteField}
-                                onAddOption={designer.handleAddOption}
+                            <FieldPropsDrawer 
+                                field={selectedField}
+                                onClose={handleCloseDrawer}
+                                onUpdate={actions.onUpdateField}
+                                onDelete={actions.onDeleteField}
+                                onAddOption={actions.onAddOption} 
                             />
                         </div>
                     )}

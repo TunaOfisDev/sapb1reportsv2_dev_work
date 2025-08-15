@@ -1,30 +1,42 @@
 // path: frontend/src/components/formforgeapi/components/properties/FieldPropsDrawer.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import styles from '../../css/FieldPropsDrawer.module.css';
 import { ALL_FIELD_OPTIONS, FIELDS_WITH_OPTIONS } from '../../constants';
 import { useDebounce } from '../../hooks/useDebounce';
 
 const FieldPropsDrawer = React.memo(({ field, onClose, onUpdate, onDelete, onAddOption }) => {
     const [localField, setLocalField] = useState(field);
-    const debouncedField = useDebounce(localField, 500);
+    
+    const fieldPropertiesToUpdate = useMemo(() => {
+        if (!localField) return null;
+        const { options, ...properties } = localField;
+        return properties;
+    }, [localField]);
+
+    const debouncedFieldProperties = useDebounce(fieldPropertiesToUpdate, 500);
 
     const [newOption, setNewOption] = useState({ label: '', value: '' });
     const [isAdding, setIsAdding] = useState(false);
     const [addError, setAddError] = useState(null);
 
     useEffect(() => {
-    // Sadece objelerin içeriği gerçekten değiştiyse state'i güncelle
-    if (JSON.stringify(field) !== JSON.stringify(localField)) {
-         setLocalField(field);
-    }
+        if (JSON.stringify(field) !== JSON.stringify(localField)) {
+            setLocalField(field);
+        }
     }, [field]);
 
+    // Bu useEffect artık SADECE label, is_required gibi temel özellikleri günceller.
     useEffect(() => {
-        if (debouncedField && onUpdate && JSON.stringify(debouncedField) !== JSON.stringify(field)) {
-            onUpdate(debouncedField);
+        if (debouncedFieldProperties && onUpdate) {
+            const { options, ...originalProperties } = field || {};
+            if (JSON.stringify(debouncedFieldProperties) !== JSON.stringify(originalProperties)) {
+                // ÖNEMLİ: Güncelleme yaparken, 'options' dizisinin en güncel halini 'field' prop'undan alıyoruz.
+                // Bu, seçeneklerin üzerine yanlışlıkla eski veriyle yazılmasını engeller.
+                onUpdate({ ...debouncedFieldProperties, options: field?.options || [] });
+            }
         }
-    }, [debouncedField, onUpdate, field]);
+    }, [debouncedFieldProperties, onUpdate, field]);
 
     if (!field) {
         return (
@@ -46,12 +58,9 @@ const FieldPropsDrawer = React.memo(({ field, onClose, onUpdate, onDelete, onAdd
         setIsAdding(true);
         setAddError(null);
         try {
-            await onAddOption(newOption);
-            
-            // DİKKAT: Bu satır, seri ekleme yapabilmeniz için kasıtlı olarak
-            // yorum satırı haline getirilmiştir. Input'u temizlemez.
-            // setNewOption({ label: '', value: '' }); 
-
+            // onAddOption, hook'ta API'ye gider ve layout'u günceller.
+            await onAddOption(newOption); 
+            setNewOption({ label: '', value: '' });
         } catch (error) {
             setAddError(error.message || "Bir hata oluştu.");
         } finally {
@@ -59,20 +68,34 @@ const FieldPropsDrawer = React.memo(({ field, onClose, onUpdate, onDelete, onAdd
         }
     };
     
-    const handleOptionChange = (newOptions) => {
-        setLocalField(prev => (prev ? { ...prev, options: newOptions } : null));
-    };
-    
+    // ==============================================================================
+    // ===                           ANA DÜZELTME BURADA                          ===
+    // ==============================================================================
+
     const handleUpdateOption = (optionId, newLabel) => {
+        // 1. Yeni 'options' dizisini immutable olarak oluştur.
         const updatedOptions = localField.options.map(opt =>
             opt.id === optionId ? { ...opt, label: newLabel } : opt
         );
-        handleOptionChange(updatedOptions);
+        
+        // 2. Güncellenmiş alanın tamamını oluştur.
+        const updatedField = { ...localField, options: updatedOptions };
+
+        // 3. Hem local state'i hem de DEBOUNCE OLMADAN doğrudan parent'ı (hook'u) anında güncelle.
+        setLocalField(updatedField);
+        onUpdate(updatedField); 
     };
     
     const handleRemoveOption = (optionId) => {
+        // 1. Yeni 'options' dizisini immutable olarak oluştur.
         const updatedOptions = localField.options.filter(opt => opt.id !== optionId);
-        handleOptionChange(updatedOptions);
+        
+        // 2. Güncellenmiş alanın tamamını oluştur.
+        const updatedField = { ...localField, options: updatedOptions };
+
+        // 3. Hem local state'i hem de DEBOUNCE OLMADAN doğrudan parent'ı (hook'u) anında güncelle.
+        setLocalField(updatedField);
+        onUpdate(updatedField);
     };
 
     const hasOptions = localField && FIELDS_WITH_OPTIONS.includes(localField.field_type);

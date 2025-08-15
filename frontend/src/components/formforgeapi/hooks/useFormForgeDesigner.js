@@ -15,7 +15,7 @@ export default function useFormForgeDesigner(form, onFormUpdate) {
             const sortedFields = [...form.fields].sort((a, b) => a.order - b.order);
             setLayout([{
                 id: `section-${form.id}`,
-                title: "Form Fields",
+                title: "Form Alanları",
                 rows: [{ id: `row-${form.id}-1`, fields: sortedFields }],
             }]);
         } else {
@@ -25,94 +25,85 @@ export default function useFormForgeDesigner(form, onFormUpdate) {
 
     const selectedField = useMemo(() => {
         if (!selectedFieldId || !layout) return null;
-        for (const section of layout) {
-            for (const row of section.rows) {
-                const field = row.fields.find(f => f.id === selectedFieldId);
-                if (field) return field;
-            }
-        }
-        return null;
+        return layout.flatMap(s => s.rows.flatMap(r => r.fields)).find(f => f.id === selectedFieldId);
     }, [selectedFieldId, layout]);
 
     const handleSelectField = useCallback((fieldId) => {
         setSelectedFieldId(prevId => (prevId === fieldId ? null : fieldId));
     }, []);
 
-    // YENİ: Alan seçimini kapatmak (drawer'ı kapatmak) için referansı sabit bir fonksiyon.
-    // Bu, FormBuilderScreen'de inline fonksiyon kullanımını engeller ve React.memo'nun doğru çalışmasını sağlar.
     const handleCloseDrawer = useCallback(() => {
         setSelectedFieldId(null);
     }, []);
-
-    const handleUpdateField = useCallback(async (fieldData) => {
+    
+    const updateFieldInLayout = useCallback((fieldId, updaterFn) => {
         setLayout(prevLayout =>
             prevLayout.map(section => ({
                 ...section,
                 rows: section.rows.map(row => ({
                     ...row,
-                    fields: row.fields.map(f => f.id === fieldData.id ? fieldData : f),
+                    fields: row.fields.map(field => 
+                        field.id === fieldId ? updaterFn(field) : field
+                    ),
                 })),
             }))
         );
+    }, []);
 
-        if (String(fieldData.id).includes('temp_')) return;
+    // ==============================================================================
+    // ===                           ANA DÜZELTME BURADA                          ===
+    // ==============================================================================
+    const handleUpdateField = useCallback(async (updatedData) => {
+        let fullFieldToSave;
+
+        // Arayüzü anında güncelle. Gelen veriyi mevcut state ile birleştirerek
+        // 'options' dizisinin kaybolmamasını garanti altına alıyoruz.
+        updateFieldInLayout(updatedData.id, (currentField) => {
+            fullFieldToSave = { ...currentField, ...updatedData };
+            return fullFieldToSave;
+        });
+
+        // Eğer state güncellemesi hemen gerçekleşmezse diye, API'ye gönderilecek veriyi
+        // bir önceki adımda oluşturduğumuz `fullFieldToSave` değişkeninden alıyoruz.
+        if (String(updatedData.id).startsWith('temp_')) return;
+        
         try {
-            await FormForgeApiApi.updateFormField(fieldData.id, fieldData);
+            // API'ye her zaman alanın tam ve en güncel halini gönderiyoruz.
+            await FormForgeApiApi.updateFormField(updatedData.id, fullFieldToSave);
         } catch (error) {
-            console.error("An error occurred while updating the field.", error);
-            onFormUpdate(form.id);
+            console.error("Alan güncellenirken hata oluştu:", error);
+            onFormUpdate(form.id); 
         }
-    }, [form?.id, onFormUpdate]);
+    }, [form?.id, onFormUpdate, updateFieldInLayout]);
 
     const handleAddOption = useCallback(async (optionData) => {
-        if (!selectedField) {
-            console.error("No field selected to add an option to.");
-            return;
-        }
+        const currentSelectedField = layout.flatMap(s => s.rows.flatMap(r => r.fields)).find(f => f.id === selectedFieldId);
+        if (!currentSelectedField) return;
+        if (!optionData?.label?.trim()) throw new Error("Seçenek etiketi boş olamaz.");
 
-        if (!optionData || !optionData.label || optionData.label.trim() === '') {
-            console.error("Option label cannot be empty.");
-            throw new Error("Seçenek etiketi boş olamaz.");
-        }
-
-        const currentOptions = selectedField.options || [];
-        
         const payload = {
             label: optionData.label.trim(),
             value: (optionData.value || '').trim() || optionData.label.trim(),
-            order: currentOptions.length,
+            order: currentSelectedField.options?.length || 0,
         };
 
         try {
-            const response = await FormForgeApiApi.addFormFieldOption(selectedField.id, payload);
+            const response = await FormForgeApiApi.addFormFieldOption(currentSelectedField.id, payload);
             const newOptionFromServer = response.data;
-
-            setLayout(prevLayout =>
-                prevLayout.map(section => ({
-                    ...section,
-                    rows: section.rows.map(row => ({
-                        ...row,
-                        fields: row.fields.map(field => {
-                            if (field.id === selectedField.id) {
-                                return {
-                                    ...field,
-                                    options: [...(field.options || []), newOptionFromServer]
-                                };
-                            }
-                            return field;
-                        })
-                    }))
-                }))
-            );
+            
+            updateFieldInLayout(currentSelectedField.id, (field) => ({
+                ...field,
+                options: [...(field.options || []), newOptionFromServer],
+            }));
         } catch (error) {
-            console.error("API error while adding a new option:", error);
+            console.error("Seçenek eklenirken API hatası:", error);
             throw error;
         }
-    }, [selectedField]);
+    }, [layout, selectedFieldId, updateFieldInLayout]);
 
     const handleDeleteField = useCallback(async (fieldId) => {
-        if (!form?.id || !fieldId || !window.confirm("Bu alanı silmek istediğinizden emin misiniz?")) return;
-
+        if (!window.confirm("Bu alanı silmek istediğinizden emin misiniz?")) return;
+        
         setLayout(prevLayout =>
             prevLayout.map(section => ({
                 ...section,
@@ -122,89 +113,82 @@ export default function useFormForgeDesigner(form, onFormUpdate) {
                 })),
             }))
         );
-        // Drawer'ı kapatmak için yeni fonksiyonu burada da kullanabiliriz.
         handleCloseDrawer();
 
         try {
             await FormForgeApiApi.deleteFormField(fieldId);
-            await onFormUpdate(form.id);
         } catch (error) {
-            console.error("An error occurred while deleting the field.", error);
+            console.error("Alan silinirken hata oluştu:", error);
             onFormUpdate(form.id);
         }
     }, [form?.id, onFormUpdate, handleCloseDrawer]);
-    
+
     const handleDragEnd = useCallback(async (event) => {
         const { active, over } = event;
         if (!over) return;
     
-        let finalLayout = [];
+        let nextLayout = layout; 
+    
         setLayout(currentLayout => {
-            let newLayout = JSON.parse(JSON.stringify(currentLayout));
-            const findContainer = (id) => newLayout.flatMap(s => s.rows).find(r => r.id === id || r.fields.some(f => f.id === id));
-            const overContainer = findContainer(over.id);
-            if (!overContainer) return currentLayout;
-
+            const newLayout = JSON.parse(JSON.stringify(currentLayout));
+            const allRows = newLayout.flatMap(s => s.rows);
+            const findRow = (itemId) => allRows.find(r => r.id === itemId || r.fields.some(f => f.id === itemId));
+            const activeRow = findRow(active.id);
+            const overRow = findRow(over.id);
+    
+            if (!activeRow || !overRow) return currentLayout;
+    
             if (active.data.current?.isPaletteItem) {
-                const newField = { ...createEmptyField({ type: active.data.current.fieldType }), form: form.id, id: `temp_${uuidv4()}` };
-                const overIndex = over.id === overContainer.id ? overContainer.fields.length : overContainer.fields.findIndex(f => f.id === over.id);
-                overContainer.fields.splice(overIndex, 0, newField);
+                const newField = { 
+                    ...createEmptyField({ type: active.data.current.fieldType }), 
+                    form: form.id, 
+                    id: `temp_${uuidv4()}` 
+                };
+                const overIndex = over.id === overRow.id ? overRow.fields.length : overRow.fields.findIndex(f => f.id === over.id);
+                overRow.fields.splice(overIndex, 0, newField);
             } else {
-                const activeContainer = findContainer(active.id);
-                if (!activeContainer || active.id === over.id) return currentLayout;
-                
-                const activeIndex = activeContainer.fields.findIndex(f => f.id === active.id);
-                const [movedField] = activeContainer.fields.splice(activeIndex, 1);
-                const overIndex = over.id === overContainer.id ? overContainer.fields.length : overContainer.fields.findIndex(f => f.id === over.id);
-                overContainer.fields.splice(overIndex >= 0 ? overIndex : overContainer.fields.length, 0, movedField);
+                if (active.id === over.id) return currentLayout;
+    
+                const activeIndex = activeRow.fields.findIndex(f => f.id === active.id);
+                const [movedField] = activeRow.fields.splice(activeIndex, 1);
+                const overIndex = over.id === overRow.id ? overRow.fields.length : overRow.fields.findIndex(f => f.id === over.id);
+                overRow.fields.splice(overIndex, 0, movedField);
             }
-            finalLayout = newLayout;
-            return newLayout;
+            nextLayout = newLayout;
+            return nextLayout;
         });
-
+    
         try {
-            const allFields = finalLayout.flatMap(s => s.rows.flatMap(r => r.fields));
-            const payload = allFields.map((field, index) => ({ ...field, order: index }));
-            const newFieldPayload = payload.find(f => String(f.id).includes('temp_'));
-            
-            if (newFieldPayload) {
-                const { id, ...apiData } = newFieldPayload;
-                await FormForgeApiApi.createFormField(apiData);
+            const allFields = nextLayout.flatMap(s => s.rows.flatMap(r => r.fields));
+            const newField = allFields.find(f => String(f.id).startsWith('temp_'));
+    
+            if (newField) {
+                const { id, ...apiData } = newField;
+                const payload = {...apiData, order: allFields.findIndex(f => f.id === newField.id)};
+                await FormForgeApiApi.createFormField(payload);
                 await onFormUpdate(form.id);
             } else {
-                const orderPayload = payload.map(({ id, order }) => ({ id, order }));
+                const orderPayload = allFields.map(({ id }, index) => ({ id, order: index }));
                 await FormForgeApiApi.updateFormFieldOrder(orderPayload);
             }
         } catch (error) {
-            console.error("Error after drag-and-drop:", error);
+            console.error("Sürükle-bırak sonrası hata:", error);
             onFormUpdate(form.id);
         }
-    }, [form, onFormUpdate]);
+    }, [form, layout, onFormUpdate]);
 
-    const handleAddRow = useCallback((sectionId) => {
-        setLayout(prevLayout =>
-            prevLayout.map(section => {
-                if (section.id === sectionId) {
-                    return { ...section, rows: [...section.rows, { id: `row_${uuidv4()}`, fields: [] }] };
-                }
-                return section;
-            })
-        );
-    }, []);
-
-    // Dışarıya aktarılan fonksiyonlar listesine handleCloseDrawer eklendi.
     return {
         layout,
-        selectedFieldId,
+        selectedField,
         viewMode,
         setViewMode,
-        selectedField,
         onDragEnd: handleDragEnd,
         handleSelectField,
-        handleUpdateField,
-        handleDeleteField,
-        handleAddRow,
-        handleAddOption,
-        handleCloseDrawer, // YENİ
+        handleCloseDrawer,
+        actions: {
+            onUpdateField: handleUpdateField,
+            onDeleteField: handleDeleteField,
+            onAddOption: handleAddOption, 
+        }
     };
 }

@@ -14,10 +14,11 @@ const FieldPropsDrawer = React.memo(({ field, onClose, onUpdate, onDelete, onAdd
     const [addError, setAddError] = useState(null);
 
     useEffect(() => {
-        if (field?.id !== localField?.id) {
-            setLocalField(field);
-        }
-    }, [field, localField?.id]);
+    // Sadece objelerin içeriği gerçekten değiştiyse state'i güncelle
+    if (JSON.stringify(field) !== JSON.stringify(localField)) {
+         setLocalField(field);
+    }
+    }, [field]);
 
     useEffect(() => {
         if (debouncedField && onUpdate && JSON.stringify(debouncedField) !== JSON.stringify(field)) {

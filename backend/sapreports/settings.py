@@ -10,6 +10,9 @@ from .spectacular_settings import SPECTACULAR_SETTINGS
 
 load_dotenv()  # .env dosyasından ayarları yükler
 
+# .env dosyasından FERNET_KEY'i okuyup Django ayarlarına ekliyoruz.
+FERNET_KEY = config('FERNET_KEY')
+
 # --- Ortam ayarları  -------------------------------------------------
 ENVIRONMENT   = os.getenv('ENVIRONMENT', 'development')
 SERVER_HOST   = os.getenv('SERVER_HOST', '127.0.0.1')
@@ -199,6 +202,7 @@ INSTALLED_APPS = [
     'logosupplierbalance',
     'mailservice',
     'newcustomerform',
+    'nexuscore',
     'openorderdocsum',
     'orderarchive',
     'procure_compare',

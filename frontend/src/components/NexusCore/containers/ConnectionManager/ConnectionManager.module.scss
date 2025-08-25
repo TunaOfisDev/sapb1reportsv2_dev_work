@@ -1,0 +1,90 @@
+// path: frontend/src/components/NexusCore/containers/ConnectionManager/ConnectionManager.module.scss
+@use '../../styles/variables' as vars;
+
+// Bağlantı listesinin kendisi (<ul>)
+.connectionList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: vars.$spacing-3; // Liste elemanları arasındaki boşluk
+}
+
+// Listedeki her bir eleman (<li>)
+.connectionItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: vars.$spacing-3 vars.$spacing-4;
+  border: 1px solid vars.$border-color;
+  border-radius: vars.$border-radius-md;
+  background-color: vars.$background-body;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    border-color: rgba(vars.$primary-color, 0.4);
+    box-shadow: vars.$shadow-sm;
+  }
+}
+
+// Sol taraftaki bilgi bölümü (Başlık ve Veritabanı Türü)
+.connectionInfo {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$spacing-1;
+}
+
+.connectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: vars.$text-primary;
+}
+
+.connectionType {
+  font-size: 0.85rem;
+  color: vars.$text-secondary;
+  font-family: monospace; // "postgresql" gibi teknik terimler için uygun
+  background-color: vars.$background-light;
+  padding: 2px 6px;
+  border-radius: vars.$border-radius-sm;
+  display: inline-block; // Arkaplan renginin sadece metin kadar yer kaplamasını sağlar
+  width: fit-content;
+}
+
+// Sağ taraftaki aksiyon butonları bölümü
+.connectionActions {
+  display: flex;
+  align-items: center;
+  gap: vars.$spacing-2;
+}
+
+// Liste boş olduğunda gösterilecek alan
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: vars.$spacing-3;
+  padding: vars.$spacing-8 vars.$spacing-4;
+  text-align: center;
+  color: vars.$text-secondary;
+  border: 2px dashed vars.$border-color;
+  border-radius: vars.$border-radius-lg;
+
+  // İkonun rengini daha soluk yaparak dikkat dağıtmasını engelleriz
+  svg {
+    color: vars.$border-color;
+  }
+
+  p {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+    color: vars.$text-primary;
+  }
+
+  span {
+    font-size: 0.9rem;
+  }
+}

@@ -1,0 +1,68 @@
+/* path: frontend/src/components/NexusCore/components/common/Button/Button.module.scss */
+
+/* Global değişkenlerimize erişmek için @use kuralını kullanıyoruz. */
+@use '../../../styles/variables' as vars;
+
+/* Block: Bileşenin ana kabı */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: vars.$spacing-2; /* İkon ve metin arası boşluk */
+  padding: vars.$spacing-2 vars.$spacing-3;
+  border: 1px solid transparent;
+  border-radius: vars.$border-radius-md;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out,
+    color 0.2s ease-in-out;
+  text-decoration: none;
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
+/* Element: Block içindeki ikon */
+.button__icon {
+  display: flex;
+  align-items: center;
+}
+
+/* Modifier: Block'un farklı stilleri */
+.button--primary {
+  background-color: vars.$primary-color;
+  color: vars.$text-on-primary;
+  border-color: vars.$primary-color;
+
+  &:hover {
+    background-color: vars.$primary-color-hover;
+    border-color: vars.$primary-color-hover;
+  }
+}
+
+.button--secondary {
+  background-color: vars.$background-body;
+  color: vars.$text-primary;
+  border-color: vars.$border-color;
+
+  &:hover {
+    background-color: vars.$background-light;
+  }
+}
+
+.button--danger {
+  background-color: vars.$danger-color;
+  color: vars.$text-on-primary;
+  border-color: vars.$danger-color;
+
+  &:hover {
+    background-color: darken(vars.$danger-color, 10%);
+    border-color: darken(vars.$danger-color, 10%);
+  }
+}
+
+/* Modifier: Butonun durumu */
+.button--disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

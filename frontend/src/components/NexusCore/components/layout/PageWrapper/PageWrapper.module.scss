@@ -1,0 +1,21 @@
+// path: frontend/src/components/NexusCore/components/layout/PageWrapper/PageWrapper.module.scss
+@use '../../../styles/variables' as vars;
+
+.pageWrapper {
+  grid-area: main; // CSS Grid layout için alan tanımı
+  
+  // İçerik, dikeyde ekrana sığmazsa sadece bu alanın kaymasını sağlar.
+  overflow-y: auto; 
+  
+  // İçeriğin kenarlara yapışmasını engelleyen iç boşluk.
+  padding: vars.$spacing-5; 
+  
+  // Ana content alanının arka plan rengi.
+  background-color: vars.$background-light;
+
+  // Geniş ekranlarda okunabilirliği artırmak için içeriği ortala ve sınırla.
+  width: 100%;
+  max-width: 1400px; // Proje tasarımına göre ayarlanabilir.
+  margin-left: auto;
+  margin-right: auto;
+}

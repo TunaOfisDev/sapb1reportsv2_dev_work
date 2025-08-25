@@ -1,0 +1,52 @@
+// path: frontend/src/components/NexusCore/components/common/Spinner/Spinner.module.scss
+@use '../../../styles/variables' as vars;
+
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: vars.$spacing-5;
+}
+
+.spinner {
+  // Animasyonun temelini oluşturan halka.
+  // Bir kenarı ana renkte, diğerleri şeffaf bir renkte.
+  border: 4px solid rgba(vars.$text-primary, 0.1);
+  border-left-color: vars.$primary-color;
+  border-radius: 50%;
+  
+  // Animasyonu tanımlıyoruz: Adı "spin", süresi 1 saniye,
+  // hız eğrisi "linear" (sabit hızda), ve sonsuz döngü.
+  animation: spin 1s linear infinite;
+}
+
+/* Farklı boyutlar için modifier'lar */
+.spinner--sm {
+  width: 24px;
+  height: 24px;
+  border-width: 3px;
+}
+
+.spinner--md {
+  width: 40px;
+  height: 40px;
+  border-width: 4px;
+}
+
+.spinner--lg {
+  width: 60px;
+  height: 60px;
+  border-width: 5px;
+}
+
+// "spin" isimli animasyonumuzun tanımı.
+// Başlangıçta (0%) 0 derece dönmüş, sonunda (100%) 360 derece (tam tur) dönmüş olacak.
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

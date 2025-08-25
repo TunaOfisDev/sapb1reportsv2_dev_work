@@ -80,6 +80,9 @@ import TunaInsSupplierAdvanceBalanceContainer from './components/TunaInsSupplier
 // YENİ EKLENEN FORMFORGEAPI MODÜLÜ
 import FormForgeApiModule from './components/formforgeapi';
 
+// ##### NEXUS CORE ENTEGRASYONU - Adım 1: Modülü import et #####
+import NexusCore from './components/NexusCore';
+
 function App() {
   return (
     <>
@@ -183,6 +186,14 @@ function App() {
             <Route path="/tunainstotalrisk" element={<TunaInsTotalRiskContainer />} />  
             <Route path="/tunainssupplierpayment" element={<TunaInsSupplierPaymentContainer />} />  
             <Route path="/tunainssupplieradvancebalance" element={<TunaInsSupplierAdvanceBalanceContainer />} />  
+
+            
+            {/* ##### NEXUS CORE ENTEGRASYONU - Adım 2: Yeni rotayı ekle ##### */}
+            {/* Bu rota, /nexus ile başlayan tüm istekleri NexusCore bileşenine yönlendirir. */}
+            {/* NexusCore kendi içindeki yönlendirmeyi ve layout'u kendisi yönetir. */}
+            <Route path="/nexus/*" element={<NexusCore />} />
+
+
 
             {/* Fallback (NotFound yönlendirmesi) */}
             <Route path="*" element={<NotFound />} />

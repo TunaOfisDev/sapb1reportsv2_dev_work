@@ -1,0 +1,67 @@
+// path: frontend/src/components/NexusCore/components/layout/Header/Header.module.scss
+@use '../../../styles/variables' as vars;
+
+.header {
+  grid-area: header; // CSS Grid layout için alan tanımı
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 vars.$spacing-5;
+  height: vars.$header-height;
+  background-color: vars.$background-body;
+  border-bottom: 1px solid vars.$border-color;
+  width: 100%;
+}
+
+.header__brand {
+  display: flex;
+  align-items: center;
+  gap: vars.$spacing-3;
+  color: vars.$primary-color; // Logonun rengini ana renkle uyumlu yap
+}
+
+.brandTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  color: vars.$text-primary;
+}
+
+.header__userMenu {
+  display: flex;
+  align-items: center;
+  gap: vars.$spacing-4;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: vars.$spacing-2;
+  color: vars.$text-secondary;
+}
+
+.userIcon {
+  color: vars.$text-secondary;
+}
+
+.userName {
+  font-weight: 500;
+}
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: vars.$text-secondary;
+  padding: vars.$spacing-2;
+  border-radius: vars.$border-radius-full;
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    background-color: vars.$background-light;
+    color: vars.$danger-color; // Çıkış aksiyonunu vurgulamak için
+  }
+}

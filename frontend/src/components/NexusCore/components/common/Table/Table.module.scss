@@ -1,0 +1,64 @@
+// path: frontend/src/components/NexusCore/components/common/Table/Table.module.scss
+@use '../../../styles/variables' as vars;
+
+// Geniş tabloların yatayda kaydırılabilmesi için bir sarmalayıcı (wrapper)
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid vars.$border-color;
+  border-radius: vars.$border-radius-md;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse; // Kenarlıkları birleştirerek temiz bir görünüm sağlar
+  font-size: 0.9rem;
+}
+
+// Başlık (thead) ve Gövde (tbody) stilleri
+.thead {
+  background-color: vars.$background-light;
+}
+
+// Satırlar (tr), Başlık Hücreleri (th), ve Veri Hücreleri (td)
+.th, .td {
+  padding: vars.$spacing-3;
+  text-align: left;
+  border-bottom: 1px solid vars.$border-color;
+  white-space: nowrap; // Hücre içeriğinin alt satıra kaymasını engeller
+}
+
+.th {
+  font-weight: 600;
+  color: vars.$text-primary;
+  position: sticky; // Kaydırma sırasında başlıkların sabit kalması için (opsiyonel)
+  top: 0;
+  background-color: vars.$background-light; // Sabit kaldığında arkaplanı korur
+}
+
+.td {
+  color: vars.$text-secondary;
+}
+
+// Satırların üzerine gelindiğinde (hover) arkaplan rengini değiştir
+.tr:hover {
+  background-color: rgba(vars.$primary-color, 0.05);
+}
+
+// "Zebra-striping": Okunabilirliği artırmak için çift satırları farklı renkte yap
+.tbody .tr:nth-child(even) {
+  background-color: vars.$background-light;
+
+  &:hover {
+    background-color: rgba(vars.$primary-color, 0.08);
+  }
+}
+
+// Hata veya "veri yok" gibi mesajlar için stil
+.messageContainer {
+  padding: vars.$spacing-6;
+  text-align: center;
+  color: vars.$text-secondary;
+  background-color: vars.$background-light;
+  border-radius: vars.$border-radius-md;
+}

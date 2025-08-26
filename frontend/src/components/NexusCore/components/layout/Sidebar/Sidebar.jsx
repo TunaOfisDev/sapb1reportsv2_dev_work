@@ -2,15 +2,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
-import { Database, Grid } from 'react-feather'; // İkonlarımızı import ediyoruz
+import { Database, Grid } from 'react-feather';
 import styles from './Sidebar.module.scss';
 
-/**
- * Uygulamanın sol tarafında yer alan, ana sayfalara navigasyon sağlayan Sidebar bileşeni.
- * Kullanıcı rolüne göre farklı linkler gösterebilir.
- */
 const Sidebar = ({ isAdmin = false }) => {
-  // Aktif link stilini yönetmek için bir fonksiyon. NavLink'in className prop'u bunu destekler.
   const getNavLinkClass = ({ isActive }) =>
     isActive ? `${styles.navLink} ${styles.navLinkActive}` : styles.navLink;
 
@@ -19,16 +14,17 @@ const Sidebar = ({ isAdmin = false }) => {
       <nav className={styles.nav}>
         <ul className={styles.navList}>
           <li className={styles.navItem}>
-            <NavLink to="/workspace" className={getNavLinkClass}>
+            {/* ### DEĞİŞİKLİK: to="/workspace" -> to="workspace" ### */}
+            <NavLink to="workspace" className={getNavLinkClass}>
               <Grid size={20} className={styles.navIcon} />
               <span className={styles.navText}>Çalışma Alanı</span>
             </NavLink>
           </li>
           
-          {/* Sadece admin rolündeki kullanıcılar bu linki görebilir */}
           {isAdmin && (
             <li className={styles.navItem}>
-              <NavLink to="/admin/connections" className={getNavLinkClass}>
+              {/* ### DEĞİŞİKLİK: to="/admin/connections" -> to="admin/connections" ### */}
+              <NavLink to="admin/connections" className={getNavLinkClass}>
                 <Database size={20} className={styles.navIcon} />
                 <span className={styles.navText}>Veri Kaynakları</span>
               </NavLink>
@@ -41,7 +37,6 @@ const Sidebar = ({ isAdmin = false }) => {
 };
 
 Sidebar.propTypes = {
-  /** Kullanıcının admin olup olmadığını belirtir, admin menüsünü kontrol eder. */
   isAdmin: PropTypes.bool,
 };
 

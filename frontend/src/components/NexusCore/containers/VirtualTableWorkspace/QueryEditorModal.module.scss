@@ -1,27 +1,21 @@
 /* path: frontend/src/components/NexusCore/containers/VirtualTableWorkspace/QueryEditorModal.module.scss */
-
-@use '../../../styles/variables' as vars;
+@use '../../styles/variables' as vars;
 
 .formGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* İki sütunlu bir yapı */
-  gap: vars.$spacing-4; /* Alanlar arası boşluk */
+  grid-template-columns: 1fr 1fr; /* İki eşit sütun */
+  gap: vars.$spacing-4;
 }
 
-.formGroup {
-  display: flex;
-  flex-direction: column;
-}
+/*.formGroup {
+  /* Bu sınıf artık doğrudan Input/Select/Textarea bileşenlerinin iç stiliyle yönetildiği için boş kalabilir
+     veya ek sarmalayıcılar için kullanılabilir. Grid yapımız için buna ihtiyacımız yok. */
+/*} 
 
-.formLabel {
-  margin-bottom: vars.$spacing-2;
-  font-weight: 500;
-  color: vars.$text-secondary;
-}
 
 /* SQL Editörü gibi tam genişlik kaplaması gereken alanlar için */
 .fullWidth {
-  grid-column: 1 / -1;
+  grid-column: 1 / -1; /* Sütunun başından sonuna kadar uzan */
 }
 
 /* Formun altındaki butonları sağa yaslamak için */
@@ -31,6 +25,4 @@
   justify-content: flex-end;
   gap: vars.$spacing-3;
   margin-top: vars.$spacing-4;
-  padding-top: vars.$spacing-4;
-  border-top: 1px solid vars.$border-color;
 }

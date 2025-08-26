@@ -1,7 +1,8 @@
-/* path: frontend/src/components/NexusCore/utils/formatters.js */
+// path: frontend/src/components/NexusCore/utils/formatters.js
 
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import popularDBList from './populardblist';
 
 /**
  * ISO 8601 formatındaki bir tarih metnini, Türkiye lokaline uygun,
@@ -29,34 +30,34 @@ export const formatDateTime = (dateString) => {
 export const formatSharingStatus = (status) => {
   switch (status) {
     case 'PRIVATE':
-      return { text: 'Özel', icon: 'lock-alt', color: 'secondary' };
+      return { text: 'Özel', icon: 'lock', color: 'secondary' };
     case 'PUBLIC_READONLY':
-      return { text: 'Halka Açık (Salt Okunur)', icon: 'eye', color: 'info' };
+      return { text: 'Salt Okunur', icon: 'eye', color: 'info' };
     case 'PUBLIC_EDITABLE':
-      return { text: 'Halka Açık (Düzenlenebilir)', icon: 'users', color: 'success' };
+      return { text: 'Düzenlenebilir', icon: 'users', color: 'success' };
     default:
       return { text: 'Bilinmiyor', icon: 'alert-triangle', color: 'warning' };
   }
 };
 
 /**
- * Veri tabanı türü kodunu, okunabilir bir metne ve ikon ismine çevirir.
- * @param {string} dbType - 'POSTGRESQL', 'SQL_SERVER' vb.
+ * Veri tabanı türü kodunu, `populardblist`'ten arayarak
+ * okunabilir bir metne ve ikon ismine çevirir.
+ * @param {string} dbType - 'postgresql', 'sap_hana' vb.
  * @returns {{text: string, icon: string}}
  */
 export const formatDbType = (dbType) => {
-    const type = dbType.toUpperCase();
-    switch (type) {
-      case 'POSTGRESQL':
-        return { text: 'PostgreSQL', icon: 'postgresql' };
-      case 'SQL_SERVER':
-        return { text: 'MS SQL Server', icon: 'sql-server' };
-      case 'MYSQL':
-        return { text: 'MySQL', icon: 'mysql' };
-      /* Diğer DB tipleri buraya eklenebilir */
-      default:
-        return { text: 'Veri Tabanı', icon: 'database' };
+    if (!dbType) {
+        return { text: 'Bilinmiyor', icon: 'help-circle' };
     }
+
+    const dbInfo = popularDBList.find(db => db.value === dbType);
+
+    if (dbInfo) {
+        return { text: dbInfo.label, icon: dbInfo.icon };
+    }
+
+    return { text: dbType, icon: 'database' };
 };
 
 /**

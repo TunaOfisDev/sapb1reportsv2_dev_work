@@ -20,21 +20,33 @@ class DynamicDBConnectionViewSet(viewsets.ModelViewSet):
     serializer_class = DynamicDBConnectionSerializer
     permission_classes = [IsAdminUser]
 
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+    # ### NİHAİ DÜZELTME: `create` metodunu tamamen override ediyoruz ###
+    # Bu, DRF'in `perform_create` kancasının yarattığı karmaşayı ortadan kaldırır.
+    def create(self, request, *args, **kwargs):
+        """
+        Yeni bir veri tabanı bağlantısı oluşturur.
+        1. Gelen veriyi doğrular.
+        2. Sahibi (owner) olarak isteği yapan kullanıcıyı ekler.
+        3. Veritabanına kaydeder.
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        # `serializer.save()` metodu, kendi içindeki `create` metodunu çağırır
+        # ve bu `create` metodu da bağlantı testini yapar.
+        # Sahibi (owner) `save` metoduna bir kwarg olarak veriyoruz.
+        serializer.save(owner=request.user)
+        
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    # ### DÜZELTME 2: retrieve metodu ###
     def retrieve(self, request, *args, **kwargs):
         """
-        Tek bir bağlantının detayını getirir. Bu metod, "Düzenle" formunu
-        doldurmak için `config_json` dahil TÜM veriyi döndürür.
+        Tek bir bağlantının detayını getirir. (Düzenle Formu için)
         """
         instance = self.get_object()
-        # Standart serializer'ı kullanarak, `to_representation`'daki maskelemeyi atlayıp
-        # ham veriyi döndürüyoruz.
         serializer = self.get_serializer(instance)
         data = serializer.data
-        # `to_representation` maskelemesini atlamak için, ham veriyi modelden alalım
         data['config_json'] = instance.config_json
         return Response(data)
 
@@ -45,7 +57,6 @@ class DynamicDBConnectionViewSet(viewsets.ModelViewSet):
         """
         connection_instance = self.get_object()
         config = connection_instance.config_json
-        # ### DÜZELTME 1: Eksik olan `db_type` parametresini ekliyoruz ###
         db_type = connection_instance.db_type
         
         is_successful, message = connection_manager.test_connection_config(config, db_type)

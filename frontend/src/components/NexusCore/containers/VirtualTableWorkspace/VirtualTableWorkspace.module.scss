@@ -1,0 +1,75 @@
+/* path: frontend/src/components/NexusCore/containers/VirtualTableWorkspace/VirtualTableList.module.scss */
+
+/* ### DÜZELTME: Doğru göreceli yol ../../ olmalıdır ### */
+@use '../../styles/variables' as vars;
+
+.emptyMessage {
+  text-align: center;
+  color: vars.$text-secondary;
+  padding: vars.$spacing-8;
+  border: 2px dashed vars.$border-color;
+  border-radius: vars.$border-radius-lg;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: vars.$spacing-3;
+}
+
+.listItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: vars.$spacing-3 vars.$spacing-4;
+  border: 1px solid vars.$border-color;
+  border-radius: vars.$border-radius-md;
+  background-color: vars.$background-body;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    border-color: rgba(vars.$primary-color, 0.3);
+    box-shadow: vars.$shadow-sm;
+  }
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$spacing-1;
+  flex-grow: 1;
+  min-width: 0; 
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.details {
+  font-size: 0.85rem;
+  color: vars.$text-secondary;
+  display: flex;
+  align-items: center;
+  gap: vars.$spacing-3;
+}
+
+.detailItem {
+    display: flex;
+    align-items: center;
+    gap: vars.$spacing-1;
+}
+
+.actions {
+  display: flex;
+  gap: vars.$spacing-2;
+  flex-shrink: 0;
+  padding-left: vars.$spacing-4;
+}

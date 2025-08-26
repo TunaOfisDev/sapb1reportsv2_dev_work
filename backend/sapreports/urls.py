@@ -58,7 +58,7 @@ urlpatterns = [
     path('api/v2/logosupplierbalance/', include('logosupplierbalance.api.urls')), 
     path('api/v2/mailservice/', include('mailservice.api.urls')),
     path('api/v2/newcustomerform/', include('newcustomerform.api.urls')),
-    path('api/v2/nexuscore', include('nexuscore.api.urls')),
+    path('api/v2/nexuscore/', include('nexuscore.api.urls')),
     path('api/v2/openorderdocsum/', include('openorderdocsum.api.urls')),
     path('api/v2/orderarchive/', include('orderarchive.urls.order_archive_urls')),
     path('api/v2/procure_compare/', include('procure_compare.urls')),

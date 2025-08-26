@@ -1,53 +1,56 @@
-# path: /var/www/sapb1reportsv2/backend/nexuscore/models/dynamic_connection.py
+# path: backend/nexuscore/models/dynamic_connection.py
 
 from django.db import models
-from .fields import EncryptedJSONField # <-- Kendi özel alanımızı import ediyoruz!
+from django.conf import settings
+from nexuscore.fields import EncryptedJSONField
 
 class DynamicDBConnection(models.Model):
     """
-    Harici veri kaynaklarına ait bağlantı ayarlarını GÜVENLİ bir şekilde saklar.
-    Bu model, Nexus Core'un dinamik veri entegrasyon yeteneğinin temel taşıdır.
+    Farklı veritabanlarına ait bağlantı bilgilerini güvenli bir şekilde
+    saklayan model.
     """
-
-    class DBType(models.TextChoices):
-        POSTGRESQL = 'POSTGRESQL', 'PostgreSQL'
-        SQL_SERVER = 'SQL_SERVER', 'Microsoft SQL Server'
-        MYSQL = 'MYSQL', 'MySQL'
-        ORACLE = 'ORACLE', 'Oracle'
-        HANA = 'HANA', 'SAP HANA'
-        OTHER = 'OTHER', 'Diğer'
-
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='db_connections',
+        verbose_name="Sahip",
+        null=True,  # Migration'ların sorunsuz çalışması için
+        blank=True
+    )
     title = models.CharField(
-        max_length=255, 
+        max_length=255,
         unique=True,
-        help_text="Bu bağlantıyı tanımlayan benzersiz bir başlık (örn: Üretim SQL Sunucusu)."
+        verbose_name="Bağlantı Başlığı"
     )
-
     db_type = models.CharField(
-        max_length=20,
-        choices=DBType.choices,
-        default=DBType.OTHER,
-        help_text="Veri tabanı türü (örn: PostgreSQL, SQL Server)."
+        max_length=50,
+        verbose_name="Veritabanı Türü",
+        help_text="Örn: postgresql, sql_server, sap_hana"
     )
-    
-    # İşte tamamen bizim kontrolümüzde olan, güvenli ve hatasız alanımız.
-    json_config = EncryptedJSONField(
-        help_text="Django DATABASES ayarlarıyla uyumlu, şifrelenmiş JSON yapılandırması."
-    )
-
     is_active = models.BooleanField(
-        default=False,
-        help_text="Sistem genelinde sorgular için varsayılan olarak kullanılacak mı?"
+        default=True,
+        verbose_name="Aktif mi?",
+        db_index=True,
+        help_text="Bu bağlantının sorgularda kullanılıp kullanılamayacağını belirtir."
     )
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = "Dinamik Veri Tabanı Bağlantısı"
-        verbose_name_plural = "Dinamik Veri Tabanı Bağlantıları"
-        ordering = ['title']
+    config_json = EncryptedJSONField(
+        verbose_name="Bağlantı Yapılandırması (Şifreli JSON)",
+        default=dict,
+        help_text="Hassas bağlantı bilgileri (şifre, host vb.) bu alanda şifrelenerek saklanır."
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Oluşturulma Tarihi"
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name="Güncellenme Tarihi"
+    )
 
     def __str__(self):
-        status = "Aktif" if self.is_active else "Pasif"
-        return f"{self.title} ({self.get_db_type_display()} - {status})"
+        return self.title
+
+    class Meta:
+        verbose_name = "Dinamik Veritabanı Bağlantısı"
+        verbose_name_plural = "Dinamik Veritabanı Bağlantıları"
+        ordering = ['-updated_at']

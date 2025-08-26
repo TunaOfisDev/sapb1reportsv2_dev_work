@@ -19,28 +19,23 @@ class DynamicDBConnectionResource(resources.ModelResource):
         export_order = fields # Dışa aktarım sırası da aynı olsun.
 
 @admin.register(DynamicDBConnection)
-class DynamicDBConnectionAdmin(ImportExportModelAdmin):
-    """
-    DynamicDBConnection modelinin admin panelindeki görünümünü ve davranışlarını yönetir.
-    Import/Export butonlarını ekler.
-    """
-    resource_class = DynamicDBConnectionResource
+class DynamicDBConnectionAdmin(admin.ModelAdmin): # ImportExport'u sadeleştirdim
     list_display = ('title', 'db_type', 'is_active', 'updated_at')
     list_filter = ('db_type', 'is_active')
     search_fields = ('title',)
     
-    # Detay sayfasındaki alanları daha düzenli göstermek için fieldsets kullanalım.
     fieldsets = (
         ('Temel Bilgiler', {
-            'fields': ('title', 'db_type', 'is_active')
+            'fields': ('owner', 'title', 'db_type', 'is_active')
         }),
         ('Yapılandırma (Hassas Veri)', {
             'description': "Bu alana girilen şifreler veritabanında şifrelenerek saklanır.",
-            'fields': ('json_config',)
+            # ### DEĞİŞİKLİK: Alan adını model ile aynı yapıyoruz: `config_json` ###
+            'fields': ('config_json',)
         }),
         ('Tarih Bilgileri', {
             'fields': ('created_at', 'updated_at'),
-            'classes': ('collapse',) # Bu bölümü varsayılan olarak kapalı tutar.
+            'classes': ('collapse',)
         }),
     )
     readonly_fields = ('created_at', 'updated_at')

@@ -1,35 +1,36 @@
-/* path: frontend/src/components/NexusCore/contexts/NotificationContext.js */
+// path: frontend/src/components/NexusCore/contexts/NotificationContext.js
 
-import React, { createContext, useState, useCallback, useContext } from 'react';
+// ### DÜZELTME: Import syntax'ı doğru hale getirildi ###
+import React, { createContext, useState, useCallback } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import NotificationHost from '../components/common/Notification/NotificationHost';
 
-// Context'i dışarıdan erişilebilir hale getirmek için export ediyoruz.
 export const NotificationContext = createContext(undefined);
 
 export const NotificationProvider = ({ children }) => {
-  const [notification, setNotification] = useState(null);
+  const [notifications, setNotifications] = useState([]);
 
-  const addNotification = useCallback((message, type = 'success') => {
-    setNotification({ message, type });
-    setTimeout(() => {
-      setNotification(null);
-    }, 5000);
+  const removeNotification = useCallback((id) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
   }, []);
+
+  const addNotification = useCallback((message, type = 'success', duration = 5000) => {
+    const id = uuidv4();
+    const newNotification = { id, message, type, duration };
+    
+    setNotifications((prev) => [...prev, newNotification]);
+
+    const timer = setTimeout(() => {
+      removeNotification(id);
+    }, duration);
+
+    return () => clearTimeout(timer);
+  }, [removeNotification]);
 
   return (
     <NotificationContext.Provider value={{ addNotification }}>
       {children}
-      {notification && (
-        <div className={`nexus-notification ${notification.type}`}>
-          {notification.message}
-        </div>
-      )}
+      <NotificationHost notifications={notifications} onClose={removeNotification} />
     </NotificationContext.Provider>
   );
 };
-
-/* Bu hook'u artık kendi dosyasına taşıyacağımız için buradan silebiliriz,
-   ancak burada kalmasının da bir zararı yoktur. Temizlik açısından kendi
-   dosyasında olması daha iyidir. */
-// export const useNotifications = () => {
-//   return useContext(NotificationContext);
-// };

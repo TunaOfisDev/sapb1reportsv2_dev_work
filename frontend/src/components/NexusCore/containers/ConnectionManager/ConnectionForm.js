@@ -6,7 +6,10 @@ import Input from '../../components/common/Input/Input';
 import Select from '../../components/common/Select/Select';
 import Textarea from '../../components/common/Textarea/Textarea';
 
-// Farklı veritabanı türleri için JSON şablonları
+// ### DEĞİŞİKLİK 1: Popüler veritabanı listemizi import ediyoruz ###
+import popularDBList from '../../utils/populardblist';
+
+// Özel olarak bildiğimiz veritabanları için detaylı JSON şablonları
 const dbTemplates = {
   postgresql: JSON.stringify({
     "ENGINE": "django.db.backends.postgresql",
@@ -27,61 +30,70 @@ const dbTemplates = {
       "driver": "ODBC Driver 17 for SQL Server"
     }
   }, null, 2)
+  // Gelecekte MongoDB, Oracle vb. için özel şablonlar buraya eklenebilir.
 };
 
-const dbOptions = [
-  { value: 'postgresql', label: 'PostgreSQL' },
-  { value: 'sql_server', label: 'Microsoft SQL Server' },
-];
+// ### DEĞİŞİKLİK 2: Özel şablonumuz olmadığında gösterilecek jenerik bir şablon oluşturuyoruz ###
+const genericTemplate = JSON.stringify({
+    "ENGINE": "django_engine_path_girin",
+    "NAME": "veritabani_adi",
+    "USER": "kullanici_adi",
+    "PASSWORD": "sifre",
+    "HOST": "sunucu_adresi",
+    "PORT": "port"
+}, null, 2);
+
+
+// ### DEĞİŞİKLİK 3: Eski, statik dbOptions listesi kaldırıldı ###
+// const dbOptions = [ ... ];
 
 const ConnectionForm = ({ onSubmit, onCancel, initialData = null, isSaving = false }) => {
+  // Formun başlangıç değerini dinamik listemizin ilk elemanı yapalım
   const [title, setTitle] = useState('');
-  const [dbType, setDbType] = useState('postgresql');
-  const [configJson, setConfigJson] = useState(dbTemplates.postgresql);
+  const [dbType, setDbType] = useState(popularDBList[0].value);
+  const [configJson, setConfigJson] = useState(dbTemplates[popularDBList[0].value] || genericTemplate);
   const [jsonError, setJsonError] = useState(null);
 
-  // `initialData` prop'u değiştiğinde (yani düzenleme moduna geçildiğinde)
-  // formun state'ini bu veriyle doldurur.
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title || '');
-      setDbType(initialData.db_type || 'postgresql');
+      // Gelen verinin listede olup olmadığını kontrol et, yoksa varsayılanı kullan
+      const initialDbType = popularDBList.some(db => db.value === initialData.db_type) ? initialData.db_type : popularDBList[0].value;
+      setDbType(initialDbType);
       setConfigJson(JSON.stringify(initialData.config_json, null, 2) || '');
     } else {
-      // Yeni kayıt modunda formu sıfırla ve varsayılan şablonu yükle
+      // Yeni kayıt modunda formu sıfırla
       setTitle('');
-      setDbType('postgresql');
-      setConfigJson(dbTemplates.postgresql);
+      const defaultDbType = popularDBList[0].value;
+      setDbType(defaultDbType);
+      setConfigJson(dbTemplates[defaultDbType] || genericTemplate);
     }
   }, [initialData]);
 
-  // Kullanıcı JSON alanını değiştirirken anlık olarak doğrulama yapar
   const handleJsonChange = (e) => {
     const jsonString = e.target.value;
     setConfigJson(jsonString);
     try {
       JSON.parse(jsonString);
-      setJsonError(null); // Hata yoksa temizle
+      setJsonError(null);
     } catch (error) {
-      setJsonError('Geçersiz JSON formatı.'); // Hata varsa state'i ayarla
+      setJsonError('Geçersiz JSON formatı.');
     }
   };
 
   const handleDbTypeChange = (e) => {
     const newType = e.target.value;
     setDbType(newType);
-    // Sadece "yeni kayıt" modundaysak şablonu otomatik değiştir
+    // Yeni kayıt modunda, seçilen türe uygun şablonu yükle.
+    // Eğer özel şablon yoksa, jenerik şablonu kullan.
     if (!initialData) {
-      setConfigJson(dbTemplates[newType] || '');
+      setConfigJson(dbTemplates[newType] || genericTemplate);
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (jsonError) {
-      // JSON hatası varsa formu gönderme
-      return;
-    }
+    if (jsonError) return;
     try {
       const parsedConfig = JSON.parse(configJson);
       onSubmit({ title, db_type: dbType, config_json: parsedConfig });
@@ -104,12 +116,13 @@ const ConnectionForm = ({ onSubmit, onCancel, initialData = null, isSaving = fal
         disabled={isSaving}
       />
 
+      {/* ### DEĞİŞİKLİK 4: Select bileşenimiz artık dinamik listemizi kullanıyor ### */}
       <Select
         id="db-type"
         label="Veritabanı Türü"
         value={dbType}
         onChange={handleDbTypeChange}
-        options={dbOptions}
+        options={popularDBList}
         disabled={isSaving}
       />
 

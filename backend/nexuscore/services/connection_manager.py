@@ -1,76 +1,124 @@
-# path: /var/www/sapb1reportsv2/backend/nexuscore/services/connection_manager.py
+# path: backend/nexuscore/services/connection_manager.py
 
 import uuid
+import logging
 from contextlib import contextmanager
 from django.conf import settings
-from django.db import connections
-from typing import Dict, Any, List
+from django.db import connections, OperationalError
+from typing import Dict, Any, Tuple
 
-# Type hinting için modellerimizi import edelim.
+# HANA için doğrudan bağlantı kütüphanesi
+from hdbcli import dbapi as hanadb_api
+# Modellerimiz
 from ..models import DynamicDBConnection, VirtualTable
-from ..utils import db_helpers
 
+logger = logging.getLogger(__name__)
+
+# --- BAĞLANTI YÖNTEMİ 1: Standart Django ENGINE Bağlantısı ---
 @contextmanager
-def dynamic_database_connection(connection_config: Dict[str, Any]):
-    """
-    Verilen yapılandırma ile geçici bir veritabanı bağlantısı kuran
-    ve işlem bittiğinde arkasını temizleyen bir context manager.
-    Her kullanımda %100 benzersiz bir alias üretir.
-    """
-    # İYİLEŞTİRME: Sabit bir alias yerine, her seferinde benzersiz bir UUID kullanalım.
-    # Bu, aynı anda birden fazla test veya sorgu çalıştığında çakışma riskini sıfırlar.
-    alias = f"dyn_service_{uuid.uuid4().hex}"
+def _django_engine_connection(config: Dict[str, Any]):
+    alias = f"dyn_django_{uuid.uuid4().hex}"
     try:
-        settings.DATABASES[alias] = connection_config
-        yield alias
+        settings.DATABASES[alias] = config
+        yield connections[alias]
     finally:
         if alias in connections:
             connections[alias].close()
         if alias in settings.DATABASES:
             del settings.DATABASES[alias]
 
+# --- BAĞLANTI YÖNTEMİ 2: Direkt SAP HANA Bağlantısı ---
+@contextmanager
+def _direct_hdb_connection(config: Dict[str, Any]):
+    connection = None
+    try:
+        connection = hanadb_api.connect(
+            address=config.get('HOST'),
+            port=int(config.get('PORT')),
+            user=config.get('USER'),
+            password=config.get('PASSWORD'),
+            currentSchema=config.get('OPTIONS', {}).get('schema')
+        )
+        yield connection
+    finally:
+        if connection:
+            connection.close()
+
+# --- AKILLI SANTRAL FONKSİYONLARI ---
+
+def test_connection_config(config: Dict[str, Any], db_type: str) -> Tuple[bool, str]:
+    """ Verilen yapılandırmayı, türüne göre doğru yöntemle test eder. """
+    if db_type == 'sap_hana':
+        try:
+            with _direct_hdb_connection(config):
+                pass
+            return True, "SAP HANA (Direkt) bağlantısı başarılı."
+        except hanadb_api.Error as e:
+            return False, f"SAP HANA (Direkt) bağlantı hatası: {e}"
+        except Exception as e:
+            return False, f"Genel bir hata oluştu: {e}"
+    else:
+        try:
+            with _django_engine_connection(config) as conn:
+                conn.ensure_connection()
+            return True, "Standart Django Engine bağlantısı başarılı."
+        except OperationalError as e:
+            return False, f"Veritabanı operasyonel hatası: {e}"
+        except Exception as e:
+            return False, f"Genel bir hata oluştu: {e}"
+
 
 def execute_virtual_table_query(virtual_table: VirtualTable) -> Dict[str, Any]:
-    """
-    Bir VirtualTable nesnesini alır, ilgili dinamik bağlantıyı kurar,
-    sorguyu çalıştırır ve sonucu (kolonlar ve satırlar) bir sözlük olarak döndürür.
-    Modeldeki şifreleme değişikliğinden etkilenmez.
-    """
-    # Modelimiz şifre çözme işini şeffaf bir şekilde yaptığı için bu satır hala çalışır.
-    connection_config = virtual_table.connection.json_config
+    """ Bir sorguyu, bağlantı türüne göre doğru yöntemle çalıştırır. """
+    if not virtual_table.connection.is_active:
+        return {"success": False, "error": "Bu sorgunun kullandığı veri kaynağı pasif durumdadır."}
+
+    connection_obj = virtual_table.connection
+    config = connection_obj.config_json
     sql_query = virtual_table.sql_query
 
     try:
-        with dynamic_database_connection(connection_config) as alias:
-            with connections[alias].cursor() as cursor:
-                cursor.execute(sql_query)
-                
-                columns: List[str] = [col[0] for col in cursor.description]
-                rows: List[Dict[str, Any]] = [dict(zip(columns, row)) for row in cursor.fetchall()]
-                
-                return {"success": True, "columns": columns, "rows": rows}
-    
+        if connection_obj.db_type == 'sap_hana':
+            with _direct_hdb_connection(config) as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute(sql_query)
+                    columns = [col[0] for col in cursor.description or []]
+                    rows = cursor.fetchall()
+        else:
+            with _django_engine_connection(config) as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute(sql_query)
+                    columns = [col[0] for col in cursor.description or []]
+                    rows = cursor.fetchall()
+        
+        return {"success": True, "columns": columns, "rows": rows}
     except Exception as e:
+        logger.error(f"Sorgu çalıştırılırken hata: {e}")
         return {"success": False, "error": f"Sorgu çalıştırılırken hata oluştu: {str(e)}"}
 
 
-def generate_metadata_for_query(connection: DynamicDBConnection, sql_query: str) -> Dict[str, Any]:
-    """
-    Yeni bir VirtualTable oluşturulurken, verilen sorguyu çalıştırıp
-    sadece kolon bilgilerini çıkarır ve `column_metadata` formatında döndürür.
-    """
-    connection_config = connection.json_config
+def generate_metadata_for_query(connection_model: DynamicDBConnection, sql_query: str) -> Dict[str, Any]:
+    """ Verilen sorgudan, bağlantı türüne göre doğru yöntemle meta veri üretir. """
+    if not connection_model.is_active:
+        return {"success": False, "error": "Kullanılan veri kaynağı pasif durumdadır."}
+
+    config = connection_model.config_json
 
     try:
-        with dynamic_database_connection(connection_config) as alias:
-            with connections[alias].cursor() as cursor:
-                cursor.execute(sql_query)
-                
-                columns: List[str] = [col[0] for col in cursor.description]
-                metadata: Dict[str, Dict[str, Any]] = {
-                    col: {"visible": True, "label": col} for col in columns
-                }
-                return {"success": True, "metadata": metadata}
+        if connection_model.db_type == 'sap_hana':
+            with _direct_hdb_connection(config) as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute(sql_query)
+                    columns = [col[0] for col in cursor.description or []]
+        else:
+            with _django_engine_connection(config) as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute(sql_query)
+                    columns = [col[0] for col in cursor.description or []]
+
+        metadata = {col: {"visible": True, "label": col} for col in columns}
+        return {"success": True, "metadata": metadata}
 
     except Exception as e:
+        logger.error(f"Sorgu meta verisi alınırken hata: {e}")
         return {"success": False, "error": f"Sorgu meta verisi alınırken hata oluştu: {str(e)}"}

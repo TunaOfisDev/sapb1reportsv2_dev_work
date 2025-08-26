@@ -1,15 +1,13 @@
-/* path: frontend/src/components/NexusCore/api/virtualTablesApi.js */
+// path: frontend/src/components/NexusCore/api/virtualTablesApi.js
 
 /* Projenizin ana Axios yapılandırmasını import ediyoruz. */
 import axiosInstance from '../../../api/axiosconfig';
 
-/* Bu modülün konuşacağı ana endpoint'i tanımlıyoruz. */
+/* Bu modülün konuşacağı ve backend urls.py ile tam uyumlu olan ana endpoint. */
 const API_ENDPOINT = 'nexuscore/virtual-tables/';
 
 /**
  * Kullanıcının görmeye yetkili olduğu tüm sanal tabloları listeler.
- * (Backend, kullanıcının kendi özel tablolarını ve halka açık tabloları döndürür.)
- * @returns {Promise<Array>} Sanal tablo listesini içeren bir promise döndürür.
  */
 export const getVirtualTables = async () => {
   try {
@@ -23,8 +21,6 @@ export const getVirtualTables = async () => {
 
 /**
  * Belirli bir ID'ye sahip sanal tablonun detaylarını (tanımını) getirir.
- * @param {number} id Sanal tablo ID'si.
- * @returns {Promise<Object>} Sanal tablo detaylarını içeren bir promise döndürür.
  */
 export const getVirtualTableById = async (id) => {
   try {
@@ -38,8 +34,6 @@ export const getVirtualTableById = async (id) => {
 
 /**
  * Yeni bir sanal tablo oluşturur.
- * @param {object} tableData - { title, sql_query, connection_id, sharing_status } formatında veri.
- * @returns {Promise<Object>} Oluşturulan yeni sanal tablo nesnesini döndürür.
  */
 export const createVirtualTable = async (tableData) => {
   try {
@@ -53,9 +47,6 @@ export const createVirtualTable = async (tableData) => {
 
 /**
  * Mevcut bir sanal tabloyu günceller.
- * @param {number} id Güncellenecek sanal tablonun ID'si.
- * @param {object} tableData Güncellenecek alanları içeren nesne (örn: { title, sharing_status }).
- * @returns {Promise<Object>} Güncellenmiş sanal tablo nesnesini döndürür.
  */
 export const updateVirtualTable = async (id, tableData) => {
   try {
@@ -69,8 +60,6 @@ export const updateVirtualTable = async (id, tableData) => {
 
 /**
  * Bir sanal tabloyu siler.
- * @param {number} id Silinecek sanal tablonun ID'si.
- * @returns {Promise<void>} İşlem başarılı olduğunda bir promise döndürür.
  */
 export const deleteVirtualTable = async (id) => {
   try {
@@ -83,13 +72,14 @@ export const deleteVirtualTable = async (id) => {
 
 /**
  * Bir sanal tablonun sorgusunu backend'de çalıştırır ve dönen veriyi alır.
- * Bu, projemizin en kritik fonksiyonlarından biridir.
- * @param {number} id Çalıştırılacak sanal tablonun ID'si.
- * @returns {Promise<Object>} { success, columns, rows } formatında veri döndürür.
+ * @param {number} id - Çalıştırılacak sanal tablonun ID'si.
+ * @param {object} [params={}] - (Gelecek için) Sorguya gönderilecek dinamik parametreler.
+ * @returns {Promise<Object>} Sorgu sonucu (kolonlar ve satırlar).
  */
-export const executeVirtualTable = async (id) => {
+export const executeVirtualTable = async (id, params = {}) => {
     try {
-        const response = await axiosInstance.post(`${API_ENDPOINT}${id}/execute/`);
+        // Parametreleri POST isteğinin body'si içinde göndermek, esneklik sağlar.
+        const response = await axiosInstance.post(`${API_ENDPOINT}${id}/execute/`, { params });
         return response.data;
     } catch (error) {
         console.error(`ID'si ${id} olan sanal tablo çalıştırılırken hata:`, error);

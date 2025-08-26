@@ -16,9 +16,11 @@ import * as connectionsApi from '../../api/connectionsApi';
 const ConnectionManager = () => {
   const { addNotification } = useNotifications();
   
-  const { data: connections, loading, error, request: fetchConnections } = useApi(connectionsApi.getConnections);
-  const { request: createConn } = useApi(connectionsApi.createConnection);
-  const { request: updateConn } = useApi(connectionsApi.updateConnection);
+  // API Hook'ları
+  const { data: apiResponse, loading: isLoadingList, error, request: fetchConnections } = useApi(connectionsApi.getConnections);
+  const { request: fetchConnectionById, loading: isLoadingDetails } = useApi(connectionsApi.getConnectionById);
+  const { request: createConn, loading: isSaving } = useApi(connectionsApi.createConnection);
+  const { request: updateConn, loading: isUpdating } = useApi(connectionsApi.updateConnection);
   const { request: deleteConn } = useApi(connectionsApi.deleteConnection);
   const { request: testConn } = useApi(connectionsApi.testConnection);
 
@@ -27,16 +29,28 @@ const ConnectionManager = () => {
 
   useEffect(() => {
     fetchConnections();
-  }, [fetchConnections]); 
+  }, [fetchConnections]);
 
   const handleOpenModalForNew = () => {
     setEditingConnection(null);
     setIsModalOpen(true);
   };
 
-  const handleOpenModalForEdit = (connection) => {
-    setEditingConnection(connection);
+  // ### MİMARİ GÜNCELLEME: "Düzenle" fonksiyonu artık asenkron ve API isteği atıyor ###
+  const handleOpenModalForEdit = async (connection) => {
     setIsModalOpen(true);
+    setEditingConnection(null); // Önceki veriyi temizle, spinner'ı göster
+
+    // ID'yi kullanarak tam veriyi (config_json dahil) backend'den çek
+    const { success, data } = await fetchConnectionById(connection.id);
+    
+    if (success) {
+      // Tam veri geldiğinde, state'i güncelleyerek formun dolmasını sağla
+      setEditingConnection(data);
+    } else {
+      addNotification('Bağlantı detayları alınırken bir hata oluştu.', 'error');
+      handleCloseModal();
+    }
   };
 
   const handleCloseModal = () => {
@@ -57,44 +71,46 @@ const ConnectionManager = () => {
   };
   
   const handleTest = async (id) => {
-    addNotification('Bağlantı test ediliyor...', 'info'); // Kullanıcıya anında geri bildirim
+    addNotification('Bağlantı test ediliyor...', 'info');
     const { success, data, error } = await testConn(id);
     if (success) {
       addNotification(`Bağlantı testi başarılı: ${data.message}`, 'success');
     } else {
-      const errorMessage = error?.response?.data?.error || 'Bağlantı testi başarısız oldu.';
+      const errorMessage = error?.response?.data?.message || 'Bağlantı testi başarısız oldu.';
       addNotification(errorMessage, 'error');
     }
   };
 
   const handleFormSubmit = async (formData) => {
-    const apiCall = editingConnection 
+    const apiCall = editingConnection?.id 
       ? () => updateConn(editingConnection.id, formData)
       : () => createConn(formData);
 
     const { success, error } = await apiCall();
     
     if (success) {
-      const message = editingConnection ? 'Bağlantı başarıyla güncellendi.' : 'Bağlantı başarıyla oluşturuldu.';
+      const message = editingConnection?.id ? 'Bağlantı başarıyla güncellendi.' : 'Bağlantı başarıyla oluşturuldu.';
       addNotification(message, 'success');
       handleCloseModal();
       fetchConnections();
     } else {
-      const errorMessage = error?.response?.data?.detail || 'İşlem sırasında bir hata oluştu.';
+      // Backend'den gelen spesifik hata mesajını gösterelim
+      const errorMessage = error?.response?.data?.config_json?.[0] || error?.response?.data?.detail || 'İşlem sırasında bir hata oluştu.';
       addNotification(errorMessage, 'error');
     }
   };
   
   const renderContent = () => {
-    if (loading && !connections) { // Sadece ilk yüklemede spinner göster
+    if (isLoadingList && !apiResponse) {
       return <Spinner />;
     }
     if (error) {
       return <p style={{ color: 'red', textAlign: 'center' }}>Veri kaynakları yüklenirken bir hata oluştu.</p>;
     }
+    
     return (
       <ConnectionList 
-        connections={connections || []}
+        connections={apiResponse?.results || []}
         onEdit={handleOpenModalForEdit}
         onDelete={handleDelete}
         onTest={handleTest}
@@ -116,15 +132,21 @@ const ConnectionManager = () => {
       </Card>
 
       <Modal
-        title={editingConnection ? 'Bağlantıyı Düzenle' : 'Yeni Veri Kaynağı Ekle'}
+        title={editingConnection?.title ? `Düzenle: ${editingConnection.title}` : 'Yeni Veri Kaynağı Ekle'}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
       >
-        <ConnectionForm 
-          onSubmit={handleFormSubmit}
-          onCancel={handleCloseModal}
-          initialData={editingConnection}
-        />
+        {/* ### MİMARİ GÜNCELLEME: Detaylar yüklenirken Spinner gösterilir ### */}
+        {isLoadingDetails ? (
+            <Spinner />
+        ) : (
+            <ConnectionForm 
+              onSubmit={handleFormSubmit}
+              onCancel={handleCloseModal}
+              initialData={editingConnection}
+              isSaving={isSaving || isUpdating}
+            />
+        )}
       </Modal>
     </>
   );

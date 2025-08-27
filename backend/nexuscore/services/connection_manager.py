@@ -2,40 +2,35 @@
 
 import uuid
 import logging
+import datetime
+from decimal import Decimal
 from contextlib import contextmanager
+from typing import Dict, Any, List, Tuple
+
 from django.conf import settings
 from django.db import connections, OperationalError
-from typing import Dict, Any, List, Tuple
-import datetime  # ### YENİ: Tarih/saat nesneleri için import ###
-from decimal import Decimal  # ### YENİ: Ondalık sayı nesneleri için import ###
-
 from hdbcli import dbapi as hanadb_api
+
 from ..models import DynamicDBConnection, VirtualTable
 
 logger = logging.getLogger(__name__)
 
 # --- BAĞLANTI YÖNTEMİ 1: Standart Django ENGINE Bağlantısı ---
+
 @contextmanager
 def _django_engine_connection(config: Dict[str, Any]):
-    """ (İç Kullanım) Django'nun standart veritabanı motoru üzerinden geçici bağlantı kurar. """
+    """
+    (İç Kullanım) Verilen yapılandırma ile geçici bir Django veritabanı bağlantısı kurar.
+    Django'nun modern gereksinimleri için eksik ayarları (TIME_ZONE vb.) otomatik tamamlar.
+    """
     alias = f"dyn_django_{uuid.uuid4().hex}"
     try:
         connection_config = config.copy()
 
-        # TIME_ZONE için akıllı varsayılan
-        if 'TIME_ZONE' not in connection_config:
-            connection_config['TIME_ZONE'] = settings.TIME_ZONE
-
-        # CONN_HEALTH_CHECKS için akıllı varsayılan
-        if 'CONN_HEALTH_CHECKS' not in connection_config:
-            connection_config['CONN_HEALTH_CHECKS'] = True
-
-        # ### NİHAİ DÜZELTME: CONN_MAX_AGE için akıllı varsayılan ###
-        # Django'nun yeni sürümleri bu ayarı da bekliyor.
-        # 0 değeri, her istek sonunda bağlantının kapatılmasını sağlar. Bu, dinamik
-        # bağlantılar için en güvenli ve en stabil ayardır.
-        if 'CONN_MAX_AGE' not in connection_config:
-            connection_config['CONN_MAX_AGE'] = 0
+        # Modern Django'nun beklediği varsayılan ayarları ekle
+        connection_config.setdefault('TIME_ZONE', settings.TIME_ZONE)
+        connection_config.setdefault('CONN_HEALTH_CHECKS', True)
+        connection_config.setdefault('CONN_MAX_AGE', 0)
 
         settings.DATABASES[alias] = connection_config
         yield connections[alias]
@@ -46,8 +41,10 @@ def _django_engine_connection(config: Dict[str, Any]):
             del settings.DATABASES[alias]
 
 # --- BAĞLANTI YÖNTEMİ 2: Direkt SAP HANA Bağlantısı ---
+
 @contextmanager
 def _direct_hdb_connection(config: Dict[str, Any]):
+    """ (İç Kullanım) hdbcli kütüphanesi üzerinden doğrudan SAP HANA bağlantısı kurar. """
     connection = None
     try:
         connection = hanadb_api.connect(
@@ -62,7 +59,7 @@ def _direct_hdb_connection(config: Dict[str, Any]):
         if connection:
             connection.close()
 
-# --- AKILLI SANTRAL FONKSİYONLARI ---
+# --- AKILLI SANTRAL FONKSİYONLARI (PUBLIC API) ---
 
 def test_connection_config(config: Dict[str, Any], db_type: str) -> Tuple[bool, str]:
     """ Verilen yapılandırmayı, türüne göre doğru yöntemle test eder. """
@@ -84,7 +81,6 @@ def test_connection_config(config: Dict[str, Any], db_type: str) -> Tuple[bool, 
             return False, f"Veritabanı operasyonel hatası: {e}"
         except Exception as e:
             return False, f"Genel bir hata oluştu: {e}"
-
 
 
 def execute_virtual_table_query(virtual_table: VirtualTable) -> Dict[str, Any]:
@@ -110,43 +106,34 @@ def execute_virtual_table_query(virtual_table: VirtualTable) -> Dict[str, Any]:
                     columns = [col[0] for col in cursor.description or []]
                     rows = cursor.fetchall()
         
-        # ### YENİ: Veri Temizleme İstasyonu ###
-        # Veritabanından gelen ham Python nesnelerini JSON uyumlu hale getiriyoruz.
+        # Veri Temizleme İstasyonu: Veritabanından gelen ham veriyi JSON'a uygun hale getir.
         sanitized_rows = []
         for row in rows:
-            new_row = []
-            for cell in row:
-                if isinstance(cell, (datetime.datetime, datetime.date)):
-                    new_row.append(cell.isoformat())
-                elif isinstance(cell, Decimal):
-                    new_row.append(str(cell)) # float(cell) de kullanılabilir ama string daha güvenlidir.
-                elif isinstance(cell, bytes):
-                    new_row.append(cell.decode('utf-8', 'replace')) # byte verileri için
-                else:
-                    new_row.append(cell)
-            sanitized_rows.append(new_row)
+            sanitized_rows.append([
+                cell.isoformat() if isinstance(cell, (datetime.datetime, datetime.date))
+                else str(cell) if isinstance(cell, Decimal)
+                else cell.decode('utf-8', 'replace') if isinstance(cell, bytes)
+                else cell
+                for cell in row
+            ])
         
         return {"success": True, "columns": columns, "rows": sanitized_rows}
 
     except Exception as e:
-        logger.error(f"Sorgu çalıştırılırken hata: {e}")
+        logger.error(f"Sorgu çalıştırılırken hata (VirtualTable ID: {virtual_table.id}): {e}")
         return {"success": False, "error": f"Sorgu çalıştırılırken hata oluştu: {str(e)}"}
 
 
-
-
-
-
-
 def generate_metadata_for_query(connection_model: DynamicDBConnection, sql_query: str) -> Dict[str, Any]:
-    """ Verilen sorgudan, bağlantı türüne göre doğru yöntemle meta veri üretir. """
+    """ Verilen sorgudan, bağlantı türüne göre doğru yöntemle meta veri (kolonlar) üretir. """
     if not connection_model.is_active:
         return {"success": False, "error": "Kullanılan veri kaynağı pasif durumdadır."}
 
     config = connection_model.config_json
+    db_type = connection_model.db_type
 
     try:
-        if connection_model.db_type == 'sap_hana':
+        if db_type == 'sap_hana':
             with _direct_hdb_connection(config) as conn:
                 with conn.cursor() as cursor:
                     cursor.execute(sql_query)
@@ -159,7 +146,6 @@ def generate_metadata_for_query(connection_model: DynamicDBConnection, sql_query
 
         metadata = {col: {"visible": True, "label": col} for col in columns}
         return {"success": True, "metadata": metadata}
-
     except Exception as e:
-        logger.error(f"Sorgu meta verisi alınırken hata: {e}")
+        logger.error(f"Sorgu meta verisi alınırken hata (Connection ID: {connection_model.id}): {e}")
         return {"success": False, "error": f"Sorgu meta verisi alınırken hata oluştu: {str(e)}"}

@@ -4,9 +4,6 @@ from django.db import models
 from django.conf import settings
 from .dynamic_connection import DynamicDBConnection
 
-# --- DÜZELTME BURADA ---
-# SharingStatus sınıfını, VirtualTable'ın DIŞINA, modül seviyesine taşıyoruz.
-# Artık bağımsız ve her yerden kolayca import edilebilir bir bileşen.
 class SharingStatus(models.TextChoices):
     """Bu sanal tablonun görünürlük ve düzenleme izinlerini tanımlar."""
     PRIVATE = 'PRIVATE', 'Özel (Sadece Sahibi Görebilir)'
@@ -17,26 +14,47 @@ class SharingStatus(models.TextChoices):
 class VirtualTable(models.Model):
     """
     Kullanıcıların kendi SQL sorgularını kullanarak oluşturduğu sanal veri tablolarını
-    ve bu tabloların meta verilerini (örn: kolon görünürlüğü, sahiplik, paylaşım durumu) saklar.
-    Bu, Nexus Core'un iş birliği ve analiz katmanıdır.
+    ve bu tabloların meta verilerini saklar.
     """
-    # ... (diğer alanlar title, connection, sql_query, column_metadata, owner aynı kalıyor) ...
-    title = models.CharField(max_length=255, help_text="...")
-    connection = models.ForeignKey(DynamicDBConnection, on_delete=models.CASCADE, related_name="virtual_tables", help_text="...")
-    sql_query = models.TextField(help_text="...")
-    column_metadata = models.JSONField(default=dict, blank=True, help_text='...')
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="virtual_tables", help_text="...")
-    
-    # sharing_status alanı artık dışarıda tanımladığımız SharingStatus sınıfını kullanıyor.
+    title = models.CharField(
+        max_length=255,
+        verbose_name="Başlık",
+        help_text="Sanal tabloya verilen, kolay hatırlanabilir isim."
+    )
+    connection = models.ForeignKey(
+        DynamicDBConnection,
+        on_delete=models.CASCADE,
+        related_name="virtual_tables",
+        verbose_name="Veri Kaynağı Bağlantısı",
+        help_text="Bu sanal tablonun sorguyu çalıştıracağı veri kaynağı."
+    )
+    sql_query = models.TextField(
+        verbose_name="SQL Sorgusu",
+        help_text="Çalıştırılacak olan SELECT veya WITH ile başlayan SQL sorgusu."
+    )
+    column_metadata = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name="Sütun Meta Verisi",
+        help_text='Sütunların görünürlüğü gibi UI ayarlarını saklar.'
+    )
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="virtual_tables",
+        verbose_name="Sahip",
+        help_text="Bu sanal tabloyu oluşturan veya sahibi olan kullanıcı."
+    )
     sharing_status = models.CharField(
         max_length=20,
         choices=SharingStatus.choices,
         default=SharingStatus.PRIVATE,
-        help_text="Bu sanal tablonun diğer kullanıcılar için görünürlük ve düzenleme ayarı."
+        verbose_name="Paylaşım Durumu",
+        help_text="Bu sanal tablonun diğer kullanıcılar için görünürlük ayarı."
     )
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Oluşturulma Tarihi")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Güncellenme Tarihi")
 
     class Meta:
         verbose_name = "Sanal Tablo"
@@ -45,5 +63,6 @@ class VirtualTable(models.Model):
         ordering = ['-updated_at']
 
     def __str__(self):
-        owner_username = self.owner.username if self.owner else "Yok"
-        return f'"{self.title}" (Sahip: {owner_username})'
+        # ### NİHAİ DÜZELTME: `owner.username` yerine `owner.email` kullanıyoruz ###
+        owner_identity = self.owner.email if self.owner else "Yok"
+        return f'"{self.title}" (Sahip: {owner_identity})'

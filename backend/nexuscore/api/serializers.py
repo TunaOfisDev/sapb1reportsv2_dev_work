@@ -58,16 +58,36 @@ class VirtualTableSerializer(serializers.ModelSerializer):
         extra_kwargs = { 'sql_query': {'required': True} }
 
     def validate_sql_query(self, value):
-        # ... (bu metod aynı kalıyor) ...
+        """
+        SQL Injection'a karşı temel güvenlik doğrulamaları.
+        Artık sorgunun başındaki yorum satırlarını ve boşlukları görmezden gelir.
+        """
         cleaned_query = value.strip()
+        
+        # Sonundaki noktalı virgülü geçici olarak kaldıralım
         if cleaned_query.endswith(';'):
             cleaned_query = cleaned_query[:-1].strip()
+
+        # İçinde hala noktalı virgül var mı diye bakalım (çoklu komut engeli)
         if ';' in cleaned_query:
-            raise serializers.ValidationError("...")
-        normalized_query = cleaned_query.upper()
-        if not (normalized_query.startswith('SELECT') or normalized_query.startswith('WITH')):
-            raise serializers.ValidationError("...")
-        return value
+            raise serializers.ValidationError("Güvenlik nedeniyle sorgu içinde çoklu komutlara izin verilmez (;).")
+
+        # Yorumları ve boş satırları atlayarak ilk anlamlı satırı bulalım
+        first_meaningful_line = ""
+        for line in cleaned_query.splitlines():
+            stripped_line = line.strip()
+            if stripped_line and not stripped_line.startswith('--'):
+                first_meaningful_line = stripped_line
+                break
+        
+        # İlk anlamlı satırın SELECT veya WITH ile başlayıp başlamadığını kontrol edelim
+        normalized_first_line = first_meaningful_line.upper()
+        if not (normalized_first_line.startswith('SELECT') or normalized_first_line.startswith('WITH')):
+            raise serializers.ValidationError(
+                "Güvenlik nedeniyle sorgular 'SELECT' veya 'WITH' ile başlamalıdır (yorum satırları hariç)."
+            )
+        
+        return value # Orijinal, yorumlu halini kaydedelim.
 
     # ### NİHAİ DÜZELTME: Tüm `create` mantığı artık burada ###
     def create(self, validated_data):

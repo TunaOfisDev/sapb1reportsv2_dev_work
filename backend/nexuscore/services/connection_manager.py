@@ -5,11 +5,11 @@ import logging
 from contextlib import contextmanager
 from django.conf import settings
 from django.db import connections, OperationalError
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, List, Tuple
+import datetime  # ### YENİ: Tarih/saat nesneleri için import ###
+from decimal import Decimal  # ### YENİ: Ondalık sayı nesneleri için import ###
 
-# HANA için doğrudan bağlantı kütüphanesi
 from hdbcli import dbapi as hanadb_api
-# Modellerimiz
 from ..models import DynamicDBConnection, VirtualTable
 
 logger = logging.getLogger(__name__)
@@ -86,8 +86,9 @@ def test_connection_config(config: Dict[str, Any], db_type: str) -> Tuple[bool, 
             return False, f"Genel bir hata oluştu: {e}"
 
 
+
 def execute_virtual_table_query(virtual_table: VirtualTable) -> Dict[str, Any]:
-    """ Bir sorguyu, bağlantı türüne göre doğru yöntemle çalıştırır. """
+    """ Bir sorguyu, bağlantı türüne göre doğru yöntemle çalıştırır ve JSON uyumlu veri döndürür. """
     if not virtual_table.connection.is_active:
         return {"success": False, "error": "Bu sorgunun kullandığı veri kaynağı pasif durumdadır."}
 
@@ -109,10 +110,32 @@ def execute_virtual_table_query(virtual_table: VirtualTable) -> Dict[str, Any]:
                     columns = [col[0] for col in cursor.description or []]
                     rows = cursor.fetchall()
         
-        return {"success": True, "columns": columns, "rows": rows}
+        # ### YENİ: Veri Temizleme İstasyonu ###
+        # Veritabanından gelen ham Python nesnelerini JSON uyumlu hale getiriyoruz.
+        sanitized_rows = []
+        for row in rows:
+            new_row = []
+            for cell in row:
+                if isinstance(cell, (datetime.datetime, datetime.date)):
+                    new_row.append(cell.isoformat())
+                elif isinstance(cell, Decimal):
+                    new_row.append(str(cell)) # float(cell) de kullanılabilir ama string daha güvenlidir.
+                elif isinstance(cell, bytes):
+                    new_row.append(cell.decode('utf-8', 'replace')) # byte verileri için
+                else:
+                    new_row.append(cell)
+            sanitized_rows.append(new_row)
+        
+        return {"success": True, "columns": columns, "rows": sanitized_rows}
+
     except Exception as e:
         logger.error(f"Sorgu çalıştırılırken hata: {e}")
         return {"success": False, "error": f"Sorgu çalıştırılırken hata oluştu: {str(e)}"}
+
+
+
+
+
 
 
 def generate_metadata_for_query(connection_model: DynamicDBConnection, sql_query: str) -> Dict[str, Any]:

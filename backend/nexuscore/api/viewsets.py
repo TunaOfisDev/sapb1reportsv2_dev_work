@@ -6,8 +6,6 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
-
-# Tüm katmanlarımızdan gerekli bileşenleri import ediyoruz.
 from ..models import DynamicDBConnection, VirtualTable, SharingStatus
 from .serializers import DynamicDBConnectionSerializer, VirtualTableSerializer
 from .permissions import IsOwnerOrPublic
@@ -20,30 +18,14 @@ class DynamicDBConnectionViewSet(viewsets.ModelViewSet):
     serializer_class = DynamicDBConnectionSerializer
     permission_classes = [IsAdminUser]
 
-    # ### NİHAİ DÜZELTME: `create` metodunu tamamen override ediyoruz ###
-    # Bu, DRF'in `perform_create` kancasının yarattığı karmaşayı ortadan kaldırır.
     def create(self, request, *args, **kwargs):
-        """
-        Yeni bir veri tabanı bağlantısı oluşturur.
-        1. Gelen veriyi doğrular.
-        2. Sahibi (owner) olarak isteği yapan kullanıcıyı ekler.
-        3. Veritabanına kaydeder.
-        """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
-        # `serializer.save()` metodu, kendi içindeki `create` metodunu çağırır
-        # ve bu `create` metodu da bağlantı testini yapar.
-        # Sahibi (owner) `save` metoduna bir kwarg olarak veriyoruz.
         serializer.save(owner=request.user)
-        
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def retrieve(self, request, *args, **kwargs):
-        """
-        Tek bir bağlantının detayını getirir. (Düzenle Formu için)
-        """
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         data = serializer.data
@@ -52,78 +34,41 @@ class DynamicDBConnectionViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], url_path='test_connection')
     def test_connection(self, request, pk=None):
-        """
-        Belirtilen ID'ye sahip veritabanı bağlantısını test eder.
-        """
         connection_instance = self.get_object()
         config = connection_instance.config_json
         db_type = connection_instance.db_type
-        
         is_successful, message = connection_manager.test_connection_config(config, db_type)
-        
         if not is_successful:
-            return Response(
-                {'status': 'failure', 'message': message}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        
+            return Response({'status': 'failure', 'message': message}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'status': 'success', 'message': message})
 
 # --- 2. Kullanıcı Alanı: Sanal Tablolar ---
 
 class VirtualTableViewSet(viewsets.ModelViewSet):
-    """
-    Kullanıcıların kendi sanal tablolarını (sorgularını) yönetmesini sağlar.
-    """
     serializer_class = VirtualTableSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrPublic]
 
     def get_queryset(self):
-        """
-        Kullanıcıların sadece kendi sahip oldukları veya herkese açık olan
-        sanal tabloları görmesini sağlar.
-        """
         user = self.request.user
-        # Adminler tüm kayıtları görebilir.
         if user.is_staff or user.is_superuser:
             return VirtualTable.objects.select_related('owner', 'connection').all()
-
         return VirtualTable.objects.select_related('owner', 'connection').filter(
             Q(owner=user) |
             Q(sharing_status__in=[SharingStatus.PUBLIC_READONLY, SharingStatus.PUBLIC_EDITABLE])
         ).distinct()
 
+    # ### NİHAİ DÜZELTME: `perform_create` artık `owner` bilgisini ekliyor ###
     def perform_create(self, serializer):
         """
-        Yeni bir sanal tablo oluşturulurken, sahibi otomatik olarak o anki kullanıcı olarak ayarlar
-        ve servis katmanı aracılığıyla meta veriyi oluşturur.
+        Yeni bir sanal tablo oluşturulurken, sahibi otomatik olarak o anki kullanıcı olarak ayarlar.
+        Geri kalan karmaşık mantık (meta veri oluşturma) serializer'ın `create` metodundadır.
         """
-        connection = serializer.validated_data['connection']
-        sql_query = serializer.validated_data['sql_query']
-
-        # Servis katmanını çağırarak sorgudan meta veriyi (kolon isimleri) al.
-        result = connection_manager.generate_metadata_for_query(connection, sql_query)
-
-        if not result.get('success'):
-            # Eğer sorgu hatalıysa ve meta veri üretilemiyorsa, validation error fırlat.
-            raise serializers.ValidationError({
-                "sql_query": f"Sorgu çalıştırılamadı: {result.get('error')}"
-            })
-        
-        metadata = result.get('metadata')
-        serializer.save(owner=self.request.user, column_metadata=metadata)
+        serializer.save(owner=self.request.user)
 
     @action(detail=True, methods=['post'], url_path='execute')
     def execute(self, request, pk=None):
-        """
-        Belirli bir sanal tablonun sorgusunu çalıştırır ve sonucu döndürür.
-        """
         virtual_table = self.get_object()
-        
-        # İş mantığını servis katmanından çağırıyoruz.
         result = connection_manager.execute_virtual_table_query(virtual_table)
-        
         if not result.get('success'):
             return Response({"error": result.get('error')}, status=status.HTTP_400_BAD_REQUEST)
-        
         return Response(result)

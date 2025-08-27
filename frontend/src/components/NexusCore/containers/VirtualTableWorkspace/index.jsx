@@ -68,6 +68,7 @@ const VirtualTableWorkspace = () => {
         const isEditMode = !!editingTable;
         const apiToCall = isEditMode ? updateApi : createApi;
         // Güncelleme işlemi iki argüman bekler (id, data), oluşturma tek (data)
+        
         const requestArgs = isEditMode ? [editingTable.id, formData] : [formData];
         
         const result = await apiToCall.request(...requestArgs);

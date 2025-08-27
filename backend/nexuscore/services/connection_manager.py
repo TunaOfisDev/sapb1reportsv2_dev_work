@@ -17,9 +17,27 @@ logger = logging.getLogger(__name__)
 # --- BAĞLANTI YÖNTEMİ 1: Standart Django ENGINE Bağlantısı ---
 @contextmanager
 def _django_engine_connection(config: Dict[str, Any]):
+    """ (İç Kullanım) Django'nun standart veritabanı motoru üzerinden geçici bağlantı kurar. """
     alias = f"dyn_django_{uuid.uuid4().hex}"
     try:
-        settings.DATABASES[alias] = config
+        connection_config = config.copy()
+
+        # TIME_ZONE için akıllı varsayılan
+        if 'TIME_ZONE' not in connection_config:
+            connection_config['TIME_ZONE'] = settings.TIME_ZONE
+
+        # CONN_HEALTH_CHECKS için akıllı varsayılan
+        if 'CONN_HEALTH_CHECKS' not in connection_config:
+            connection_config['CONN_HEALTH_CHECKS'] = True
+
+        # ### NİHAİ DÜZELTME: CONN_MAX_AGE için akıllı varsayılan ###
+        # Django'nun yeni sürümleri bu ayarı da bekliyor.
+        # 0 değeri, her istek sonunda bağlantının kapatılmasını sağlar. Bu, dinamik
+        # bağlantılar için en güvenli ve en stabil ayardır.
+        if 'CONN_MAX_AGE' not in connection_config:
+            connection_config['CONN_MAX_AGE'] = 0
+
+        settings.DATABASES[alias] = connection_config
         yield connections[alias]
     finally:
         if alias in connections:

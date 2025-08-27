@@ -6,10 +6,13 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
-from ..models import DynamicDBConnection, VirtualTable, SharingStatus
-from .serializers import DynamicDBConnectionSerializer, VirtualTableSerializer
+# Modellerimizi, serileştiricilerimizi ve izinlerimizi import ediyoruz
+from ..models import DynamicDBConnection, VirtualTable, SharingStatus, ReportTemplate
+from .serializers import DynamicDBConnectionSerializer, VirtualTableSerializer, ReportTemplateSerializer
 from .permissions import IsOwnerOrPublic
-from ..services import connection_manager
+
+# ### GÜNCELLEME: Servislerimizi artık paket olarak import ediyoruz ###
+from ..services import connection_manager, template_manager
 
 # --- 1. Altyapı Yönetimi: Veri Tabanı Bağlantıları ---
 
@@ -57,12 +60,7 @@ class VirtualTableViewSet(viewsets.ModelViewSet):
             Q(sharing_status__in=[SharingStatus.PUBLIC_READONLY, SharingStatus.PUBLIC_EDITABLE])
         ).distinct()
 
-    # ### NİHAİ DÜZELTME: `perform_create` artık `owner` bilgisini ekliyor ###
     def perform_create(self, serializer):
-        """
-        Yeni bir sanal tablo oluşturulurken, sahibi otomatik olarak o anki kullanıcı olarak ayarlar.
-        Geri kalan karmaşık mantık (meta veri oluşturma) serializer'ın `create` metodundadır.
-        """
         serializer.save(owner=self.request.user)
 
     @action(detail=True, methods=['post'], url_path='execute')
@@ -71,4 +69,43 @@ class VirtualTableViewSet(viewsets.ModelViewSet):
         result = connection_manager.execute_virtual_table_query(virtual_table)
         if not result.get('success'):
             return Response({"error": result.get('error')}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(result)
+
+# --- 3. Kullanıcı Alanı: Rapor Şablonları (YENİ) ---
+
+class ReportTemplateViewSet(viewsets.ModelViewSet):
+    """
+    Kullanıcıların kendi rapor şablonlarını yönetmesini ve çalıştırmasını sağlar.
+    """
+    serializer_class = ReportTemplateSerializer
+    permission_classes = [IsAuthenticated, IsOwnerOrPublic]
+
+    def get_queryset(self):
+        """Kullanıcıların sadece kendi sahip oldukları veya herkese açık olan raporları görmesini sağlar."""
+        user = self.request.user
+        if user.is_staff or user.is_superuser:
+            return ReportTemplate.objects.select_related('owner', 'source_virtual_table').all()
+        return ReportTemplate.objects.select_related('owner', 'source_virtual_table').filter(
+            Q(owner=user) |
+            Q(sharing_status__in=[SharingStatus.PUBLIC_READONLY, SharingStatus.PUBLIC_EDITABLE])
+        ).distinct()
+
+    def perform_create(self, serializer):
+        """Yeni bir rapor oluşturulurken, sahibi otomatik olarak o anki kullanıcı olarak ayarlar."""
+        serializer.save(owner=self.request.user)
+
+    @action(detail=True, methods=['post'], url_path='execute')
+    def execute(self, request, pk=None):
+        """
+        Belirli bir rapor şablonunu çalıştırır.
+        Önce kaynak sorgudan ham veriyi çeker, sonra şablonu bu veriye uygular.
+        """
+        report_template = self.get_object()
+        
+        # Tüm iş mantığını `template_manager` servisimizden çağırıyoruz.
+        result = template_manager.execute_report_template(report_template)
+        
+        if not result.get('success'):
+            return Response({"error": result.get('error')}, status=status.HTTP_400_BAD_REQUEST)
+        
         return Response(result)

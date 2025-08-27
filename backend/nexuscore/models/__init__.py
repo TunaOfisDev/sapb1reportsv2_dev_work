@@ -2,12 +2,13 @@
 
 from .dynamic_connection import DynamicDBConnection
 from .virtual_table import VirtualTable, SharingStatus
-# ### DEĞİŞİKLİK: Import yolunu yeni konuma göre güncelliyoruz ###
+from .report_template import ReportTemplate # <-- YENİ: Yeni modelimizi import ediyoruz
 from nexuscore.fields import EncryptedJSONField
 
 __all__ = [
     'DynamicDBConnection',
     'VirtualTable',
     'SharingStatus',
+    'ReportTemplate', # <-- YENİ: Yeni modelimizi dış dünyaya açıyoruz
     'EncryptedJSONField',
 ]

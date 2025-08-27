@@ -1,6 +1,9 @@
 // path: frontend/src/components/NexusCore/containers/VirtualTableWorkspace/index.jsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { PlusCircle } from 'react-feather';
+// ### YENİ: Navigasyon için Link bileşenini import ediyoruz ###
+import { Link } from 'react-router-dom';
+// ### YENİ: Playground butonu için bir ikon seçelim ###
+import { PlusCircle, Sliders } from 'react-feather';
 import styles from './VirtualTableWorkspace.module.scss';
 
 // Hook'lar ve API'ler
@@ -9,18 +12,16 @@ import { useNotifications } from '../../hooks/useNotifications';
 import * as virtualTablesApi from '../../api/virtualTablesApi';
 import * as connectionsApi from '../../api/connectionsApi';
 
-// Gerçek, ortak bileşenler
+// Bileşenler
 import Card from '../../components/common/Card/Card';
 import Button from '../../components/common/Button/Button';
 import Spinner from '../../components/common/Spinner/Spinner';
 import Table from '../../components/common/Table/Table';
-
-// Bu klasördeki diğer bileşenler
 import VirtualTableList from './VirtualTableList';
 import QueryEditorModal from './QueryEditorModal';
 
 const VirtualTableWorkspace = () => {
-    // API Hook'ları
+    // ... (dosyanın başındaki tüm state ve fonksiyon tanımları aynı kalıyor) ...
     const { data: tablesResponse, error: listError, loading: listLoading, request: fetchTables } = useApi(virtualTablesApi.getVirtualTables);
     const { data: connectionsResponse, request: fetchConnections } = useApi(connectionsApi.getConnections);
     const { data: tableData, error: executeError, loading: executeLoading, request: executeQuery } = useApi(virtualTablesApi.executeVirtualTable);
@@ -28,13 +29,11 @@ const VirtualTableWorkspace = () => {
     const updateApi = useApi(virtualTablesApi.updateVirtualTable);
     const deleteApi = useApi(virtualTablesApi.deleteVirtualTable);
 
-    // State Yönetimi
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTable, setEditingTable] = useState(null);
     const [selectedTable, setSelectedTable] = useState(null);
     const { addNotification } = useNotifications();
 
-    // Veri Çekme
     const memoizedFetchTables = useCallback(fetchTables, []);
     const memoizedFetchConnections = useCallback(fetchConnections, []);
 
@@ -43,7 +42,6 @@ const VirtualTableWorkspace = () => {
         memoizedFetchConnections();
     }, [memoizedFetchTables, memoizedFetchConnections]);
 
-    // Olay Yöneticileri
     const handleExecute = (table) => {
         setSelectedTable(table);
         executeQuery(table.id);
@@ -66,12 +64,12 @@ const VirtualTableWorkspace = () => {
     
     const handleFormSubmit = async (formData) => {
         const isEditMode = !!editingTable;
-        const apiToCall = isEditMode ? updateApi : createApi;
-        // Güncelleme işlemi iki argüman bekler (id, data), oluşturma tek (data)
-        
-        const requestArgs = isEditMode ? [editingTable.id, formData] : [formData];
-        
-        const result = await apiToCall.request(...requestArgs);
+        let result;
+        if (isEditMode) {
+            result = await updateApi.request(editingTable.id, formData);
+        } else {
+            result = await createApi.request(formData);
+        }
 
         if(result.success) {
             addNotification(isEditMode ? 'Sorgu başarıyla güncellendi.' : 'Sorgu başarıyla oluşturuldu.', 'success');
@@ -83,7 +81,6 @@ const VirtualTableWorkspace = () => {
         }
     };
 
-    // ### DÜZELTME BURADA: Gelen yanıt paketinden `results` dizisini alıyoruz ###
     const tables = tablesResponse?.results || [];
     const connections = connectionsResponse?.results || [];
     
@@ -109,7 +106,18 @@ const VirtualTableWorkspace = () => {
             </Card>
 
             {selectedTable && (
-                <Card title={`Sonuçlar: ${selectedTable.title}`} className={styles.resultsCard}>
+                <Card 
+                    title={`Sonuçlar: ${selectedTable.title}`} 
+                    className={styles.resultsCard}
+                    // ### YENİ: Sonuçlar kartına "Oyun Alanı" butonu ekliyoruz ###
+                    headerActions={
+                        <Link to={`/nexus/playground/${selectedTable.id}`}>
+                            <Button variant="primary" IconComponent={Sliders}>
+                                Oyun Alanına Git
+                            </Button>
+                        </Link>
+                    }
+                >
                     <Table 
                         data={tableData}
                         loading={executeLoading}

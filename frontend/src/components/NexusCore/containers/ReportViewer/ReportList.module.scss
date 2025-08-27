@@ -1,0 +1,44 @@
+/* path: frontend/src/components/NexusCore/containers/ReportViewer/ReportList.module.scss */
+@use '../../styles/variables' as vars;
+
+.emptyMessage {
+  text-align: center;
+  color: vars.$text-secondary;
+  padding: vars.$spacing-8;
+  border: 2px dashed vars.$border-color;
+  border-radius: vars.$border-radius-lg;
+}
+
+.reportGrid {
+  display: grid;
+  // Her kart en az 350px genişliğinde olacak, sığdığı kadar yan yana dizilecek.
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: vars.$spacing-5;
+}
+
+.reportCard {
+  // Bu sınıfı doğrudan Card bileşenine `className` olarak vereceğiz.
+  // Card'ın kendi stillerine ek olarak, buradaki stiller de uygulanacak.
+  display: flex;
+  flex-direction: column; // İçeriğin dikeyde düzgün hizalanması için
+}
+
+.cardBody {
+    flex-grow: 1; // Card'ın gövdesinin mevcut tüm alanı kaplamasını sağlar
+    p {
+        margin-top: vars.$spacing-2;
+        color: vars.$text-secondary;
+    }
+}
+
+.cardFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: vars.$text-secondary;
+}
+
+.ownerInfo {
+    font-style: italic;
+}

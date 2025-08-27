@@ -5,20 +5,17 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import useAuth from '../../auth/useAuth';
 import authService from '../../auth/authService';
 
-// Layout ve Diğer Bileşenler
+// Layout ve Sayfa Bileşenleri
 import Header from './components/layout/Header/Header';
 import Sidebar from './components/layout/Sidebar/Sidebar';
 import PageWrapper from './components/layout/PageWrapper/PageWrapper';
 import Spinner from './components/common/Spinner/Spinner';
 import ConnectionManager from './containers/ConnectionManager';
+import VirtualTableWorkspace from './containers/VirtualTableWorkspace';
+import ReportViewer from './containers/ReportViewer';
+import ReportPlayground from './containers/ReportPlayground';
 import { NotificationProvider } from './contexts/NotificationContext';
 import styles from './NexusCore.module.scss';
-
-// ### YENİ: Gerçek Workspace bileşenimizi import ediyoruz ###
-import VirtualTableWorkspace from './containers/VirtualTableWorkspace';
-
-// ### KALDIRILDI: Artık bu geçici placeholder'a ihtiyacımız yok ###
-// const VirtualTableWorkspace = () => ( ... );
 
 const NexusCore = () => {
   const { user, logout, loading: authLoading, isAuthenticated } = useAuth();
@@ -50,11 +47,8 @@ const NexusCore = () => {
 
   const isAdmin = useMemo(() => {
     if (!permissions) return false;
-    
-    // Projeye özgü admin belirleme mantığı
     const hasAdminPosition = permissions.positions?.some(pos => pos.toLowerCase().includes('admin'));
     const isInITDepartment = permissions.departments?.some(dep => dep.toLowerCase().includes('it'));
-    
     return hasAdminPosition || isInITDepartment;
   }, [permissions]);
 
@@ -72,15 +66,20 @@ const NexusCore = () => {
         <Header user={{ name: user.email }} onLogout={logout} />
         <Sidebar isAdmin={isAdmin} />
         <PageWrapper>
+          {/* ### NİHAİ DÜZELTME: Tüm Rotalar tek bir <Routes> bloğu içinde ### */}
           <Routes>
+            {/* Admin'e özel rota */}
             {isAdmin && (
               <Route path="admin/connections" element={<ConnectionManager />} />
             )}
             
+            {/* Tüm kullanıcılar için rotalar */}
             <Route path="workspace" element={<VirtualTableWorkspace />} />
+            <Route path="reports" element={<ReportViewer />} />
+            <Route path="playground/:virtualTableId" element={<ReportPlayground />} />
             
+            {/* Varsayılan ve bulunamayan yollar için yönlendirmeler */}
             <Route path="/" element={<Navigate replace to="workspace" />} />
-            
             <Route path="*" element={<Navigate replace to="workspace" />} />
           </Routes>
         </PageWrapper>

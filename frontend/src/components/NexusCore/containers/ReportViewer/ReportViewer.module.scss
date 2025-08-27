@@ -1,0 +1,23 @@
+/* path: frontend/src/components/NexusCore/containers/ReportViewer/ReportViewer.module.scss */
+@use '../../styles/variables' as vars;
+
+.viewerContainer {
+    display: flex;
+    flex-direction: column;
+    gap: vars.$spacing-5;
+}
+
+.header {
+    padding-bottom: vars.$spacing-3;
+    border-bottom: 1px solid vars.$border-color;
+
+    h1 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin: 0;
+    }
+}
+
+.resultsContainer {
+    margin-top: vars.$spacing-4;
+}

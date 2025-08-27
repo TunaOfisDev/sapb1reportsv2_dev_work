@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
-import { Database, Grid } from 'react-feather';
+import { Database, Grid, BookOpen } from 'react-feather';
 import styles from './Sidebar.module.scss';
 
 const Sidebar = ({ isAdmin = false }) => {
@@ -20,7 +20,14 @@ const Sidebar = ({ isAdmin = false }) => {
               <span className={styles.navText}>Çalışma Alanı</span>
             </NavLink>
           </li>
-          
+
+          <li className={styles.navItem}>
+            <NavLink to="reports" className={getNavLinkClass}>
+              <BookOpen size={20} className={styles.navIcon} />
+              <span className={styles.navText}>Raporlarım</span>
+            </NavLink>
+          </li>
+                  
           {isAdmin && (
             <li className={styles.navItem}>
               {/* ### DEĞİŞİKLİK: to="/admin/connections" -> to="admin/connections" ### */}

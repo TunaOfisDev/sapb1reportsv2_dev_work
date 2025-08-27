@@ -1,0 +1,53 @@
+/* path: frontend/src/components/NexusCore/containers/ReportPlayground/ReportPlayground.module.scss */
+@use '../../styles/variables' as vars;
+
+/* ... (playgroundContainer, panel, ve diğer stiller burada) ... */
+
+/* --- AvailableColumns'a Özel Stiller --- */
+
+/*.availableColumns {
+  /* Panel'in genel stillerini miras alıyor. */
+/*}*/
+
+.columnList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: vars.$spacing-2;
+}
+
+.columnItem {
+  display: flex;
+  align-items: center;
+  gap: vars.$spacing-2;
+  padding: vars.$spacing-2 vars.$spacing-3;
+  border: 1px solid vars.$border-color;
+  border-radius: vars.$border-radius-md;
+  background-color: vars.$background-body;
+  cursor: grab; // Sürüklenebilir olduğunu belirtir
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  user-select: none; // Metnin seçilmesini engeller
+
+  &:hover {
+    background-color: vars.$background-light;
+    box-shadow: vars.$shadow-sm;
+  }
+
+  &:active {
+    cursor: grabbing;
+    background-color: rgba(vars.$primary-color, 0.1);
+  }
+}
+
+.dragHandle {
+  color: vars.$text-placeholder;
+}
+
+.columnName {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

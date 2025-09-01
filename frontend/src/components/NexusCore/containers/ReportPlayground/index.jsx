@@ -1,19 +1,17 @@
 // path: frontend/src/components/NexusCore/containers/ReportPlayground/index.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { DndContext, closestCenter } from '@dnd-kit/core';
-import { arrayMove } from '@dnd-kit/sortable';
+import { DndContext, closestCenter, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './ReportPlayground.module.scss';
 
-// Hook'lar ve API'ler
+// Hook'lar, API'ler ve Bileşenler
 import { useApi } from '../../hooks/useApi';
 import { useNotifications } from '../../hooks/useNotifications';
 import * as virtualTablesApi from '../../api/virtualTablesApi';
 import * as reportTemplatesApi from '../../api/reportTemplatesApi';
-
-// Bileşenler
 import AvailableColumns from './AvailableColumns';
 import ReportCanvas from './ReportCanvas';
 import PropertiesPanel from './PropertiesPanel';
@@ -34,81 +32,107 @@ const ReportPlayground = () => {
     const [reportTitle, setReportTitle] = useState('');
     const [reportColumns, setReportColumns] = useState([]); // Tuvaldeki kolonlar
     const [selectedColumnKey, setSelectedColumnKey] = useState(null);
+    const [activeId, setActiveId] = useState(null); // Sürüklenen aktif elemanı tutar
 
-    // Kaynak veriyi ilk yüklemede çek
+    // Veri Çekme
+    const memoizedExecuteQuery = useCallback(executeSourceQuery, []);
     useEffect(() => {
         if (virtualTableId) {
-            executeSourceQuery(virtualTableId);
+            memoizedExecuteQuery(virtualTableId);
         }
-    }, [virtualTableId, executeSourceQuery]);
+    }, [virtualTableId, memoizedExecuteQuery]);
+    
+    // Olay Yöneticileri (Event Handlers)
+    const handleAddColumn = useCallback((columnKey) => {
+        if (reportColumns.some(c => c.key === columnKey)) {
+            addNotification(`'${columnKey}' kolonu zaten raporda mevcut.`, 'info');
+            return;
+        }
+        const newColumn = { key: columnKey, label: columnKey, visible: true, id: uuidv4() };
+        setReportColumns((items) => [...items, newColumn]);
+    }, [reportColumns, addNotification]);
 
-    // Sürükle-bırak bittiğinde çalışan ana mantık
+    const handleRemoveColumn = useCallback((keyToRemove) => {
+        setReportColumns(items => items.filter(col => col.key !== keyToRemove));
+        if (selectedColumnKey === keyToRemove) {
+            setSelectedColumnKey(null);
+        }
+    }, [selectedColumnKey, reportColumns]);
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: { distance: 8 },
+        })
+    );
+    
+    const handleDragStart = (event) => {
+        setActiveId(event.active.id);
+    };
+    
     const handleDragEnd = (event) => {
         const { active, over } = event;
+        setActiveId(null);
+        if (!over) return;
 
-        if (over && active.id !== over.id) {
-            // Kolonları kendi içinde yeniden sıralama
+        if (over.id === 'canvas-drop-area' && !reportColumns.some(c => c.key === active.id)) {
+            handleAddColumn(active.id);
+            return;
+        }
+        
+        const activeItemInCanvas = reportColumns.find(c => c.id === active.id);
+        const overItemInCanvas = reportColumns.find(c => c.id === over.id);
+
+        if (activeItemInCanvas && overItemInCanvas && active.id !== over.id) {
             setReportColumns((items) => {
-                const oldIndex = items.findIndex(item => item.key === active.id);
-                const newIndex = items.findIndex(item => item.key === over.id);
+                const oldIndex = items.findIndex(item => item.id === active.id);
+                const newIndex = items.findIndex(item => item.id === over.id);
                 return arrayMove(items, oldIndex, newIndex);
             });
-        } else if (over && over.id === 'canvas-drop-area' && !reportColumns.some(c => c.key === active.id)) {
-            // Soldaki listeden tuvale yeni kolon ekleme
-            const newColumnKey = active.id;
-            const newColumn = {
-                key: newColumnKey,
-                label: newColumnKey,
-                visible: true,
-                id: uuidv4(), // Sıralama için benzersiz bir id
-            };
-            setReportColumns((items) => [...items, newColumn]);
         }
     };
     
-    // Özellikler panelinden bir kolonu güncelleme
     const handleUpdateColumn = (key, newProps) => {
         setReportColumns(items => items.map(col => 
             col.key === key ? { ...col, ...newProps } : col
         ));
     };
 
-    // Raporu kaydetme
     const handleSave = async () => {
         if (!reportTitle) {
             addNotification('Lütfen rapora bir başlık verin.', 'error');
             return;
         }
-
         const configuration_json = {
             columns: reportColumns.map(({ key, label, visible }) => ({ key, label, visible })),
-            // Gelecekte sıralama ve filtre ayarları da buraya eklenebilir
         };
-
         const payload = {
             title: reportTitle,
             source_virtual_table_id: virtualTableId,
             configuration_json,
-            sharing_status: 'PRIVATE', // Varsayılan
+            sharing_status: 'PRIVATE',
         };
-
         const { success } = await createReport(payload);
         if (success) {
             addNotification('Rapor başarıyla kaydedildi!', 'success');
-            navigate('/nexus/reports'); // Raporlar galerisine yönlendir (bu sayfayı sonra yapacağız)
+            navigate('/nexus/reports');
         } else {
             addNotification('Rapor kaydedilirken bir hata oluştu.', 'error');
         }
     };
     
-    // --- Arayüz Çizimi ---
     if (sourceLoading) return <Spinner size="lg" />;
-    if (sourceError) return <div className={styles.error}>Kaynak veri yüklenirken bir hata oluştu.</div>;
+    if (sourceError) return <div className={styles.error}>Kaynak veri yüklenirken bir hata oluştu. Lütfen geçerli bir Sanal Tablo ID'si ile geldiğinizden emin olun.</div>;
 
     const selectedColumn = reportColumns.find(c => c.key === selectedColumnKey) || null;
+    const activeItem = activeId ? (reportColumns.find(c => c.id === activeId) || { key: activeId, label: activeId }) : null;
 
     return (
-        <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
+        <DndContext 
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd} 
+            collisionDetection={closestCenter}
+            sensors={sensors}
+        >
             <div className={styles.pageContainer}>
                 <header className={styles.pageHeader}>
                     <Input 
@@ -123,20 +147,32 @@ const ReportPlayground = () => {
                     </Button>
                 </header>
                 <div className={styles.playgroundContainer}>
-                    <AvailableColumns columns={sourceData?.columns || []} />
-                    <ReportCanvas 
-                        columns={reportColumns}
-                        data={sourceData || {}}
-                        onColumnClick={setSelectedColumnKey}
-                        selectedColumnKey={selectedColumnKey}
-                        setReportColumns={setReportColumns} // Yeniden sıralama için
+                    <AvailableColumns 
+                        columns={sourceData?.columns || []}
+                        onColumnAdd={handleAddColumn} 
                     />
+                    <SortableContext items={reportColumns.map(c => c.id)} strategy={verticalListSortingStrategy}>
+                        <ReportCanvas 
+                            columns={reportColumns}
+                            data={sourceData || {}}
+                            onColumnClick={setSelectedColumnKey}
+                            selectedColumnKey={selectedColumnKey}
+                            onColumnRemove={handleRemoveColumn}
+                        />
+                    </SortableContext>
                     <PropertiesPanel 
                         selectedColumn={selectedColumn}
                         onUpdateColumn={handleUpdateColumn}
                     />
                 </div>
             </div>
+            <DragOverlay>
+                {activeId ? (
+                    <div className={`${styles.columnItem} ${styles.dragging}`}>
+                        {activeItem?.label || activeId}
+                    </div>
+                ) : null}
+            </DragOverlay>
         </DndContext>
     );
 };

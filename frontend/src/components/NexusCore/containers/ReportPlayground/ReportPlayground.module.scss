@@ -1,13 +1,67 @@
 /* path: frontend/src/components/NexusCore/containers/ReportPlayground/ReportPlayground.module.scss */
 @use '../../styles/variables' as vars;
 
-/* ... (playgroundContainer, panel, ve diğer stiller burada) ... */
+.pageContainer {
+    display: flex;
+    flex-direction: column;
+    gap: vars.$spacing-5;
+}
+
+.pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: vars.$spacing-4;
+    padding-bottom: vars.$spacing-4;
+    border-bottom: 1px solid vars.$border-color;
+    
+    // Rapor başlığı input'unun daha fazla yer kaplamasını sağla
+    & > div:first-child {
+        flex-grow: 1;
+    }
+}
+
+.playgroundContainer {
+  display: grid;
+  grid-template-columns: 280px 1fr 320px; /* Sütunlar | Rapor | Özellikler */
+  gap: vars.$spacing-5;
+  height: calc(100vh - (vars.$header-height + 150px)); /* Yüksekliği sayfanın geri kalanını kaplayacak şekilde ayarla */
+}
+
+.panel {
+  background-color: vars.$background-body;
+  border: 1px solid vars.$border-color;
+  border-radius: vars.$border-radius-lg;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; // İçerik taşarsa gizle
+}
+
+.panelTitle {
+  padding: vars.$spacing-3 vars.$spacing-4;
+  border-bottom: 1px solid vars.$border-color;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.panelContent {
+  padding: vars.$spacing-4;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: vars.$spacing-5;
+}
+
+.error {
+    text-align: center;
+    padding: vars.$spacing-8;
+    color: vars.$danger-color;
+}
 
 /* --- AvailableColumns'a Özel Stiller --- */
-
-/*.availableColumns {
-  /* Panel'in genel stillerini miras alıyor. */
-/*}*/
+/*.availableColumns { }*/
 
 .columnList {
   list-style: none;
@@ -26,28 +80,104 @@
   border: 1px solid vars.$border-color;
   border-radius: vars.$border-radius-md;
   background-color: vars.$background-body;
-  cursor: grab; // Sürüklenebilir olduğunu belirtir
+  cursor: grab;
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
-  user-select: none; // Metnin seçilmesini engeller
+  user-select: none;
 
   &:hover {
     background-color: vars.$background-light;
     box-shadow: vars.$shadow-sm;
   }
-
   &:active {
     cursor: grabbing;
     background-color: rgba(vars.$primary-color, 0.1);
   }
 }
 
-.dragHandle {
-  color: vars.$text-placeholder;
+.dragHandle { color: vars.$text-placeholder; }
+.columnName { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* --- ReportCanvas'a Özel Stiller --- */
+/*.reportCanvas { }*/
+
+.canvasPlaceholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: vars.$text-secondary;
+  height: 100%;
+  padding: vars.$spacing-5;
+  border: 2px dashed vars.$border-color;
+  border-radius: vars.$border-radius-md;
 }
 
-.columnName {
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.previewTableWrapper { width: 100%; overflow-x: auto; }
+.previewTable {
+    width: 100%;
+    border-collapse: collapse;
+    th, td { padding: vars.$spacing-2 vars.$spacing-3; border: 1px solid vars.$border-color; text-align: left; font-size: 0.9rem; white-space: nowrap; }
+    th {
+        background-color: vars.$background-light;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        position: relative;
+        &:hover { background-color: rgba(vars.$primary-color, 0.1); }
+        &.active { background-color: vars.$primary-color; color: vars.$text-on-primary; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
+    }
+    td { color: vars.$text-secondary; }
+}
+
+.thContent { display: flex; justify-content: space-between; align-items: center; gap: vars.$spacing-4; }
+
+.removeColumnBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    padding: 2px;
+    border-radius: 50%;
+    display: none;
+    line-height: 0;
+    
+    .previewTable th:hover & {
+        display: inline-flex;
+    }
+    &:hover { background-color: rgba(0,0,0,0.2); }
+}
+
+
+/* --- PropertiesPanel'e Özel Stiller --- */
+/*.propertiesPanel { }*/
+
+.placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: vars.$text-secondary;
+  height: 100%;
+  padding: vars.$spacing-4;
+}
+
+.propertyGroup {
+  padding-bottom: vars.$spacing-4;
+  border-bottom: 1px solid vars.$background-light;
+  &:last-child { border-bottom: none; padding-bottom: 0; }
+}
+
+.originalName {
+    font-size: 0.9rem;
+    color: vars.$text-secondary;
+    word-break: break-all;
+    strong { color: vars.$text-primary; font-family: vars.$font-family-mono; }
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: vars.$spacing-2;
+    cursor: pointer;
+    font-weight: 500;
 }

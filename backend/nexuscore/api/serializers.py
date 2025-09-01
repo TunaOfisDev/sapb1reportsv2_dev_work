@@ -99,9 +99,16 @@ class ReportTemplateSerializer(serializers.ModelSerializer):
         read_only=True
     )
     
+    # ### YENİ: OKUMA İŞLEMİ İÇİN ID ALANI ###
+    # Bu alan, GET isteklerinde kaynak sanal tablonun ID'sini döndürür.
+    # "Düzenle" butonunun doğru URL'i oluşturması için bu kritiktir.
+    source_virtual_table = serializers.PrimaryKeyRelatedField(
+        read_only=True
+    )
+
     # Yazma (POST/PUT) için, ID ile ilişki kuralım
     source_virtual_table_id = serializers.PrimaryKeyRelatedField(
-        queryset=VirtualTable.objects.all(), # ViewSet'te bu queryset kullanıcıya göre filtrelenecek
+        queryset=VirtualTable.objects.all(),
         source='source_virtual_table',
         write_only=True,
         label="Kaynak Sanal Tablo ID"
@@ -111,8 +118,9 @@ class ReportTemplateSerializer(serializers.ModelSerializer):
         model = ReportTemplate
         fields = [
             'id', 'title', 'description', 'owner',
-            'source_virtual_table_id', # Yazma için
-            'source_virtual_table_display', # Okuma için
+            'source_virtual_table', # ### YENİ: Okuma alanı `fields` listesine eklendi ###
+            'source_virtual_table_id', 
+            'source_virtual_table_display',
             'configuration_json',
             'sharing_status', 'sharing_status_display',
             'created_at', 'updated_at'

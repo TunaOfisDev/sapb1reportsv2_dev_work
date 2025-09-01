@@ -6,17 +6,17 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
-# Modellerimizi, serileştiricilerimizi ve izinlerimizi import ediyoruz
+# Tüm katmanlarımızdan gerekli bileşenleri import ediyoruz
 from ..models import DynamicDBConnection, VirtualTable, SharingStatus, ReportTemplate
 from .serializers import DynamicDBConnectionSerializer, VirtualTableSerializer, ReportTemplateSerializer
 from .permissions import IsOwnerOrPublic
-
-# ### GÜNCELLEME: Servislerimizi artık paket olarak import ediyoruz ###
-from ..services import connection_manager, template_manager
+# ### YENİ: pivot_manager'ı da servislerimize dahil ediyoruz ###
+from ..services import connection_manager, template_manager, pivot_manager
 
 # --- 1. Altyapı Yönetimi: Veri Tabanı Bağlantıları ---
 
 class DynamicDBConnectionViewSet(viewsets.ModelViewSet):
+    # ... (Bu ViewSet'te bir değişiklik yok, aynı kalıyor) ...
     queryset = DynamicDBConnection.objects.all().order_by('title')
     serializer_class = DynamicDBConnectionSerializer
     permission_classes = [IsAdminUser]
@@ -48,6 +48,7 @@ class DynamicDBConnectionViewSet(viewsets.ModelViewSet):
 # --- 2. Kullanıcı Alanı: Sanal Tablolar ---
 
 class VirtualTableViewSet(viewsets.ModelViewSet):
+    # ... (Bu ViewSet'te bir değişiklik yok, aynı kalıyor) ...
     serializer_class = VirtualTableSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrPublic]
 
@@ -71,17 +72,14 @@ class VirtualTableViewSet(viewsets.ModelViewSet):
             return Response({"error": result.get('error')}, status=status.HTTP_400_BAD_REQUEST)
         return Response(result)
 
-# --- 3. Kullanıcı Alanı: Rapor Şablonları (YENİ) ---
+# --- 3. Kullanıcı Alanı: Rapor Şablonları ---
 
 class ReportTemplateViewSet(viewsets.ModelViewSet):
-    """
-    Kullanıcıların kendi rapor şablonlarını yönetmesini ve çalıştırmasını sağlar.
-    """
     serializer_class = ReportTemplateSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrPublic]
 
     def get_queryset(self):
-        """Kullanıcıların sadece kendi sahip oldukları veya herkese açık olan raporları görmesini sağlar."""
+        # ... (bu metod aynı kalıyor) ...
         user = self.request.user
         if user.is_staff or user.is_superuser:
             return ReportTemplate.objects.select_related('owner', 'source_virtual_table').all()
@@ -91,19 +89,25 @@ class ReportTemplateViewSet(viewsets.ModelViewSet):
         ).distinct()
 
     def perform_create(self, serializer):
-        """Yeni bir rapor oluşturulurken, sahibi otomatik olarak o anki kullanıcı olarak ayarlar."""
+        # ... (bu metod aynı kalıyor) ...
         serializer.save(owner=self.request.user)
 
+    # ### GÜNCELLEME: execute aksiyonu artık "akıllı santral" gibi çalışıyor ###
     @action(detail=True, methods=['post'], url_path='execute')
     def execute(self, request, pk=None):
         """
-        Belirli bir rapor şablonunu çalıştırır.
-        Önce kaynak sorgudan ham veriyi çeker, sonra şablonu bu veriye uygular.
+        Bir rapor şablonunu çalıştırır. Raporun türüne göre ('pivot' veya 'detail')
+        doğru servis katmanını çağırır.
         """
         report_template = self.get_object()
-        
-        # Tüm iş mantığını `template_manager` servisimizden çağırıyoruz.
-        result = template_manager.execute_report_template(report_template)
+        config = report_template.configuration_json
+
+        # Rapor türünü kontrol et, eğer pivot ise pivot_manager'ı çağır.
+        if config.get('report_type') == 'pivot':
+            result = pivot_manager.generate_pivot_data(report_template)
+        else:
+            # Değilse, standart detay raporu için template_manager'ı çağır.
+            result = template_manager.execute_report_template(report_template)
         
         if not result.get('success'):
             return Response({"error": result.get('error')}, status=status.HTTP_400_BAD_REQUEST)

@@ -122,3 +122,62 @@
     height: 100%;
     overflow: auto; // Hem dikey hem yatay kaydırma
 }
+
+
+// ### YENİ: Mod Değiştirme Düğmeleri ###
+.modeSwitcher {
+    display: flex;
+    background-color: vars.$background-light;
+    border-radius: vars.$border-radius-md;
+    padding: 4px;
+    border: 1px solid vars.$border-color;
+}
+
+.modeButton {
+    flex: 1;
+    padding: vars.$spacing-2 vars.$spacing-3;
+    border: none;
+    background-color: transparent;
+    border-radius: vars.$border-radius-sm;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    color: vars.$text-secondary;
+
+    &.active {
+        background-color: vars.$background-body;
+        color: vars.$primary-color;
+        box-shadow: vars.$shadow-sm;
+    }
+}
+
+/* ### YENİ: Pivot Modu Yerleşimi ### */
+.pivotLayoutContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr; // Üstte iki, altta bir alan
+    grid-template-rows: auto 1fr;
+    grid-template-areas: 
+        "rows columns"
+        "values values";
+    gap: vars.$spacing-4;
+    height: 100%;
+}
+
+.dropZone {
+    border: 2px dashed vars.$border-color;
+    border-radius: vars.$border-radius-md;
+    padding: vars.$spacing-3;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+
+    &.rows { grid-area: rows; }
+    &.columns { grid-area: columns; }
+    &.values { grid-area: values; }
+}
+
+.dropZoneTitle {
+    font-weight: 600;
+    color: vars.$text-secondary;
+    margin-bottom: vars.$spacing-3;
+}

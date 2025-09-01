@@ -5,12 +5,13 @@ import logging
 import datetime
 from decimal import Decimal
 from contextlib import contextmanager
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, Tuple
 
 from django.conf import settings
 from django.db import connections, OperationalError
 from hdbcli import dbapi as hanadb_api
 
+from ..utils.data_type_mapper import map_db_type_to_general_category
 from ..models import DynamicDBConnection, VirtualTable
 
 logger = logging.getLogger(__name__)
@@ -125,7 +126,10 @@ def execute_virtual_table_query(virtual_table: VirtualTable) -> Dict[str, Any]:
 
 
 def generate_metadata_for_query(connection_model: DynamicDBConnection, sql_query: str) -> Dict[str, Any]:
-    """ Verilen sorgudan, bağlantı türüne göre doğru yöntemle meta veri (kolonlar) üretir. """
+    """
+    Verilen sorgudan, bağlantı türüne göre doğru yöntemle meta veri üretir.
+    ARTIK SADECE KOLON ADLARINI DEĞİL, VERİ TİPLERİNİ DE TESPİT EDİYOR.
+    """
     if not connection_model.is_active:
         return {"success": False, "error": "Kullanılan veri kaynağı pasif durumdadır."}
 
@@ -133,19 +137,39 @@ def generate_metadata_for_query(connection_model: DynamicDBConnection, sql_query
     db_type = connection_model.db_type
 
     try:
+        # Hangi bağlantı türü olursa olsun, cursor.description standardını kullanacağız.
         if db_type == 'sap_hana':
             with _direct_hdb_connection(config) as conn:
                 with conn.cursor() as cursor:
                     cursor.execute(sql_query)
-                    columns = [col[0] for col in cursor.description or []]
+                    description = cursor.description or []
         else:
             with _django_engine_connection(config) as conn:
                 with conn.cursor() as cursor:
-                    cursor.execute(sql_query)
-                    columns = [col[0] for col in cursor.description or []]
+                    # LIMIT 0 optimizasyonu: Sadece kolon bilgisi almak için tüm veriyi çekme.
+                    # Bu, çoğu SQL veritabanında çalışır.
+                    optimized_query = f"SELECT * FROM ({sql_query}) AS subquery LIMIT 0"
+                    try:
+                        cursor.execute(optimized_query)
+                    except Exception:
+                        # Eğer LIMIT 0 çalışmazsa, orijinal sorguyu çalıştır.
+                        cursor.execute(sql_query)
+                    description = cursor.description or []
 
-        metadata = {col: {"visible": True, "label": col} for col in columns}
+        # ### YENİ: Gelişmiş Meta Veri Oluşturma ###
+        metadata = {}
+        for col_desc in description:
+            col_name = col_desc[0]
+            type_code = col_desc[1]
+            
+            metadata[col_name] = {
+                "label": col_name,
+                "visible": True,
+                "dataType": map_db_type_to_general_category(type_code)
+            }
+        
         return {"success": True, "metadata": metadata}
+
     except Exception as e:
         logger.error(f"Sorgu meta verisi alınırken hata (Connection ID: {connection_model.id}): {e}")
         return {"success": False, "error": f"Sorgu meta verisi alınırken hata oluştu: {str(e)}"}

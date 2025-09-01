@@ -58,6 +58,7 @@ const ReportPlayground = () => {
 
     const [reportTitle, setReportTitle] = useState('');
     const [reportColumns, setReportColumns] = useState([]);
+    const [reportType, setReportType] = useState('detail');
 
     const memoizedExecuteQuery = useCallback(executeSourceQuery, []);
     useEffect(() => {
@@ -98,12 +99,13 @@ const ReportPlayground = () => {
     };
 
     const handleSave = async () => {
-        if (!reportTitle) {
-            addNotification('Lütfen rapora bir başlık verin.', 'error');
-            return;
-        }
+        if (!reportTitle) { /* ... */ }
+
+        // ### GÜNCELLEME: Kaydedilen JSON'a rapor türünü ekliyoruz ###
         const configuration_json = {
+            report_type: reportType,
             columns: reportColumns.map(({ key, label, visible }) => ({ key, label, visible })),
+            // pivot_config: reportType === 'pivot' ? { ... } : {} // Pivot state'i eklendiğinde
         };
         const payload = {
             title: reportTitle,
@@ -140,37 +142,79 @@ const ReportPlayground = () => {
     return (
         <div className={styles.pageContainer}>
             <header className={styles.pageHeader}>
-                <Input 
-                    id="report-title"
-                    label="Rapor Başlığı"
-                    value={reportTitle}
-                    onChange={(e) => setReportTitle(e.target.value)}
-                    placeholder="Örn: Aylık Müşteri Risk Analizi"
-                />
+                <Input /* ... */ />
+                
+                {/* ### YENİ: Mod Değiştirme Düğmeleri ### */}
+                <div className={styles.modeSwitcher}>
+                    <button 
+                        className={`${styles.modeButton} ${reportType === 'detail' ? styles.active : ''}`}
+                        onClick={() => setReportType('detail')}
+                    >
+                        Detay Tablo
+                    </button>
+                    <button 
+                        className={`${styles.modeButton} ${reportType === 'pivot' ? styles.active : ''}`}
+                        onClick={() => setReportType('pivot')}
+                    >
+                        Özet (Pivot) Tablo
+                    </button>
+                </div>
+
                 <Button onClick={handleSave} variant="primary" disabled={isSaving}>
                     {isSaving ? 'Kaydediliyor...' : 'Raporu Kaydet'}
                 </Button>
             </header>
-            <DndContext sensors={sensors} onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
+
+            <DndContext /* ... */ >
                 <div className={styles.playgroundContainer}>
-                    <div className={styles.panel}>
-                        <h3 className={styles.panelTitle}>Kolon Yöneticisi</h3>
-                        <div className={styles.panelContent}>
-                            <SortableContext items={reportColumns.map(c => c.id)} strategy={verticalListSortingStrategy}>
-                                <ul className={styles.columnManagerList}>
-                                    {reportColumns.map(col => (
-                                        <SortableColumnItem key={col.id} col={col} onUpdate={handleColumnUpdate} />
-                                    ))}
-                                </ul>
-                            </SortableContext>
-                        </div>
-                    </div>
-                    <div className={styles.panel}>
-                         <h3 className={styles.panelTitle}>Canlı Önizleme</h3>
-                         <div className={styles.tableWrapper}>
-                            <Table data={getPreviewData()} />
-                         </div>
-                    </div>
+                    {/* ### YENİ: Arayüz artık seçilen moda göre değişiyor ### */}
+                    {reportType === 'detail' ? (
+                        <>
+                            {/* SOL PANEL: KOLON YÖNETİCİSİ */}
+                            <div className={styles.panel}>
+                                <h3 className={styles.panelTitle}>Kolon Yöneticisi</h3>
+                                <div className={styles.panelContent}>
+                                    <SortableContext items={reportColumns.map(c => c.id)} strategy={verticalListSortingStrategy}>
+                                        <ul className={styles.columnManagerList}>
+                                            {reportColumns.map(col => (
+                                                <SortableColumnItem key={col.id} col={col} onUpdate={handleColumnUpdate} />
+                                            ))}
+                                        </ul>
+                                    </SortableContext>
+                                </div>
+                            </div>
+                            {/* SAĞ PANEL: CANLI ÖNİZLEME */}
+                            <div className={styles.panel}>
+                                 <h3 className={styles.panelTitle}>Canlı Önizleme</h3>
+                                 <div className={styles.tableWrapper}>
+                                    <Table data={getPreviewData()} />
+                                 </div>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            {/* SOL PANEL: KULLANILABİLİR KOLONLAR */}
+                            <div className={styles.panel}>
+                                <h3 className={styles.panelTitle}>Kullanılabilir Kolonlar</h3>
+                                {/* Burası, pivot için sürükle-bırak kaynak kolonları listesi olacak */}
+                            </div>
+                            {/* SAĞ PANEL: PIVOT ALANLARI */}
+                            <div className={styles.panel}>
+                                <h3 className={styles.panelTitle}>Pivot Alanları</h3>
+                                <div className={`${styles.panelContent} ${styles.pivotLayoutContainer}`}>
+                                    <div className={`${styles.dropZone} ${styles.rows}`}>
+                                        <h4 className={styles.dropZoneTitle}>Satırlar</h4>
+                                    </div>
+                                    <div className={`${styles.dropZone} ${styles.columns}`}>
+                                        <h4 className={styles.dropZoneTitle}>Sütunlar</h4>
+                                    </div>
+                                    <div className={`${styles.dropZone} ${styles.values}`}>
+                                        <h4 className={styles.dropZoneTitle}>Değerler</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
             </DndContext>
         </div>

@@ -1,0 +1,41 @@
+/* frontend/src/components/CustomerSalesV2/css/MultiFilterLine.css */
+
+.multi-filter-line {
+  display: flex;
+  flex-wrap: wrap; /* Küçük ekranlarda alt satıra geçmesini sağlar */
+  gap: 16px; /* Filtreler arası boşluk */
+  padding: 12px 8px; /* Dikey ve yatay boşluk */
+  background-color: #ffffff; /* Temiz bir arka plan */
+  border-bottom: 1px solid #dee2e6; /* Altında hafif bir ayırıcı çizgi */
+  align-items: center;
+}
+
+.filter-item {
+  flex: 1; /* Mevcut alanı eşit olarak paylaş */
+  min-width: 200px; /* Çok küçülmesini engelle */
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-item .ant-select {
+  /* Ant Design Select bileşeninin tamamını hedefler */
+  width: 100%;
+}
+
+.filter-item .ant-select-selector {
+  /* Seçim kutusunun kendisi */
+  border-radius: 5px !important; /* Köşeleri yuvarlat */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); /* Hafif bir derinlik hissi */
+}
+
+.filter-item .ant-select-selection-placeholder,
+.filter-item .ant-select-selection-item {
+  /* Placeholder ve seçilen öğelerin yazı tipi */
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Seçilen etiketlerin (tag) rengini projenin ana rengiyle uyumlu hale getiriyoruz */
+.ant-select-selection-item {
+  background-color: #e7f3ff !important;
+  border-color: #007bff !important;
+}

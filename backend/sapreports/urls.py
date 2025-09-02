@@ -38,6 +38,7 @@ urlpatterns = [
     path('api/v2/bomcostmanager/', include('bomcostmanager.api.urls')),
     path('api/v2/crmblog/', include('crmblog.api.urls')),
     path('api/v2/customercollection/', include('customercollection.api.urls')),
+    path('api/v2/customersales/', include('customersales.api.urls')),
     path('api/v2/deliverydocsum/', include('deliverydocsum.api.urls')),
     path('api/v2/deliverydocsumv2/', include('deliverydocsumv2.api.urls')),
     #path('api/v2/docarchive/', include('docarchive.api.urls')),

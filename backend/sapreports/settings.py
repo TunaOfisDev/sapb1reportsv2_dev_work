@@ -183,6 +183,7 @@ INSTALLED_APPS = [
     'activities',
     'crmblog',
     'customercollection',
+    'customersales',
     'deliverydocsum',
     'deliverydocsumv2',
     'docarchivev2',

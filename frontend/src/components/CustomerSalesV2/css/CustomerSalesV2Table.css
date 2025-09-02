@@ -1,0 +1,121 @@
+/* frontend/src/components/CustomerSales/css/CustomerSalesTable.css*/
+/* Ana tablo stil ayarları */
+.customer-sales__table {
+  width: 100%;
+  border-collapse: separate; /* Hücre çizgilerini ayarlamak için */
+  border-spacing: 0; /* Hücreler arasındaki boşluğu kaldır */
+}
+
+/* Her hücre için çizgileri tanımla */
+.customer-sales__table th,
+.customer-sales__table td {
+  border: 1px solid #ddd; /* Hücre çizgileri için gri renk */
+  padding: 0.1rem; /* Hücre içi boşluk daha da azaltıldı */
+}
+
+/* Satır hover efekti */
+.customer-sales__table tr:hover {
+  background-color: #f2f2f2; /* Açık gri hover renk */
+}
+
+/* Müşteri Kodu sütunu genişliği ve hücre stilini tanımla */
+.customer-sales__thead--header.customer-sales__thead--musteri-kodu,
+.customer-sales__td--musteri-kodu {
+  width: 120px; /* Daha dar bir görünüm için genişlik */
+}
+
+/* Müşteri adı sütunu için taşan metni gösterme ayarları */
+.customer-sales__td--musteri-ad,
+.customer-sales__th--musteri-ad {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px; /* Ayarlanabilir genişlik */
+  display: block;
+}
+
+/* Tablo başlıkları */
+.customer-sales__thead--header {
+  background-color: #007bff; /* Mavi arkaplan */
+  color: white; /* Beyaz yazı rengi */
+  font-weight: bold; /* Kalın yazı tipi */
+  padding: 0.1rem 0.2rem; /* Başlıkları dikey eksende daha da daraltmak için padding ayarı */
+  font-size: 0.95rem; /* Yazı boyutunu küçült */
+  line-height: 0.95rem; /* Satır yüksekliğini ayarla */
+}
+
+/* Sayısal kolonlar için sağa hizalama */
+.customer-sales__thead--numeric-header,
+.customer-sales__td--numeric {
+  text-align: right; /* Sağa hizala */
+}
+
+/* Yıllık Toplam kolonu için kalın font stilini tanımla */
+.customer-sales__td--yillik-toplam {
+  font-weight: bold; /* Yazı tipini kalın yap */
+}
+
+/* Style for the filter box container inside table header */
+.customer-sales__table .filter-container {
+  margin-top: 0.1rem; /* Boşluğu 0.1rem yapmak için */
+  font-size: 0.85rem; /* Font boyutunu biraz küçült */
+  padding: 0.05rem; /* İç boşluğu azalt */
+  border: 0; /* Çerçeveyi kaldır */
+  outline: none; /* Odaklanıldığında dış çizgiyi kaldır */
+  width: 80%; /* Genişliği %80 yap */
+}
+
+/* Style for filter input within the filter box container */
+.customer-sales__table .filter-container .customer-sales__filter-input {
+  font-size: 0.85rem; /* Font boyutunu biraz küçült */
+  padding: 0.05rem; /* İç boşluğu azalt */
+  border: 1px solid #ccc; /* Define border style */
+  width: calc(100% - 10px); /* Adjust the width to be 100% of the container minus 10px */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+  position: absolute; /* Absolute position within the filter-container */
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: auto; /* This will help in centering the input if there's space on the sides */
+}
+
+/* ColumnFilter componentine özgü stil */
+.column-filter-wrapper {
+  display: block; /* veya inline-block, duruma göre */
+  width: 100%; /* İhtiyacınıza göre ayarlayın */
+}
+
+.column-filter-wrapper input {
+  width: 100%; /* input'un tam genişlik almasını sağlar */
+}
+
+.customer-sales-container__header {
+  display: flex;
+  justify-content: space-between; /* İçerikleri sağa ve sola yasla */
+  align-items: center; /* İçerikleri dikey olarak ortala */
+  padding: 1px; /* Biraz padding */
+}
+
+.card-code-count {
+  flex-grow: 1;
+  text-align: left; /* Müşteri sayısını sola hizala */
+}
+
+/* Sayfalama bölümü altındaki mavi çizgiyi kaldır */
+.pagination-wrapper {
+  background-color: #f5f5f5; /* arka planı beyaz yap */
+  padding: 1px;
+  text-align: right; /* Sayfalama butonlarını sağa hizala */
+  border-bottom: none; /* Mavi çizgiyi kaldır */
+}
+
+/* Adjustments for responsive design */
+@media (max-width: 768px) {
+  .customer-sales__table .filter-container .customer-sales__filter-input {
+    position: static; /* Reset position for mobile view */
+    width: 90%; /* Reduce width for mobile to avoid overflow */
+    margin: 0; /* Reset margin for mobile */
+  }
+}
+
+

@@ -1,0 +1,116 @@
+/* frontend/src/components/CustomerSales/css/CustomerSalesContainer.css */
+.customer-sales-container {
+  background-color: #f5f5f5;
+  padding: 5px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+  border: 1px solid #dee2e6;
+}
+
+.customer-sales-container__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom:1px;
+  border-bottom: 2px solid #007bff; /* Tek mavi çizgi başlığın altında */
+  margin-bottom: 2px; /* Çizgi altındaki boşluk */
+}
+
+.customer-sales-container__title {
+  font-size: 24px;
+  margin: 0;
+}
+
+.customer-sales-container__button-wrapper {
+  display: flex;
+  gap: 10px;
+}
+
+.customer-sales-container__button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.customer-sales-container__button:hover {
+  background-color: #0056b3;
+}
+
+.customer-sales__table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.customer-sales__table th,
+.customer-sales__table td {
+  border: 1px solid #ddd;
+  padding: 0.1rem;
+}
+
+.customer-sales__table tr:hover {
+  background-color: #f2f2f2;
+}
+
+.customer-sales__thead--header {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+}
+
+.customer-sales__thead--numeric-header,
+.customer-sales__td--numeric {
+  text-align: right;
+}
+
+.customer-sales__td--yillik-toplam {
+  font-weight: bold;
+}
+
+.customer-sales__table .filter-container {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  padding: 0.2rem;
+  border: 0;
+  outline: none;
+  width: 80%;
+}
+
+.customer-sales__table .filter-container .customer-sales__filter-input {
+  font-size: 0.85rem;
+  padding: 0.2rem;
+  border: 1px solid #ccc;
+  width: calc(100% - 10px);
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+.column-filter-wrapper {
+  display: block;
+  width: 100%;
+}
+
+.column-filter-wrapper input {
+  width: 100%;
+}
+
+
+/* Sayfalama bölümü altındaki mavi çizgiyi kaldır */
+.pagination-wrapper {
+  background-color: #f5f5f5; /* arka planı beyaz yap */
+  padding: 1px;
+  text-align: right; /* Sayfalama butonlarını sağa hizala */
+  border-bottom: none; /* Mavi çizgiyi kaldır */
+}
+
+

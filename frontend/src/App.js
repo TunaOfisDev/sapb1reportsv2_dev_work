@@ -83,6 +83,8 @@ import FormForgeApiModule from './components/formforgeapi';
 // ##### NEXUS CORE ENTEGRASYONU - Adım 1: Modülü import et #####
 import NexusCore from './components/NexusCore';
 
+import CustomerSalesV2 from './components/CustomerSalesV2';
+
 function App() {
   return (
     <>
@@ -130,6 +132,8 @@ function App() {
             <Route path="/newcustomerform" element={<NewCustomerFormMain />} />
             <Route path="/newcustomerform/edit/:id" element={<EditCustomerForm />} />
             <Route path="/systemnotebook" element={<SystemNotebook />} />
+
+            <Route path="/customersalesv2" element={<CustomerSalesV2 />} />
 
             <Route path="/stockcards" element={<StockCardDashboard />} />
 

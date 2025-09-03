@@ -47,7 +47,17 @@ class CustomerSalesDataView(APIView):
         # ... (summary_data ve filter_options kodlarınız burada aynı kalıyor) ...
         summary_data = filtered_queryset.aggregate(
             ToplamNetSPB_EUR=Coalesce(Sum('toplam_net_spb_eur'), Decimal('0.0'), output_field=DecimalField()),
-            # ... diğer aylar
+            Ocak=Coalesce(Sum('ocak'), Decimal('0.0'), output_field=DecimalField()),
+            Şubat=Coalesce(Sum('subat'), Decimal('0.0'), output_field=DecimalField()),
+            Mart=Coalesce(Sum('mart'), Decimal('0.0'), output_field=DecimalField()),
+            Nisan=Coalesce(Sum('nisan'), Decimal('0.0'), output_field=DecimalField()),
+            Mayıs=Coalesce(Sum('mayis'), Decimal('0.0'), output_field=DecimalField()),
+            Haziran=Coalesce(Sum('haziran'), Decimal('0.0'), output_field=DecimalField()),
+            Temmuz=Coalesce(Sum('temmuz'), Decimal('0.0'), output_field=DecimalField()),
+            Ağustos=Coalesce(Sum('agustos'), Decimal('0.0'), output_field=DecimalField()),
+            Eylül=Coalesce(Sum('eylul'), Decimal('0.0'), output_field=DecimalField()),
+            Ekim=Coalesce(Sum('ekim'), Decimal('0.0'), output_field=DecimalField()),
+            Kasım=Coalesce(Sum('kasim'), Decimal('0.0'), output_field=DecimalField()),
             Aralık=Coalesce(Sum('aralik'), Decimal('0.0'), output_field=DecimalField())
         )
         saticilar = sorted(base_queryset.values_list('satici', flat=True).distinct())

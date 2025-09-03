@@ -1,13 +1,31 @@
-// frontend/src/components/CustomerSales/utils/FormatNumber.js
-import '../css/CustomerSalesTable.css';
+// frontend/src/components/CustomerSalesV2/utils/FormatNumber.js
+import PropTypes from 'prop-types';
 
+/**
+ * Sayısal bir değeri, Türkiye'ye uygun para formatında (binlik ayraç, 2 ondalık) string'e çevirir.
+ * Değer null, undefined veya sayı değilse '0,00' döndürür.
+ */
 const FormatNumber = ({ value }) => {
-  const number = parseFloat(value); // parseFloat kullanarak ondalık sayıları da destekleyin
-  const formattedNumber = number.toLocaleString('tr-TR'); // Sayıyı yerel string formatına çevirin
-
-  return <div className="customer-sales__td--numeric">{formattedNumber}</div>;
+  const num = parseFloat(value);
+  if (isNaN(num)) {
+    return '0,00';
+  }
+  return num.toLocaleString('tr-TR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 };
 
-export default FormatNumber;
+FormatNumber.propTypes = {
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+};
 
-  
+export default FormatNumber; // `formatNumber` değil, bileşen olarak export edelim
+export const formatNumber = (value) => { // Hook içinde kullanmak için fonksiyon hali
+    const num = parseFloat(value);
+    if (isNaN(num)) return '0,00';
+    return num.toLocaleString('tr-TR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+};

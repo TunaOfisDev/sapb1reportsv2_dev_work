@@ -1,121 +1,156 @@
-/* frontend/src/components/CustomerSales/css/CustomerSalesTable.css*/
-/* Ana tablo stil ayarları */
+/* frontend/src/components/CustomerSalesV2/css/CustomerSalesV2Table.css */
+
+/* Değişkenler: Renk ve stil yönetimini kolaylaştırır */
+:root {
+  --header-bg-color: #343a40; /* Kurumsal koyu gri */
+  --header-text-color: #ffffff;
+  --border-color: #dee2e6; /* Açık gri çizgi */
+  --row-hover-bg-color: #f8f9fa; /* Çok hafif gri */
+  --total-col-bg-color: #f8f9fa;
+  --footer-bg-color: #e9ecef; /* Toplamlar için belirgin arka plan */
+  --footer-border-color: #adb5bd;
+  --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Tabloyu saran ve yatay kaydırma sağlayan ana konteyner */
+.customersalesv2-table-wrapper {
+  overflow-x: auto;
+  width: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Ana Tablo Stilleri */
 .customer-sales__table {
   width: 100%;
-  border-collapse: separate; /* Hücre çizgilerini ayarlamak için */
-  border-spacing: 0; /* Hücreler arasındaki boşluğu kaldır */
+  border-collapse: collapse; /* Bitişik çizgiler için */
+  font-family: var(--font-family);
+  font-size: 14px; /* Okunabilir temel font boyutu */
 }
 
-/* Her hücre için çizgileri tanımla */
-.customer-sales__table th,
-.customer-sales__table td {
-  border: 1px solid #ddd; /* Hücre çizgileri için gri renk */
-  padding: 0.1rem; /* Hücre içi boşluk daha da azaltıldı */
+/* Tablo Başlıkları (THEAD) */
+.customer-sales__table thead {
+  background-color: var(--header-bg-color);
+  color: var(--header-text-color);
+  position: sticky; /* Kaydırmada başlığı sabitler */
+  top: 0;
+  z-index: 10;
 }
 
-/* Satır hover efekti */
-.customer-sales__table tr:hover {
-  background-color: #f2f2f2; /* Açık gri hover renk */
-}
-
-/* Müşteri Kodu sütunu genişliği ve hücre stilini tanımla */
-.customer-sales__thead--header.customer-sales__thead--musteri-kodu,
-.customer-sales__td--musteri-kodu {
-  width: 120px; /* Daha dar bir görünüm için genişlik */
-}
-
-/* Müşteri adı sütunu için taşan metni gösterme ayarları */
-.customer-sales__td--musteri-ad,
-.customer-sales__th--musteri-ad {
+.customer-sales__table th {
+  padding: 10px 8px;
+  font-weight: 500;
+  text-align: left;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 250px; /* Ayarlanabilir genişlik */
-  display: block;
+  vertical-align: top;
+  border-right: 1px solid #495057; /* Başlıklar arası ayırıcı */
+}
+.customer-sales__table th:last-child {
+  border-right: none;
 }
 
-/* Tablo başlıkları */
-.customer-sales__thead--header {
-  background-color: #007bff; /* Mavi arkaplan */
-  color: white; /* Beyaz yazı rengi */
-  font-weight: bold; /* Kalın yazı tipi */
-  padding: 0.1rem 0.2rem; /* Başlıkları dikey eksende daha da daraltmak için padding ayarı */
-  font-size: 0.95rem; /* Yazı boyutunu küçült */
-  line-height: 0.95rem; /* Satır yüksekliğini ayarla */
+/* Tablo Gövdesi (TBODY) */
+.customer-sales__table td {
+  padding: 8px;
+  border-bottom: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.customer-sales__table td:last-child {
+  border-right: none;
 }
 
-/* Sayısal kolonlar için sağa hizalama */
+.customer-sales__table tbody tr:hover {
+  background-color: var(--row-hover-bg-color);
+}
+
+/* Tablo Alt Bilgisi (TFOOT) - Dinamik Toplamlar */
+.customer-sales__table tfoot {
+    position: sticky; /* Kaydırmada alt toplamları sabitler */
+    bottom: 0;
+    z-index: 10;
+}
+
+.customer-sales__table tfoot td {
+  background-color: var(--footer-bg-color);
+  font-weight: bold;
+  border-top: 2px solid var(--footer-border-color);
+  padding: 10px 8px;
+}
+
+/* Yardımcı Sınıflar */
 .customer-sales__thead--numeric-header,
 .customer-sales__td--numeric {
-  text-align: right; /* Sağa hizala */
+  text-align: right;
+  font-variant-numeric: tabular-nums; /* Sayıların aynı hizada görünmesini sağlar */
 }
 
-/* Yıllık Toplam kolonu için kalın font stilini tanımla */
 .customer-sales__td--yillik-toplam {
-  font-weight: bold; /* Yazı tipini kalın yap */
+  font-weight: bold;
+  background-color: var(--total-col-bg-color);
 }
 
-/* Style for the filter box container inside table header */
-.customer-sales__table .filter-container {
-  margin-top: 0.1rem; /* Boşluğu 0.1rem yapmak için */
-  font-size: 0.85rem; /* Font boyutunu biraz küçült */
-  padding: 0.05rem; /* İç boşluğu azalt */
-  border: 0; /* Çerçeveyi kaldır */
-  outline: none; /* Odaklanıldığında dış çizgiyi kaldır */
-  width: 80%; /* Genişliği %80 yap */
+.customer-sales__th--musteri-ad,
+.customer-sales__td--musteri-ad {
+  min-width: 250px;
+  max-width: 350px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal; /* Uzun isimler için alt satıra geç */
+  word-break: break-word;
+}
+.customer-sales__thead--musteri-kodu{
+  min-width: 120px;
 }
 
-/* Style for filter input within the filter box container */
-.customer-sales__table .filter-container .customer-sales__filter-input {
-  font-size: 0.85rem; /* Font boyutunu biraz küçült */
-  padding: 0.05rem; /* İç boşluğu azalt */
-  border: 1px solid #ccc; /* Define border style */
-  width: calc(100% - 10px); /* Adjust the width to be 100% of the container minus 10px */
-  box-sizing: border-box; /* Include padding and border in the element's total width and height */
-  position: absolute; /* Absolute position within the filter-container */
-  top: 0;
-  left: 0;
-  right: 0;
-  margin: auto; /* This will help in centering the input if there's space on the sides */
+/* Filtre Kutucukları */
+.filter-container {
+  margin-top: 6px;
+  width: 100%;
 }
-
-/* ColumnFilter componentine özgü stil */
-.column-filter-wrapper {
-  display: block; /* veya inline-block, duruma göre */
-  width: 100%; /* İhtiyacınıza göre ayarlayın */
-}
-
 .column-filter-wrapper input {
-  width: 100%; /* input'un tam genişlik almasını sağlar */
+  width: 100%;
+  padding: 4px 6px;
+  font-size: 12px;
+  border: 1px solid #495057;
+  border-radius: 4px;
+  font-weight: normal;
+  background-color: #495057;
+  color: var(--header-text-color);
+  box-sizing: border-box;
+}
+.column-filter-wrapper input::placeholder {
+  color: #adb5bd;
+}
+.column-filter-wrapper input:focus {
+  outline: none;
+  border-color: #007bff;
+  background-color: #5a6268;
 }
 
-.customer-sales-container__header {
-  display: flex;
-  justify-content: space-between; /* İçerikleri sağa ve sola yasla */
-  align-items: center; /* İçerikleri dikey olarak ortala */
-  padding: 1px; /* Biraz padding */
+/* Sıralama İkonları */
+.customer-sales__thead--header span {
+  font-size: 0.8em;
+  margin-left: 4px;
+  opacity: 0.7;
 }
 
-.card-code-count {
-  flex-grow: 1;
-  text-align: left; /* Müşteri sayısını sola hizala */
-}
-
-/* Sayfalama bölümü altındaki mavi çizgiyi kaldır */
-.pagination-wrapper {
-  background-color: #f5f5f5; /* arka planı beyaz yap */
-  padding: 1px;
-  text-align: right; /* Sayfalama butonlarını sağa hizala */
-  border-bottom: none; /* Mavi çizgiyi kaldır */
-}
-
-/* Adjustments for responsive design */
+/* ===== RESPONSIVE TASARIM ===== */
 @media (max-width: 768px) {
-  .customer-sales__table .filter-container .customer-sales__filter-input {
-    position: static; /* Reset position for mobile view */
-    width: 90%; /* Reduce width for mobile to avoid overflow */
-    margin: 0; /* Reset margin for mobile */
+  .customer-sales__table {
+    font-size: 12px; /* Mobil için fontları küçült */
+  }
+
+  .customer-sales__table th,
+  .customer-sales__table td {
+    padding: 6px 4px; /* Mobil için hücre boşluklarını azalt */
+  }
+
+  .customer-sales__th--musteri-ad,
+  .customer-sales__td--musteri-ad {
+    min-width: 180px;
+    max-width: 200px;
   }
 }
-
-

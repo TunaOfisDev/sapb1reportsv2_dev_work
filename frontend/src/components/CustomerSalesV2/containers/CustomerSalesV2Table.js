@@ -1,140 +1,98 @@
-import React, { useMemo } from 'react';
+// frontend/src/components/CustomerSalesV2/containers/CustomerSalesV2Table.js
+import React, { useMemo, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+// DÜZELTME: Kapsamlı yapı için 'useFlexLayout' geri eklendi.
 import { useTable, useSortBy, useFilters, usePagination, useFlexLayout } from 'react-table';
 import { Spin, Alert } from 'antd';
 
-// Varsayılan olarak bu yardımcı bileşenlerin utils klasöründe olduğunu varsayıyoruz.
 import { formatNumber } from '../utils/FormatNumber';
 import { ColumnFilter } from '../utils/ColumnFilter';
-import { DynamicSubTotal } from '../utils/DynamicSubTotal';
-import { Pagination } from '../utils/Pagination';
+import DynamicSubTotal from '../utils/DynamicSubTotal';
+import Pagination from '../utils/Pagination';
 
-// Referans alınan CSS dosyasını V2 için de kullanabiliriz.
 import '../css/CustomerSalesV2Table.css';
 
-/**
- * Müşteri satış verilerini sıralama, filtreleme, sayfalama ve alt toplam
- * özellikleriyle gösteren gelişmiş tablo bileşeni.
- * @param {object} props
- * @param {Array<object>} props.data - Tabloda gösterilecek veri dizisi.
- * @param {object} props.summaryData - Raporun genel toplamlarını içeren nesne.
- * @param {boolean} props.isLoading - Verinin yüklenip yüklenmediğini belirten durum.
- * @param {boolean} props.isError - Veri çekme sırasında hata olup olmadığını belirten durum.
- */
 const CustomerSalesV2Table = ({ data, summaryData, isLoading, isError }) => {
-  // Her kolon için varsayılan filtre bileşenini tanımlıyoruz.
-  const defaultColumn = useMemo(() => ({
-    Filter: ColumnFilter,
-  }), []);
+  const defaultColumn = useMemo(() => ({ Filter: ColumnFilter }), []);
+  const [visibleMonths, setVisibleMonths] = useState([]);
 
-  // Sütunları ve veriyi useMemo ile sarmalayarak performans optimizasyonu yapıyoruz.
-  const columns = useMemo(() => {
-    // Sadece toplamı sıfırdan büyük olan ayları gösterelim (dinamik kolonlar)
+  useEffect(() => {
+    if (!summaryData || Object.keys(summaryData).length === 0) return;
     const months = [
       { key: 'ocak', label: 'Ocak' }, { key: 'subat', label: 'Şubat' }, { key: 'mart', label: 'Mart' },
       { key: 'nisan', label: 'Nisan' }, { key: 'mayis', label: 'Mayıs' }, { key: 'haziran', label: 'Haziran' },
       { key: 'temmuz', label: 'Temmuz' }, { key: 'agustos', label: 'Ağustos' }, { key: 'eylul', label: 'Eylül' },
       { key: 'ekim', label: 'Ekim' }, { key: 'kasim', label: 'Kasım' }, { key: 'aralik', label: 'Aralık' }
     ];
-    
-    // Ant Design'dan gelen summaryData isimleri farklı olabilir, eşleştirme yapıyoruz.
     const monthTotals = {
         ocak: summaryData.Ocak, subat: summaryData.Şubat, mart: summaryData.Mart, nisan: summaryData.Nisan,
         mayis: summaryData.Mayıs, haziran: summaryData.Haziran, temmuz: summaryData.Temmuz, agustos: summaryData.Ağustos,
         eylul: summaryData.Eylül, ekim: summaryData.Ekim, kasim: summaryData.Kasım, aralik: summaryData.Aralık,
     };
-
-    const visibleMonths = months.filter(month => parseFloat(monthTotals[month.key]) > 0);
-
-    return [
-      { Header: 'Satıcı', accessor: 'satici' },
-      { Header: 'Satış Tipi', accessor: 'satis_tipi' },
-      { Header: 'Cari Grup', accessor: 'cari_grup' },
-      { Header: 'Müşteri Kodu', accessor: 'musteri_kodu' },
-      { Header: 'Müşteri Adı', accessor: 'musteri_adi', Footer: () => <div style={{ textAlign: 'right', fontWeight: 'bold' }}>Dinamik Toplam:</div> },
-      {
-        Header: () => <>Toplam Yıllık <br /> {formatNumber(summaryData.ToplamNetSPB_EUR)}</>,
-        accessor: 'toplam_net_spb_eur',
-        Cell: ({ value }) => formatNumber(value),
-        Footer: (info) => <DynamicSubTotal rows={info.rows} columnId="toplam_net_spb_eur" />,
-        disableFilters: true,
-        className: 'td-numeric td-total',
-      },
-      // Sadece verisi olan ayları dinamik olarak ekle
-      ...visibleMonths.map(month => ({
-        Header: () => <>{month.label} <br /> {formatNumber(monthTotals[month.key])}</>,
-        accessor: month.key,
-        Cell: ({ value }) => formatNumber(value),
-        Footer: (info) => <DynamicSubTotal rows={info.rows} columnId={month.key} />,
-        disableFilters: true,
-        className: 'td-numeric',
-      })),
-    ];
+    const filtered = months.filter(month => monthTotals[month.key] && parseFloat(monthTotals[month.key]) > 0);
+    setVisibleMonths(filtered);
   }, [summaryData]);
+
+  const columns = useMemo(() => [
+    { Header: 'Satıcı', accessor: 'satici', Filter: ColumnFilter, width: 150 },
+    { Header: 'Satış Tipi', accessor: 'satis_tipi', Filter: ColumnFilter, width: 120 },
+    { Header: 'Cari Grup', accessor: 'cari_grup', Filter: ColumnFilter, width: 120 },
+    { Header: 'Müşteri Kodu', accessor: 'musteri_kodu', Filter: ColumnFilter, width: 130, headerClassName: 'customer-sales__thead--musteri-kodu' },
+    { 
+      Header: 'Müşteri Adı', accessor: 'musteri_adi', Filter: ColumnFilter, 
+      width: 300, className: 'customer-sales__td--musteri-ad', headerClassName: 'customer-sales__th--musteri-ad',
+      Footer: () => <div style={{ textAlign: 'right', fontWeight: 'bold' }}>Dinamik Toplam:</div> 
+    },
+    {
+      Header: () => <>Toplam Yıllık <br /> {formatNumber(summaryData?.ToplamNetSPB_EUR)}</>,
+      accessor: 'toplam_net_spb_eur', width: 150,
+      Cell: ({ value }) => formatNumber(value),
+      Footer: (info) => <DynamicSubTotal data={info.rows} columnId="toplam_net_spb_eur" />,
+      disableFilters: true,
+      className: 'customer-sales__td--numeric customer-sales__td--yillik-toplam',
+      headerClassName: 'customer-sales__thead--numeric-header',
+    },
+    ...visibleMonths.map(month => ({
+      Header: () => <>{month.label} <br /> {formatNumber(summaryData?.[month.label])}</>,
+      accessor: month.key, width: 120,
+      Cell: ({ value }) => formatNumber(value),
+      Footer: (info) => <DynamicSubTotal data={info.rows} columnId={month.key} />,
+      disableFilters: true,
+      className: 'customer-sales__td--numeric',
+      headerClassName: 'customer-sales__thead--numeric-header',
+    })),
+  ], [summaryData, visibleMonths]);
 
   const tableData = useMemo(() => data, [data]);
 
   const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    prepareRow,
-    page,
-    canPreviousPage,
-    canNextPage,
-    pageCount,
-    gotoPage,
-    nextPage,
-    previousPage,
-    setPageSize,
-    state: { pageIndex, pageSize },
-    footerGroups,
+    getTableProps, getTableBodyProps, headerGroups, prepareRow, page,
+    canPreviousPage, canNextPage, pageCount, gotoPage, nextPage, previousPage,
+    setPageSize, state: { pageIndex, pageSize }, footerGroups,
   } = useTable(
-    {
-      columns,
-      data: tableData,
-      defaultColumn,
-      initialState: { pageIndex: 0, pageSize: 25, sortBy: [{ id: 'toplam_net_spb_eur', desc: true }] },
-    },
-    useFilters,
-    useSortBy,
-    usePagination,
-    useFlexLayout // Sütun genişliklerini daha iyi yönetmek için
+    { columns, data: tableData, defaultColumn, initialState: { pageIndex: 0, pageSize: 20, sortBy: [{ id: 'toplam_net_spb_eur', desc: true }] } },
+    useFilters, useSortBy, usePagination,
+    useFlexLayout // DÜZELTME: Kapsamlı yapı için hook geri eklendi.
   );
 
-  if (isLoading) {
-    return <div style={{ textAlign: 'center', padding: '50px' }}><Spin size="large" tip="Veriler Yükleniyor..." /></div>;
-  }
-
-  if (isError) {
-    return <Alert message="Veri Yüklenemedi" description="Rapor verileri çekilirken bir hata oluştu." type="error" showIcon />;
-  }
+  if (isLoading) return <div style={{ textAlign: 'center', padding: ' ৫০px' }}><Spin size="large" tip="Veriler Yükleniyor..." /></div>;
+  if (isError) return <Alert message="Veri Yüklenemedi" description="Rapor verileri çekilirken bir hata oluştu." type="error" showIcon />;
 
   return (
     <>
       <div className="pagination-wrapper">
-        <Pagination
-          pageCount={pageCount}
-          pageIndex={pageIndex}
-          gotoPage={gotoPage}
-          nextPage={nextPage}
-          previousPage={previousPage}
-          setPageSize={setPageSize}
-          pageSize={pageSize}
-          canNextPage={canNextPage}
-          canPreviousPage={canPreviousPage}
-        />
+        <Pagination {...{ pageCount, pageIndex, gotoPage, nextPage, previousPage, setPageSize, pageSize, canNextPage, canPreviousPage }} />
       </div>
       <div className="customersalesv2-table-wrapper">
-        <table {...getTableProps()} className="customersalesv2-table">
+        <table {...getTableProps()} className="customer-sales__table">
           <thead>
             {headerGroups.map(headerGroup => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map(column => (
-                  <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                  <th {...column.getHeaderProps(column.getSortByToggleProps())} className={`customer-sales__thead--header ${column.headerClassName || ''}`}>
                     {column.render('Header')}
                     <span>{column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}</span>
-                    <div>{column.canFilter ? column.render('Filter') : null}</div>
+                    <div className="filter-container">{column.canFilter ? column.render('Filter') : null}</div>
                   </th>
                 ))}
               </tr>
@@ -158,7 +116,7 @@ const CustomerSalesV2Table = ({ data, summaryData, isLoading, isError }) => {
             {footerGroups.map(group => (
               <tr {...group.getFooterGroupProps()}>
                 {group.headers.map(column => (
-                  <td {...column.getFooterProps()} className="td-numeric td-total">
+                  <td {...column.getFooterProps()} className="customer-sales__td--numeric customer-sales__td--yillik-toplam">
                     {column.render('Footer')}
                   </td>
                 ))}

@@ -1,156 +1,118 @@
 /* frontend/src/components/CustomerSalesV2/css/CustomerSalesV2Table.css */
 
-/* Değişkenler: Renk ve stil yönetimini kolaylaştırır */
+/* Değişkenler: Canlı ve Kurumsal Renk Paleti */
 :root {
-  --header-bg-color: #343a40; /* Kurumsal koyu gri */
+  --sap-blue: #0054a3;
+  --sap-yellow-bright: #ffc107; /* Canlı, parlak sarı */
+  --sap-yellow-darker: #e0a800; /* Çerçeve ve metin için */
   --header-text-color: #ffffff;
-  --border-color: #dee2e6; /* Açık gri çizgi */
-  --row-hover-bg-color: #f8f9fa; /* Çok hafif gri */
-  --total-col-bg-color: #f8f9fa;
-  --footer-bg-color: #e9ecef; /* Toplamlar için belirgin arka plan */
-  --footer-border-color: #adb5bd;
-  --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --body-text-color: #212529; /* Ana metin rengi */
+  --border-color: #dee2e6;
+  --row-even-bg-color: #f8f9fa; /* Zebra deseni için */
+  --footer-bg-color: #e9ecef;
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-/* Tabloyu saran ve yatay kaydırma sağlayan ana konteyner */
+/* Tabloyu saran ana konteyner */
 .customersalesv2-table-wrapper {
   overflow-x: auto;
   width: 100%;
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07); /* Daha belirgin bir gölge */
 }
 
 /* Ana Tablo Stilleri */
 .customer-sales__table {
   width: 100%;
-  border-collapse: collapse; /* Bitişik çizgiler için */
+  border-collapse: collapse;
   font-family: var(--font-family);
-  font-size: 14px; /* Okunabilir temel font boyutu */
+  font-size: 14px;
+  color: var(--body-text-color);
 }
 
 /* Tablo Başlıkları (THEAD) */
 .customer-sales__table thead {
-  background-color: var(--header-bg-color);
+  background-color: var(--sap-blue);
   color: var(--header-text-color);
-  position: sticky; /* Kaydırmada başlığı sabitler */
+  position: sticky;
   top: 0;
   z-index: 10;
 }
 
 .customer-sales__table th {
-  padding: 10px 8px;
-  font-weight: 500;
+  padding: 12px 10px;
+  font-weight: 600;
   text-align: left;
   white-space: nowrap;
   vertical-align: top;
-  border-right: 1px solid #495057; /* Başlıklar arası ayırıcı */
-}
-.customer-sales__table th:last-child {
-  border-right: none;
 }
 
-/* Tablo Gövdesi (TBODY) */
+/* Tablo Gövdesi (TBODY) - Zebra Deseni ve SAP Sarısı Hover */
 .customer-sales__table td {
-  padding: 8px;
+  padding: 10px;
   border-bottom: 1px solid var(--border-color);
-  border-right: 1px solid var(--border-color);
   white-space: nowrap;
   vertical-align: middle;
 }
-.customer-sales__table td:last-child {
-  border-right: none;
+
+.customer-sales__table tbody tr:nth-child(even) {
+  background-color: var(--row-even-bg-color); /* Zebra deseni */
 }
 
 .customer-sales__table tbody tr:hover {
-  background-color: var(--row-hover-bg-color);
+  background-color: #fff3cd; /* SAP Sarısının daha yumuşak bir tonu */
+  color: #000;
 }
 
-/* Tablo Alt Bilgisi (TFOOT) - Dinamik Toplamlar */
+/* Tablo Alt Bilgisi (TFOOT) */
 .customer-sales__table tfoot {
-    position: sticky; /* Kaydırmada alt toplamları sabitler */
-    bottom: 0;
-    z-index: 10;
+  position: sticky; bottom: 0; z-index: 10;
 }
-
 .customer-sales__table tfoot td {
   background-color: var(--footer-bg-color);
   font-weight: bold;
-  border-top: 2px solid var(--footer-border-color);
-  padding: 10px 8px;
+  border-top: 2px solid #adb5bd;
+  padding: 12px 10px;
 }
 
-/* Yardımcı Sınıflar */
-.customer-sales__thead--numeric-header,
-.customer-sales__td--numeric {
-  text-align: right;
-  font-variant-numeric: tabular-nums; /* Sayıların aynı hizada görünmesini sağlar */
-}
-
-.customer-sales__td--yillik-toplam {
-  font-weight: bold;
-  background-color: var(--total-col-bg-color);
-}
-
-.customer-sales__th--musteri-ad,
-.customer-sales__td--musteri-ad {
-  min-width: 250px;
-  max-width: 350px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: normal; /* Uzun isimler için alt satıra geç */
-  word-break: break-word;
-}
-.customer-sales__thead--musteri-kodu{
-  min-width: 120px;
-}
-
-/* Filtre Kutucukları */
+/* FİLTRE KUTUCUKLARI - CANLANDIRILMIŞ HALİ */
 .filter-container {
-  margin-top: 6px;
+  margin-top: 8px;
   width: 100%;
 }
 .column-filter-wrapper input {
   width: 100%;
-  padding: 4px 6px;
-  font-size: 12px;
-  border: 1px solid #495057;
+  padding: 6px 10px;
+  font-size: 13px;
   border-radius: 4px;
-  font-weight: normal;
-  background-color: #495057;
-  color: var(--header-text-color);
+  font-weight: 400;
   box-sizing: border-box;
+  
+  /* CANLI SAP SARISI TEMA */
+  background-color: var(--sap-yellow-bright);
+  color: var(--sap-dark-text);
+  border: 1px solid var(--sap-yellow-darker);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); /* İçine gömülü hissi */
+  transition: all 0.2s ease-in-out;
 }
 .column-filter-wrapper input::placeholder {
-  color: #adb5bd;
+  color: #664d03;
+  opacity: 0.8;
 }
 .column-filter-wrapper input:focus {
   outline: none;
-  border-color: #007bff;
-  background-color: #5a6268;
+  border-color: var(--sap-blue);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1), 0 0 0 3px rgba(0, 84, 163, 0.25); /* Hem iç hem dış gölge */
 }
 
-/* Sıralama İkonları */
-.customer-sales__thead--header span {
-  font-size: 0.8em;
-  margin-left: 4px;
-  opacity: 0.7;
-}
+/* Diğer Stiller */
+.customer-sales__thead--numeric-header,
+.customer-sales__td--numeric { text-align: right; font-variant-numeric: tabular-nums; }
+.customer-sales__td--yillik-toplam { font-weight: bold; }
 
-/* ===== RESPONSIVE TASARIM ===== */
+/* ... (diğer yardımcı sınıflar ve responsive kodlar aynı kalabilir) ... */
 @media (max-width: 768px) {
-  .customer-sales__table {
-    font-size: 12px; /* Mobil için fontları küçült */
-  }
-
-  .customer-sales__table th,
-  .customer-sales__table td {
-    padding: 6px 4px; /* Mobil için hücre boşluklarını azalt */
-  }
-
-  .customer-sales__th--musteri-ad,
-  .customer-sales__td--musteri-ad {
-    min-width: 180px;
-    max-width: 200px;
-  }
+  .customer-sales__table { font-size: 12px; }
+  .customer-sales__table th, .customer-sales__table td { padding: 8px 6px; }
 }

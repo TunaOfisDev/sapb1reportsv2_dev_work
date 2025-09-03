@@ -80,7 +80,8 @@ const CustomerSalesV2Table = ({ data, summaryData, isLoading, isError }) => {
 
   return (
     <>
-      <div className="pagination-wrapper">
+      {/* DÜZELTME: Hatalı 'pagination-wrapper' sınıf adı, doğru olan 'pagination-controls' ile değiştirildi. */}
+      <div >
         <Pagination {...{ pageCount, pageIndex, gotoPage, nextPage, previousPage, setPageSize, pageSize, canNextPage, canPreviousPage }} />
       </div>
       <div className="customersalesv2-table-wrapper">

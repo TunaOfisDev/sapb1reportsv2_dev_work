@@ -1,39 +1,31 @@
+// frontend/src/components/CustomerSalesV2/utils/MultiFilterLine.js
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Select } from 'antd';
+import { Select, Input } from 'antd'; // Input bileşenini antd'den import ediyoruz
+import { SearchOutlined } from '@ant-design/icons'; // Arama ikonu
 import '../css/MultiFilterLine.css';
 
-/**
- * Rapor için çoklu seçim yapılabilen filtre satırını oluşturan bileşen.
- * Ant Design'ın Select bileşenini kullanarak arama ve çoklu seçim özellikleri sunar.
- *
- * @param {object} props - Bileşenin propları.
- * @param {object} props.filterOptions - Filtre kutularını dolduracak seçenekleri içeren nesne.
- * @param {string[]} props.filterOptions.saticilar - Satıcı listesi.
- * @param {string[]} props.filterOptions.satisTipleri - Satış Tipi listesi.
- * @param {string[]} props.filterOptions.cariGruplar - Cari Grup listesi.
- * @param {object} props.filters - Anlık olarak seçili olan filtre değerlerini tutan nesne.
- * @param {function} props.onFilterChange - Bir filtrede değişiklik olduğunda çağrılacak olan ana fonksiyon.
- */
-const MultiFilterLine = ({ filterOptions, filters, onFilterChange }) => {
-  // Bir filtre değiştiğinde, ana bileşendeki state'i güncellemek için bu fonksiyon çağrılır.
+const MultiFilterLine = ({ filterOptions, filters, onFilterChange, globalFilter, onGlobalFilterChange }) => {
   const handleFilterChange = (filterKey, selectedValues) => {
     onFilterChange(filterKey, selectedValues);
   };
 
-  /**
-   * Ant Design Select bileşeni için seçenek listesini formatlar.
-   * @param {string[]} optionsArray - String dizisi olarak gelen seçenekler.
-   * @returns {object[]} Ant Design'e uygun formatta { label, value } nesnelerinden oluşan dizi.
-   */
   const formatOptions = (optionsArray = []) =>
-    optionsArray.map((option) => ({
-      label: option,
-      value: option,
-    }));
+    optionsArray.map((option) => ({ label: option, value: option }));
 
   return (
     <div className="multi-filter-line">
+      {/* YENİ: Genel Arama Kutusu */}
+      <div className="filter-item global-search">
+        <Input
+          placeholder="Tüm Metinlerde Ara (Müşteri Adı, Kodu...)"
+          prefix={<SearchOutlined />}
+          value={globalFilter}
+          onChange={(e) => onGlobalFilterChange(e.target.value)}
+          allowClear
+        />
+      </div>
+
       {/* Satıcı Filtresi */}
       <div className="filter-item">
         <Select
@@ -44,7 +36,7 @@ const MultiFilterLine = ({ filterOptions, filters, onFilterChange }) => {
           value={filters.satici || []}
           onChange={(values) => handleFilterChange('satici', values)}
           options={formatOptions(filterOptions.saticilar)}
-          maxTagCount="responsive" // Çok fazla seçim olduğunda etiketleri gizler
+          maxTagCount="responsive"
         />
       </div>
 
@@ -79,8 +71,7 @@ const MultiFilterLine = ({ filterOptions, filters, onFilterChange }) => {
   );
 };
 
-// Bileşenin alması gereken propların tiplerini ve zorunluluklarını belirliyoruz.
-// Bu, kodun daha güvenli ve anlaşılır olmasını sağlar.
+// Yeni propları PropTypes'a ekliyoruz
 MultiFilterLine.propTypes = {
   filterOptions: PropTypes.shape({
     saticilar: PropTypes.arrayOf(PropTypes.string),
@@ -89,6 +80,8 @@ MultiFilterLine.propTypes = {
   }).isRequired,
   filters: PropTypes.object.isRequired,
   onFilterChange: PropTypes.func.isRequired,
+  globalFilter: PropTypes.string.isRequired,
+  onGlobalFilterChange: PropTypes.func.isRequired,
 };
 
 export default MultiFilterLine;

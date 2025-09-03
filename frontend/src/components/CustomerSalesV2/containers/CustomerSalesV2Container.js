@@ -10,24 +10,21 @@ import { exportToXLSX } from '../utils/XLSXExport';
 
 import '../css/CustomerSalesV2Container.css';
 
-/**
- * Müşteri Satış Özeti V2 raporunun ana konteyner bileşeni.
- * Tüm alt bileşenleri (filtreler, tablo, butonlar) yönetir ve veri akışını organize eder.
- */
 const CustomerSalesV2Container = () => {
   // 1. STATE YÖNETİMİ
-  // Kullanıcının arayüzde seçtiği filtreleri tutan state
   const [filters, setFilters] = useState({
     satici: [],
     satis_tipi: [],
     cari_grup: [],
   });
 
+  // DÜZELTME: EKSİK OLAN STATE TANIMI BURAYA EKLENDİ
+  const [globalFilter, setGlobalFilter] = useState('');
+
   // 2. VERİ ÇEKME (CUSTOM HOOK)
-  // useCustomerSalesV2 hook'u, API ile olan tüm iletişimi ve state'i yönetir.
   const {
     reportData,
-    summaryData: grandTotalSummary, // Hook'tan gelen genel toplamı isimlendiriyoruz
+    summaryData: grandTotalSummary,
     filterOptions,
     lastUpdated,
     isLoadingReport,
@@ -36,33 +33,52 @@ const CustomerSalesV2Container = () => {
     isSyncing,
   } = useCustomerSalesV2();
 
+  // YENİ: Genel arama state'ini güncelleyen fonksiyon
+  const handleGlobalFilterChange = useCallback((value) => {
+    setGlobalFilter(value || ''); // Değer null veya undefined ise boş string ata
+  }, []);
+
+  // Filtre bileşeninden gelen değişikliği state'e yansıtan callback fonksiyonu
+  const handleFilterChange = useCallback((filterKey, values) => {
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      [filterKey]: values,
+    }));
+  }, []);
+
   // 3. FİLTRELEME MANTIĞI (CLIENT-SIDE)
-  // Filtreler değiştiğinde veya ana veri geldiğinde, bu memoized fonksiyon çalışır
-  // ve veriyi frontend tarafında filtreler.
   const filteredData = useMemo(() => {
-    // Eğer hiç filtre seçilmemişse, tüm veriyi döndür
-    const hasActiveFilters = Object.values(filters).some(f => f.length > 0);
-    if (!hasActiveFilters) {
-      return reportData;
+    let data = reportData;
+
+    const hasActiveSelectFilters = Object.values(filters).some(f => f.length > 0);
+    if (hasActiveSelectFilters) {
+      data = data.filter(row => {
+        const saticiMatch = filters.satici.length === 0 || filters.satici.includes(row.satici);
+        const satisTipiMatch = filters.satis_tipi.length === 0 || filters.satis_tipi.includes(row.satis_tipi);
+        const cariGrupMatch = filters.cari_grup.length === 0 || filters.cari_grup.includes(row.cari_grup);
+        return saticiMatch && satisTipiMatch && cariGrupMatch;
+      });
     }
 
-    return reportData.filter(row => {
-      const saticiMatch = filters.satici.length === 0 || filters.satici.includes(row.satici);
-      const satisTipiMatch = filters.satis_tipi.length === 0 || filters.satis_tipi.includes(row.satis_tipi);
-      const cariGrupMatch = filters.cari_grup.length === 0 || filters.cari_grup.includes(row.cari_grup);
-      return saticiMatch && satisTipiMatch && cariGrupMatch;
-    });
-  }, [reportData, filters]);
+    if (globalFilter) {
+      const lowerCaseFilter = globalFilter.toLowerCase();
+      data = data.filter(row => {
+        return (
+          row.musteri_adi.toLowerCase().includes(lowerCaseFilter) ||
+          row.musteri_kodu.toLowerCase().includes(lowerCaseFilter)
+        );
+      });
+    }
 
-  // Filtreler değiştiğinde, sadece filtrelenmiş veriye ait alt toplamları hesapla
+    return data;
+  }, [reportData, filters, globalFilter]);
+
   const dynamicSummary = useMemo(() => {
-    // Eğer filtre yoksa, hook'tan gelen genel toplamı kullan
-    const hasActiveFilters = Object.values(filters).some(f => f.length > 0);
+    const hasActiveFilters = Object.values(filters).some(f => f.length > 0) || globalFilter;
     if (!hasActiveFilters) {
         return grandTotalSummary;
     }
     
-    // Filtre varsa, filtrelenmiş veriye göre yeniden hesapla
     const initialSummary = {
         ToplamNetSPB_EUR: 0, Ocak: 0, Şubat: 0, Mart: 0, Nisan: 0, Mayıs: 0, Haziran: 0,
         Temmuz: 0, Ağustos: 0, Eylül: 0, Ekim: 0, Kasım: 0, Aralık: 0
@@ -73,41 +89,32 @@ const CustomerSalesV2Container = () => {
         acc.Ocak += parseFloat(row.ocak || 0);
         acc.Şubat += parseFloat(row.subat || 0);
         acc.Mart += parseFloat(row.mart || 0);
-        // ... diğer aylar
+        acc.Nisan += parseFloat(row.nisan || 0);
+        acc.Mayıs += parseFloat(row.mayis || 0);
+        acc.Haziran += parseFloat(row.haziran || 0);
+        acc.Temmuz += parseFloat(row.temmuz || 0);
+        acc.Ağustos += parseFloat(row.agustos || 0);
+        acc.Eylül += parseFloat(row.eylul || 0);
+        acc.Ekim += parseFloat(row.ekim || 0);
+        acc.Kasım += parseFloat(row.kasim || 0);
         acc.Aralık += parseFloat(row.aralik || 0);
+
         return acc;
     }, initialSummary);
 
-  }, [filteredData, grandTotalSummary, filters]);
+  }, [filteredData, grandTotalSummary, filters, globalFilter]);
 
-
-  // Filtre bileşeninden gelen değişikliği state'e yansıtan callback fonksiyonu
-  const handleFilterChange = useCallback((filterKey, values) => {
-    setFilters(prevFilters => ({
-      ...prevFilters,
-      [filterKey]: values,
-    }));
-  }, []);
-  
-  // Excel'e aktarma fonksiyonu
   const handleExport = () => {
       if (filteredData.length > 0) {
-        // 1. Anlık tarih ve saat bilgisini alıp formatlıyoruz.
         const now = new Date();
         const timestamp = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}-${now.getMinutes().toString().padStart(2, '0')}`;
-        
-        // 2. Dinamik ve uzantılı dosya adını oluşturuyoruz.
         const fileName = `MusteriSatisOzeti_${timestamp}.xlsx`;
-  
-        // 3. Dışa aktarma fonksiyonunu yeni dosya adıyla çağırıyoruz.
         exportToXLSX(filteredData, fileName, 'Müşteri Satış Özeti');
-        
         message.success('Veriler başarıyla Excel\'e aktarıldı!');
       } else {
         message.warning('Dışa aktarılacak veri bulunamadı.');
       }
     };
-
 
   return (
     <div className="customer-sales-container">
@@ -140,6 +147,8 @@ const CustomerSalesV2Container = () => {
         filterOptions={filterOptions}
         filters={filters}
         onFilterChange={handleFilterChange}
+        globalFilter={globalFilter}
+        onGlobalFilterChange={handleGlobalFilterChange}
       />
       
       <CustomerSalesV2Table

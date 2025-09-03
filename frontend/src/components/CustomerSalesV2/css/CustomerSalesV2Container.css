@@ -14,7 +14,7 @@
   align-items: center;
   justify-content: space-between;
   padding-bottom:1px;
-  border-bottom: 2px solid #007bff; /* Tek mavi çizgi başlığın altında */
+  border-bottom: 2px solid #2C4E6C; /* Tek mavi çizgi başlığın altında */
   margin-bottom: 2px; /* Çizgi altındaki boşluk */
 }
 
@@ -29,7 +29,7 @@
 }
 
 .customer-sales-container__button {
-  background-color: #007bff;
+  background-color: #2C4E6C;
   color: white;
   border: none;
   padding: 5px 10px;
@@ -59,7 +59,7 @@
 }
 
 .customer-sales__thead--header {
-  background-color: #007bff;
+  background-color: #2C4E6C;
   color: white;
   font-weight: bold;
 }
@@ -109,7 +109,7 @@
 .pagination-wrapper {
   background-color: #f5f5f5; /* arka planı beyaz yap */
   padding: 1px;
-  text-align: right; /* Sayfalama butonlarını sağa hizala */
+  text-align: left; /* Sayfalama butonlarını sağa hizala */
   border-bottom: none; /* Mavi çizgiyi kaldır */
 }
 

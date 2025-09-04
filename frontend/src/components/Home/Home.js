@@ -96,7 +96,8 @@ function Home() {
               <h2 className="Home-section-title">Satis Siparişler</h2>
               <Link to="/salesbudgetv2" className="Home-link-button">Satis Butce (TL) 2025</Link>
               <Link to="/salesbudgeteur" className="Home-link-button">Satis Butce (Eur) 2025</Link>
-              <Link to="/customersales" className="Home-link-button">Satis Siparis Aylik Ozet</Link>
+              <Link to="/customersales" className="Home-link-button">Satis Siparis Aylık Ozet</Link>
+              <Link to="/customersalesv2" className="Home-link-button">Satis Tipi Bazında Aylık (Eur)</Link>
               <Link to="/openorderdocsum" className="Home-link-button">Acik Siparis Ozeti Nakliye Montaj</Link>
             </div>
             

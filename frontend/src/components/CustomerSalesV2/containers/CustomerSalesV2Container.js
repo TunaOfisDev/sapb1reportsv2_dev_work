@@ -119,7 +119,7 @@ const CustomerSalesV2Container = () => {
   return (
     <div className="customer-sales-container">
       <div className="customer-sales-container__header">
-        <h1 className="customer-sales-container__title">Müşteri Bazlı Satış Özeti (EUR)</h1>
+        <h1 className="customer-sales-container__title">Müşteri Satış Sipariş Özeti(EUR)-Satış Tipi Bazında</h1>
         <div className="customer-sales-container__button-wrapper">
           <Tag color="blue" style={{ display: 'flex', alignItems: 'center' }}>
             Son Güncelleme: {isLoadingReport ? '...' : lastUpdated}

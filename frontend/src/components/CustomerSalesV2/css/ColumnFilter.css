@@ -1,0 +1,19 @@
+/* frontend/src/components/CustomerSalesV2/css/ColumnFilter.css */
+.customer-sales-columnfilter {
+  display: flex;
+  align-items: center;
+}
+
+.customer-sales-columnfilter__input {
+  width: 90%; /* Genişliği %100 yap */
+  font-size: 0.85rem; /* Font büyüklüğünü ayarla */
+  padding: 0.2rem; /* Padding artır */
+  margin: 0; /* Eğer gerekliyse */
+  border: 0.1; /* Çerçeve kaldır */
+  outline: none; /* Odaklanıldığında dış çizgiyi kaldır */
+  background-color: #f7d67def; /* SAP input rengi */
+}
+
+.customer-sales-columnfilter-container {
+  margin-right: 20%; /* Filtre ve sıralama simgesini sağa iter */
+}

@@ -1,74 +1,119 @@
-/* frontend/src/components/CustomerSalesV2/css/CustomerSalesV2Table.css */
-
-/* Değişkenler: Canlı ve Kurumsal Renk Paleti */
+/* Değişkenler */
 :root {
   --sap-blue: #0054a3;
-  --sap-yellow-bright: #ffc107; /* Canlı, parlak sarı */
-  --sap-yellow-darker: #e0a800; /* Çerçeve ve metin için */
+  --sap-yellow-bright: #ffc107;
+  --sap-yellow-darker: #e0a800;
   --header-text-color: #ffffff;
-  --body-text-color: #212529; /* Ana metin rengi */
+  --body-text-color: #212529;
   --border-color: #dee2e6;
-  --row-even-bg-color: #f8f9fa; /* Zebra deseni için */
+  --row-even-bg-color: #f8f9fa;
   --footer-bg-color: #e9ecef;
   --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-/* Tabloyu saran ana konteyner */
+/* Tabloyu Saran Ana Konteyner */
 .customersalesv2-table-wrapper {
-  overflow-x: auto;
+  overflow: auto;
+  max-height: 75vh;
   width: 100%;
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07); /* Daha belirgin bir gölge */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
 }
 
 /* Ana Tablo Stilleri */
 .customer-sales__table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
   font-family: var(--font-family);
   font-size: 14px;
   color: var(--body-text-color);
 }
 
-/* Tablo Başlıkları (THEAD) */
+/* THEAD Stili */
 .customer-sales__table thead {
-  background-color: var(--sap-blue);
-  color: var(--header-text-color);
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
-.customer-sales__table th {
+/* Tüm başlık hücreleri */
+.customer-sales__table thead th {
+  background-color: var(--sap-blue) !important;
+  color: var(--header-text-color) !important;
   padding: 12px 10px;
   font-weight: 600;
   text-align: left;
   white-space: nowrap;
   vertical-align: top;
+  background-clip: padding-box;
 }
 
-/* Tablo Gövdesi (TBODY) - Zebra Deseni ve SAP Sarısı Hover */
+/* Sticky başlık hücreleri */
+.customer-sales__table thead th.sticky-col {
+  position: sticky;
+  z-index: 12;
+  background-color: var(--sap-blue) !important;
+  background-clip: padding-box;
+}
+
+/* Filtre kutuları */
+.customer-sales__table thead .filter-container input {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--header-text-color);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+/* Chrome autofill sarısı override */
+.customer-sales__table thead .filter-container input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px rgba(255,255,255,0.12) inset !important;
+  -webkit-text-fill-color: var(--header-text-color) !important;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* TBODY */
 .customer-sales__table td {
   padding: 10px;
   border-bottom: 1px solid var(--border-color);
   white-space: nowrap;
   vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .customer-sales__table tbody tr:nth-child(even) {
-  background-color: var(--row-even-bg-color); /* Zebra deseni */
+  background-color: var(--row-even-bg-color);
 }
 
 .customer-sales__table tbody tr:hover {
-  background-color: #fff3cd; /* SAP Sarısının daha yumuşak bir tonu */
+  background-color: #fff3cd;
   color: #000;
 }
 
-/* Tablo Alt Bilgisi (TFOOT) */
-.customer-sales__table tfoot {
-  position: sticky; bottom: 0; z-index: 10;
+/* Sticky kolonlar (gövde) */
+.customer-sales__table tbody tr .sticky-col {
+  background-color: #ffffff;
+  position: sticky;
+  z-index: 2;
+  background-clip: padding-box;
 }
+
+.customer-sales__table tbody tr:nth-child(even) .sticky-col {
+  background-color: var(--row-even-bg-color);
+}
+
+.customer-sales__table tbody tr:hover .sticky-col {
+  background-color: #fff3cd;
+}
+
+/* TFOOT */
+.customer-sales__table tfoot {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
 .customer-sales__table tfoot td {
   background-color: var(--footer-bg-color);
   font-weight: bold;
@@ -76,43 +121,76 @@
   padding: 12px 10px;
 }
 
-/* FİLTRE KUTUCUKLARI - CANLANDIRILMIŞ HALİ */
-.filter-container {
-  margin-top: 8px;
-  width: 100%;
-}
-.column-filter-wrapper input {
-  width: 100%;
-  padding: 6px 10px;
-  font-size: 13px;
-  border-radius: 4px;
-  font-weight: 400;
-  box-sizing: border-box;
-  
-  /* CANLI SAP SARISI TEMA */
-  background-color: var(--sap-yellow-bright);
-  color: var(--sap-dark-text);
-  border: 1px solid var(--sap-yellow-darker);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); /* İçine gömülü hissi */
-  transition: all 0.2s ease-in-out;
-}
-.column-filter-wrapper input::placeholder {
-  color: #664d03;
-  opacity: 0.8;
-}
-.column-filter-wrapper input:focus {
-  outline: none;
-  border-color: var(--sap-blue);
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1), 0 0 0 3px rgba(0, 84, 163, 0.25); /* Hem iç hem dış gölge */
+.customer-sales__table tfoot .sticky-col {
+  background-color: var(--footer-bg-color) !important;
+  z-index: 4;
 }
 
-/* Diğer Stiller */
+/* Sayısal hücreler */
 .customer-sales__thead--numeric-header,
-.customer-sales__td--numeric { text-align: right; font-variant-numeric: tabular-nums; }
-.customer-sales__td--yillik-toplam { font-weight: bold; }
+.customer-sales__td--numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
 
-/* ... (diğer yardımcı sınıflar ve responsive kodlar aynı kalabilir) ... */
+.customer-sales__td--yillik-toplam {
+  font-weight: bold;
+}
+
+/* Yapışkan Kolonlar */
+.customer-sales__table .sticky-col {
+  position: -webkit-sticky;
+  position: sticky;
+  z-index: 2;
+}
+
+.customer-sales__table .first-col { left: 0; box-shadow: 1px 0 0 rgba(0,0,0,0.08); }
+.customer-sales__table .second-col { left: 150px; box-shadow: 1px 0 0 rgba(0,0,0,0.08); }
+
+/* =================================================================== */
+/* RESPONSIVE TASARIM (MOBİL VE TABLET UYUMLULUĞU) - YENİ EKLENDİ      */
+/* =================================================================== */
+
+/* Tablet ve altı (768px'den küçük ekranlar) */
 @media (max-width: 768px) {
-  .customer-sales__table { font-size: 12px; }
-  .customer-sales__table th, .customer-sales__table td { padding: 8px 6px; }
+  .customer-sales__table {
+    font-size: 12px;
+  }
+
+  .customer-sales__table th,
+  .customer-sales__table td {
+    padding: 8px 6px;
+  }
+
+  .customer-sales__table .second-col {
+    left: 120px;
+  }
+}
+
+/* Mobil cihazlar (480px'den küçük ekranlar) */
+@media (max-width: 480px) {
+  .customersalesv2-table-wrapper {
+    max-height: 80vh;
+  }
+
+  .customer-sales__table {
+    font-size: 11px;
+  }
+
+  .customer-sales__table th,
+  .customer-sales__table td {
+    padding: 6px 4px;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .customer-sales__table .second-col {
+    position: static;
+    left: auto;
+  }
+
+  .column-filter-wrapper input {
+    font-size: 12px;
+    padding: 4px 6px;
+  }
 }

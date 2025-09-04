@@ -1,0 +1,29 @@
+/* frontend/src/components/CustomerSalesV2/css/DynamicSubTotal.css */
+
+/* Toplam değiştiğinde tetiklenecek olan flaş animasyonu */
+@keyframes subtotal-flash {
+  0% {
+    /* SAP Sarısı'nın yarı şeffaf haliyle başla */
+    background-color: rgba(255, 193, 7, 0.7); 
+    transform: scale(1.1); /* Hafifçe büyüt */
+  }
+  100% {
+    /* Normal (şeffaf) haline geri dön */
+    background-color: transparent;
+    transform: scale(1);
+  }
+}
+
+/* Animasyonu uygulayacak olan ana konteyner */
+.dynamic-subtotal-container {
+  display: inline-block;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* JavaScript tarafından dinamik olarak eklenecek olan 'updated' sınıfı */
+.dynamic-subtotal-container.updated {
+  /* Flaş animasyonunu 1 saniye boyunca çalıştır */
+  animation: subtotal-flash 1s ease-out;
+}

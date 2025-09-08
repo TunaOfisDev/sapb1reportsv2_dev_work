@@ -191,13 +191,11 @@ function App() {
             <Route path="/tunainssupplierpayment" element={<TunaInsSupplierPaymentContainer />} />  
             <Route path="/tunainssupplieradvancebalance" element={<TunaInsSupplierAdvanceBalanceContainer />} />  
 
-            
-            {/* ##### NEXUS CORE ENTEGRASYONU - Adım 2: Yeni rotayı ekle ##### */}
-            {/* Bu rota, /nexus ile başlayan tüm istekleri NexusCore bileşenine yönlendirir. */}
-            {/* NexusCore kendi içindeki yönlendirmeyi ve layout'u kendisi yönetir. */}
+            {/* ##### NEXUS CORE ENTEGRASYONU ##### */}
+            {/* BU DOĞRU OLAN TEK SATIRDIR. */}
+            {/* /nexus/ ile başlayan TÜM trafiği NexusCore bileşenine yönlendirir. */}
             <Route path="/nexus/*" element={<NexusCore />} />
-
-
+            
 
             {/* Fallback (NotFound yönlendirmesi) */}
             <Route path="*" element={<NotFound />} />

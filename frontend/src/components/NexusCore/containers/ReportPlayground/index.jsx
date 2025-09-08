@@ -13,33 +13,85 @@ import Spinner from '../../components/common/Spinner/Spinner';
 import Button from '../../components/common/Button/Button';
 import Input from '../../components/common/Input/Input';
 
-// Yeni modüler bileşenlerimiz
+// Modüler bileşenlerimiz
 import DetailBuilder from './DetailBuilder';
 import PivotBuilder from './PivotBuilder';
 
+// Boş bir konfigürasyon şablonu
+const EMPTY_CONFIG = {
+    report_type: 'detail',
+    columns: [],
+    pivot_config: { rows: [], columns: [], values: [], filters: [] },
+};
+
 const ReportPlayground = () => {
-    const { virtualTableId } = useParams();
+    // 1. Mod Tespiti ve Hook Tanımlamaları
+    const { virtualTableId, reportId } = useParams();
+    const isEditMode = Boolean(reportId); 
+
     const navigate = useNavigate();
     const { addNotification } = useNotifications();
 
+    // 2. API Kancaları
     const { data: sourceData, loading: sourceLoading, error: sourceError, request: executeSourceQuery } = useApi(virtualTablesApi.executeVirtualTable);
-    const { loading: isSaving, request: createReport } = useApi(reportTemplatesApi.createReportTemplate);
+    const { data: existingTemplate, loading: templateLoading, request: getTemplate } = useApi(reportTemplatesApi.getReportTemplateById);
+    const { loading: isSaving, request: saveReportApi } = useApi(
+        isEditMode ? reportTemplatesApi.updateReportTemplate : reportTemplatesApi.createReportTemplate
+    );
 
+    // 3. State Yönetimi
     const [reportTitle, setReportTitle] = useState('');
     const [reportType, setReportType] = useState('detail');
-    const [configuration, setConfiguration] = useState({
-        report_type: 'detail',
-        columns: [],
-        pivot_config: {},
-    });
+    const [configuration, setConfiguration] = useState(EMPTY_CONFIG);
+    const [currentSourceTableId, setCurrentSourceTableId] = useState(virtualTableId || null);
 
-    const memoizedExecuteQuery = useCallback(executeSourceQuery, []);
+
+    // 4. Veri Yükleme Mantığı (SONSUZ DÖNGÜ DÜZELTMESİ)
     useEffect(() => {
-        if (virtualTableId) {
-            memoizedExecuteQuery(virtualTableId);
+        // Bu efektin niyeti SADECE route parametreleri değiştiğinde çalışmaktır.
+        // getTemplate, addNotification, navigate gibi hook'lardan dönen fonksiyonlar
+        // her render'da yeniden oluşur ve bağımlılık dizisinde olurlarsa sonsuz döngü yaratırlar.
+        
+        if (isEditMode && reportId) {
+            const fetchTemplate = async () => {
+                const { success, data } = await getTemplate(reportId); // Fonksiyonu doğrudan kullan
+                if (success) {
+                    setReportTitle(data.title);
+                    const config = data.configuration_json || EMPTY_CONFIG;
+                    setConfiguration(config);
+                    setReportType(config.report_type || 'detail');
+                    setCurrentSourceTableId(data.source_virtual_table);
+                } else {
+                    addNotification('Mevcut rapor yüklenirken hata oluştu.', 'error');
+                    navigate('/nexus/reports'); 
+                }
+            };
+            fetchTemplate();
+        } else if (virtualTableId) {
+            setCurrentSourceTableId(virtualTableId);
         }
-    }, [virtualTableId, memoizedExecuteQuery]);
+    
+    // Bağımlılık dizisinden kararsız fonksiyonları kasıtlı olarak çıkarıyoruz.
+    // Bu efekt SADECE ID'ler değiştiğinde çalışacak, fonksiyon referansları değiştiğinde değil.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isEditMode, reportId, virtualTableId]); 
 
+
+    // Kaynak Veri Yükleyici (Bu kanca, memoize edilmiş bir fonksiyona bağlı olmalı)
+    const memoizedExecuteQuery = useCallback(executeSourceQuery, [executeSourceQuery]);
+    useEffect(() => {
+        if (currentSourceTableId) {
+            memoizedExecuteQuery(currentSourceTableId);
+        }
+    }, [currentSourceTableId, memoizedExecuteQuery]);
+
+    
+    // Pivot Döngü Kırıcı (Bu düzeltme geçerliliğini koruyor)
+    const handlePivotChange = useCallback((pivotConfig) => {
+        setConfiguration(prev => ({ ...prev, pivot_config: pivotConfig }));
+    }, []); 
+
+    // 5. Akıllı Kaydetme Fonksiyonu
     const handleSave = async () => {
         if (!reportTitle) {
             addNotification('Lütfen rapora bir başlık verin.', 'error');
@@ -47,21 +99,25 @@ const ReportPlayground = () => {
         }
         const payload = {
             title: reportTitle,
-            source_virtual_table_id: virtualTableId,
+            source_virtual_table_id: currentSourceTableId,
             configuration_json: { ...configuration, report_type: reportType },
-            sharing_status: 'PRIVATE',
+            sharing_status: existingTemplate?.sharing_status || 'PRIVATE',
         };
-        const { success } = await createReport(payload);
+
+        const { success } = await (isEditMode ? saveReportApi(reportId, payload) : saveReportApi(payload));
+
         if (success) {
-            addNotification('Rapor başarıyla kaydedildi!', 'success');
+            addNotification(`Rapor başarıyla ${isEditMode ? 'güncellendi' : 'kaydedildi'}!`, 'success');
             navigate('/nexus/reports');
         } else {
             addNotification('Rapor kaydedilirken bir hata oluştu.', 'error');
         }
     };
 
-    if (sourceLoading) return <Spinner size="lg" />;
+    // ... (Render bloğu aynı) ...
+    if (sourceLoading || templateLoading) return <Spinner size="lg" />;
     if (sourceError) return <div className={styles.error}>Kaynak veri yüklenirken bir hata oluştu.</div>;
+    const sourceColumns = sourceData?.columns || [];
 
     return (
         <div className={styles.pageContainer}>
@@ -69,7 +125,7 @@ const ReportPlayground = () => {
                 <Input 
                     id="report-title"
                     label="Rapor Başlığı"
-                    value={reportTitle}
+                    value={reportTitle} 
                     onChange={(e) => setReportTitle(e.target.value)}
                     placeholder="Örn: Aylık Müşteri Risk Analizi"
                 />
@@ -82,7 +138,7 @@ const ReportPlayground = () => {
                     </button>
                 </div>
                 <Button onClick={handleSave} variant="primary" disabled={isSaving}>
-                    {isSaving ? 'Kaydediliyor...' : 'Raporu Kaydet'}
+                    {isSaving ? 'Kaydediliyor...' : (isEditMode ? 'Raporu Güncelle' : 'Raporu Kaydet')}
                 </Button>
             </header>
             
@@ -94,10 +150,13 @@ const ReportPlayground = () => {
                         setConfig={setConfiguration}
                     />
                 ) : (
-                    <PivotBuilder 
-                        sourceColumns={sourceData?.columns || []}
-                        onChange={(pivotConfig) => setConfiguration(prev => ({...prev, pivot_config: pivotConfig}))}
-                    />
+                    sourceColumns.length > 0 && (
+                        <PivotBuilder 
+                            sourceColumns={sourceColumns}
+                            initialConfig={configuration.pivot_config || {}}
+                            onChange={handlePivotChange} 
+                        />
+                    )
                 )}
             </div>
         </div>

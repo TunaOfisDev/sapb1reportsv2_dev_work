@@ -60,13 +60,14 @@ const NexusCore = () => {
     return <Navigate to="/login" replace />;
   }
 
+  // NexusCore modülünün tamamı NotificationProvider ile sarmalanır.
   return (
     <NotificationProvider>
       <div className={styles.appContainer}>
         <Header user={{ name: user.email }} onLogout={logout} />
         <Sidebar isAdmin={isAdmin} />
         <PageWrapper>
-          {/* ### NİHAİ DÜZELTME: Tüm Rotalar tek bir <Routes> bloğu içinde ### */}
+          {/* Burası NexusCore modülünün iç yönlendiricisidir */}
           <Routes>
             {/* Admin'e özel rota */}
             {isAdmin && (
@@ -76,10 +77,31 @@ const NexusCore = () => {
             {/* Tüm kullanıcılar için rotalar */}
             <Route path="workspace" element={<VirtualTableWorkspace />} />
             <Route path="reports" element={<ReportViewer />} />
-            <Route path="playground/:virtualTableId" element={<ReportPlayground />} />
+            
+            {/* --- ROTA GÜNCELLEMESİ BURADA --- */}
+            
+            {/* 1. YENİ RAPOR OLUŞTURMA ROTASI: */}
+            {/* (Örn: /nexus/playground/new/1) */}
+            {/* ReportPlayground'u :virtualTableId ile "Yeni" modda açar */}
+            <Route 
+                path="playground/new/:virtualTableId" 
+                element={<ReportPlayground />} 
+            />
+            
+            {/* 2. RAPOR DÜZENLEME ROTASI: */}
+            {/* (Örn: /nexus/playground/edit/46) */}
+            {/* ReportPlayground'u :reportId ile "Düzeltme" modunda açar */}
+            <Route 
+                path="playground/edit/:reportId" 
+                element={<ReportPlayground />} 
+            />
+            
+            {/* Hatalı olan eski rota (Bunu silebilir veya fallback olarak bırakabiliriz ama en temizi ikili sistemdir) */}
+            {/* <Route path="playground/:virtualTableId" element={<ReportPlayground />} /> */}
             
             {/* Varsayılan ve bulunamayan yollar için yönlendirmeler */}
-            <Route path="/" element={<Navigate replace to="workspace" />} />
+            {/* /nexus/ için varsayılan sayfa workspace olsun */}
+            <Route path="/" element={<Navigate replace to="workspace" />} /> 
             <Route path="*" element={<Navigate replace to="workspace" />} />
           </Routes>
         </PageWrapper>

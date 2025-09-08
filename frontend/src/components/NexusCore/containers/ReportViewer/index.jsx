@@ -43,10 +43,16 @@ const ReportViewer = () => {
         }
     };
     
+    // --- DÜZELTME BURADA ---
     const handleEdit = (report) => {
-        // Kullanıcıyı, raporun kaynak sorgusunun ID'si ile Playground'a yönlendir.
-        navigate(`/nexus/playground/${report.source_virtual_table}`);
+        // Hata: Kullanıcıyı kaynak VT ID'si ile "yeni" moduna gönderiyordu.
+        // navigate(`/nexus/playground/${report.source_virtual_table}`);
+        
+        // Doğru: Kullanıcıyı raporun KENDİ ID'si ile "düzeltme" moduna gönder.
+        // Bu URL, ReportPlayground component'indeki "isEditMode" mantığını tetikleyecek.
+        navigate(`/nexus/playground/edit/${report.id}`);
     };
+    // -----------------------
 
     return (
         <div className={styles.viewerContainer}>

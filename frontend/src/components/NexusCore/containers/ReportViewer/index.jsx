@@ -13,46 +13,89 @@ import ReportList from './ReportList';
 import Card from '../../components/common/Card/Card';
 import Table from '../../components/common/Table/Table';
 import Spinner from '../../components/common/Spinner/Spinner';
+import PivotRenderer from '../ReportPlayground/PivotBuilder/PivotRenderer';
+
+
+/**
+ * ### MİMARİ DÜZELTME ###
+ * Bu bileşen artık "reportData" adında TEK BİR nesne alıyor.
+ * Bu nesne, API'den dönen { configuration: {...}, data: {...} } paketinin tamamıdır.
+ * Bu bileşen, bu paketi AÇMAKTAN sorumludur.
+ */
+const ReportResultRenderer = ({ reportData, loading, error }) => {
+    if (loading) return <Spinner />;
+    // Backend hatasını doğrudan göster
+    if (error) return <p style={{ color: 'red' }}>Rapor sonucu çalıştırılırken hata oluştu: {error}</p>;
+    
+    // API çağrısı başarılı olduysa AMA data boşsa (veya paket formatı yanlışsa)
+    if (!reportData || !reportData.configuration || !reportData.data) {
+         // Eğer reportData.data'nın içinde kendi 'error'u varsa onu göster (örn: SQL hatası)
+         if (reportData?.data?.error) {
+            return <p style={{ color: 'red' }}>Veri sorgulanırken hata oluştu: {reportData.data.error}</p>;
+         }
+         // Beklenmedik bir cevap formatı
+         return <p>Rapor verisi alındı ancak formatı geçersiz.</p>;
+    }
+
+    // ### PAKETİ AÇIYORUZ ###
+    const config = reportData.configuration;
+    const data = reportData.data; // Bu bizim { columns: [...], rows: [...] } nesnemiz
+    
+    const reportType = config?.report_type || 'detail';
+
+    if (reportType === 'pivot') {
+        // Pivot motoruna ham veri (data) ve pivot planını (config.pivot_config) veriyoruz.
+        const pivotState = config?.pivot_config || { rows: [], columns: [], values: [] };
+        
+        return (
+            <PivotRenderer 
+                data={data} 
+                pivotState={pivotState} 
+            />
+        );
+    }
+
+    // Rapor 'detail' ise, standart düz tabloya ham datayı (veya filtrelenmiş datayı, 
+    // backend ne döndürdüyse) veriyoruz.
+    return (
+        <Table 
+            data={data} 
+            loading={false}
+            error={null}
+        />
+    );
+};
+
 
 const ReportViewer = () => {
     const navigate = useNavigate();
-
-    // Rapor şablonlarının CRUD işlemleri için özel hook'umuzu kullanıyoruz.
     const { templates, isLoading: listLoading, error: listError, loadTemplates, deleteTemplate } = useReportTemplates();
     
-    // Tek bir raporu çalıştırmak için jenerik useApi hook'unu kullanıyoruz.
+    // 'reportData' artık bizim BÜYÜK PAKETİMİZİ ({ config, data }) tutuyor
     const { data: reportData, loading: executeLoading, error: executeError, request: executeReport } = useApi(reportTemplatesApi.executeReportTemplate);
 
     const [selectedReport, setSelectedReport] = useState(null);
 
-    // Bileşen ilk yüklendiğinde rapor listesini çek.
     useEffect(() => {
         loadTemplates();
     }, [loadTemplates]);
 
-    // Olay Yöneticileri
     const handleExecute = (report) => {
-        setSelectedReport(report);
+        setSelectedReport(report); 
         executeReport(report.id);
     };
 
     const handleDelete = async (report) => {
+        // ... (Bu fonksiyon aynı, değişiklik yok) ...
         const { success } = await deleteTemplate(report.id);
         if (success && selectedReport && selectedReport.id === report.id) {
-            setSelectedReport(null); // Eğer gösterilen rapor silindiyse, sonuçları temizle
+            setSelectedReport(null); 
         }
     };
     
-    // --- DÜZELTME BURADA ---
     const handleEdit = (report) => {
-        // Hata: Kullanıcıyı kaynak VT ID'si ile "yeni" moduna gönderiyordu.
-        // navigate(`/nexus/playground/${report.source_virtual_table}`);
-        
-        // Doğru: Kullanıcıyı raporun KENDİ ID'si ile "düzeltme" moduna gönder.
-        // Bu URL, ReportPlayground component'indeki "isEditMode" mantığını tetikleyecek.
         navigate(`/nexus/playground/edit/${report.id}`);
     };
-    // -----------------------
 
     return (
         <div className={styles.viewerContainer}>
@@ -70,11 +113,16 @@ const ReportViewer = () => {
             }
             {listError && <p style={{color: 'red'}}>Rapor listesi yüklenirken bir hata oluştu.</p>}
 
+            {/* Sonuç Alanı */}
             {selectedReport && (
                 <div className={styles.resultsContainer}>
                     <Card title={`Rapor Sonuçları: ${selectedReport.title}`}>
-                        <Table 
-                            data={reportData}
+                        {/* ### NİHAİ DÜZELTME ###
+                          Akıllı Renderer'a artık sadece API'den dönen BÜYÜK PAKETİ yolluyoruz.
+                          Artık 'selectedReport.configuration_json'a (güvenilmez olana) ihtiyacımız yok.
+                        */}
+                        <ReportResultRenderer 
+                            reportData={reportData} // { config, data } paketinin tamamı
                             loading={executeLoading}
                             error={executeError}
                         />

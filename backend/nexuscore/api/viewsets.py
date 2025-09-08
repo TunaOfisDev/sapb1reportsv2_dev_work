@@ -1,4 +1,4 @@
-# path: /var/www/sapb1reportsv2/backend/nexuscore/api/viewsets.py
+# path: backend/nexuscore/api/viewsets.py
 
 from django.db.models import Q
 from rest_framework import viewsets, status, serializers
@@ -6,17 +6,16 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
-# Tüm katmanlarımızdan gerekli bileşenleri import ediyoruz
+# template_manager ve pivot_manager'a execute() içinde ihtiyacımız YOK.
+# Sadece ham veri kaynağı olan connection_manager'a ihtiyacımız var.
 from ..models import DynamicDBConnection, VirtualTable, SharingStatus, ReportTemplate
 from .serializers import DynamicDBConnectionSerializer, VirtualTableSerializer, ReportTemplateSerializer
 from .permissions import IsOwnerOrPublic
-# ### YENİ: pivot_manager'ı da servislerimize dahil ediyoruz ###
-from ..services import connection_manager, template_manager, pivot_manager
+from ..services import connection_manager # Sadece bu servis gerekiyor.
 
 # --- 1. Altyapı Yönetimi: Veri Tabanı Bağlantıları ---
-
 class DynamicDBConnectionViewSet(viewsets.ModelViewSet):
-    # ... (Bu ViewSet'te bir değişiklik yok, aynı kalıyor) ...
+    # ... (Bu kod bloğu değişmedi, olduğu gibi kalıyor) ...
     queryset = DynamicDBConnection.objects.all().order_by('title')
     serializer_class = DynamicDBConnectionSerializer
     permission_classes = [IsAdminUser]
@@ -45,10 +44,10 @@ class DynamicDBConnectionViewSet(viewsets.ModelViewSet):
             return Response({'status': 'failure', 'message': message}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'status': 'success', 'message': message})
 
-# --- 2. Kullanıcı Alanı: Sanal Tablolar ---
 
+# --- 2. Kullanıcı Alanı: Sanal Tablolar ---
 class VirtualTableViewSet(viewsets.ModelViewSet):
-    # ... (Bu ViewSet'te bir değişiklik yok, aynı kalıyor) ...
+    # ... (Bu kod bloğu değişmedi, olduğu gibi kalıyor) ...
     serializer_class = VirtualTableSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrPublic]
 
@@ -66,14 +65,16 @@ class VirtualTableViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], url_path='execute')
     def execute(self, request, pk=None):
+        # Bu 'execute' (sanal tabloyu çalıştırma) backend'den ham veri almak için kullanılır.
+        # Playground'un kullandığı budur ve bu DOĞRUDUR.
         virtual_table = self.get_object()
         result = connection_manager.execute_virtual_table_query(virtual_table)
         if not result.get('success'):
             return Response({"error": result.get('error')}, status=status.HTTP_400_BAD_REQUEST)
         return Response(result)
 
-# --- 3. Kullanıcı Alanı: Rapor Şablonları ---
 
+# --- 3. Kullanıcı Alanı: Rapor Şablonları ---
 class ReportTemplateViewSet(viewsets.ModelViewSet):
     serializer_class = ReportTemplateSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrPublic]
@@ -92,24 +93,44 @@ class ReportTemplateViewSet(viewsets.ModelViewSet):
         # ... (bu metod aynı kalıyor) ...
         serializer.save(owner=self.request.user)
 
-    # ### GÜNCELLEME: execute aksiyonu artık "akıllı santral" gibi çalışıyor ###
+    # ### MİMARİ DÜZELTME: 'execute' ARTIK "APTAL" BİR VERİ AKTARICIDIR ###
     @action(detail=True, methods=['post'], url_path='execute')
     def execute(self, request, pk=None):
         """
-        Bir rapor şablonunu çalıştırır. Raporun türüne göre ('pivot' veya 'detail')
-        doğru servis katmanını çağırır.
+        Bir raporu çalıştırır. 
+        Frontend'in (React) ihtiyacı olan iki şeyi döndürür:
+        1. Raporun Konfigürasyonu (Frontend'in 'nasıl' render edeceğini bilmesi için)
+        2. Ham Veri (Frontend'in 'neyi' render edeceğini bilmesi için)
+        
+        Bu endpoint, backend'de pivot VEYA filtreleme yapmaz. 
+        Tüm bu mantık frontend'de (PivotRenderer ve DetailBuilder) ele alınır.
         """
-        report_template = self.get_object()
-        config = report_template.configuration_json
+        try:
+            report_template = self.get_object()
+            
+            # 1. Ham veriyi al (Tıpkı VirtualTable.execute gibi)
+            source_table = report_template.source_virtual_table
+            if not source_table:
+                raise serializers.ValidationError("Raporun bağlı olduğu bir sanal tablo kaynağı yok.")
 
-        # Rapor türünü kontrol et, eğer pivot ise pivot_manager'ı çağır.
-        if config.get('report_type') == 'pivot':
-            result = pivot_manager.generate_pivot_data(report_template)
-        else:
-            # Değilse, standart detay raporu için template_manager'ı çağır.
-            result = template_manager.execute_report_template(report_template)
-        
-        if not result.get('success'):
-            return Response({"error": result.get('error')}, status=status.HTTP_400_BAD_REQUEST)
-        
-        return Response(result)
+            raw_data_result = connection_manager.execute_virtual_table_query(source_table)
+            
+            if not raw_data_result.get('success'):
+                # Ham veri sorgusu başarısız olursa, hatayı döndür
+                return Response({"error": raw_data_result.get('error')}, status=status.HTTP_400_BAD_REQUEST)
+
+            # 2. Konfigürasyonu al
+            config = report_template.configuration_json
+            
+            # 3. Frontend'e istediği paketi (payload) yolla
+            payload = {
+                "configuration": config,
+                "data": raw_data_result 
+                # (raw_data_result zaten {success, columns, rows} formatındadır)
+            }
+            
+            return Response(payload)
+            
+        except Exception as e:
+            # Genel bir hata olursa yakala
+            return Response({"error": f"Rapor çalıştırılırken sunucu hatası: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

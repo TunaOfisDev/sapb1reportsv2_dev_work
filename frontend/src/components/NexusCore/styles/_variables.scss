@@ -24,6 +24,9 @@ $border-radius-sm: 4px;
 $border-radius-md: 6px;
 $border-radius-lg: 8px;
 $border-radius-full: 9999px;
+// ### YENİ: Pivot tablolar ve yoğun gridler için daha hafif bir çizgi rengi ###
+$border-color-light: #f3f4f6; // (Tailwind gray-100'e denk gelir, paletine uygundur)
+$border-radius-sm: 4px;
 $shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 // ### YENİ: Eksik olan orta boy gölge tanımını ekliyoruz ###
 $shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);

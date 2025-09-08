@@ -33,6 +33,7 @@ const ReportPlayground = () => {
     const { addNotification } = useNotifications();
 
     // 2. API Kancaları
+    // sourceData bizim ana yakıt depomuzdur. { columns: [...], rows: [...] } içerir.
     const { data: sourceData, loading: sourceLoading, error: sourceError, request: executeSourceQuery } = useApi(virtualTablesApi.executeVirtualTable);
     const { data: existingTemplate, loading: templateLoading, request: getTemplate } = useApi(reportTemplatesApi.getReportTemplateById);
     const { loading: isSaving, request: saveReportApi } = useApi(
@@ -46,50 +47,52 @@ const ReportPlayground = () => {
     const [currentSourceTableId, setCurrentSourceTableId] = useState(virtualTableId || null);
 
 
-    // 4. Veri Yükleme Mantığı (SONSUZ DÖNGÜ DÜZELTMESİ)
+    // 4. Veri Yükleme Mantığı (useEffect bağımlılıkları temizlendi)
     useEffect(() => {
-        // Bu efektin niyeti SADECE route parametreleri değiştiğinde çalışmaktır.
-        // getTemplate, addNotification, navigate gibi hook'lardan dönen fonksiyonlar
-        // her render'da yeniden oluşur ve bağımlılık dizisinde olurlarsa sonsuz döngü yaratırlar.
-        
+        const fetchTemplateAndSetState = async (id) => {
+            const { success, data } = await getTemplate(id);
+            if (success) {
+                setReportTitle(data.title);
+                const config = data.configuration_json || EMPTY_CONFIG;
+                setConfiguration(config);
+                setReportType(config.report_type || 'detail');
+                setCurrentSourceTableId(data.source_virtual_table);
+            } else {
+                addNotification('Mevcut rapor yüklenirken hata oluştu.', 'error');
+                navigate('/nexus/reports');
+            }
+        };
+
         if (isEditMode && reportId) {
-            const fetchTemplate = async () => {
-                const { success, data } = await getTemplate(reportId); // Fonksiyonu doğrudan kullan
-                if (success) {
-                    setReportTitle(data.title);
-                    const config = data.configuration_json || EMPTY_CONFIG;
-                    setConfiguration(config);
-                    setReportType(config.report_type || 'detail');
-                    setCurrentSourceTableId(data.source_virtual_table);
-                } else {
-                    addNotification('Mevcut rapor yüklenirken hata oluştu.', 'error');
-                    navigate('/nexus/reports'); 
-                }
-            };
-            fetchTemplate();
+            fetchTemplateAndSetState(reportId);
         } else if (virtualTableId) {
             setCurrentSourceTableId(virtualTableId);
         }
-    
-    // Bağımlılık dizisinden kararsız fonksiyonları kasıtlı olarak çıkarıyoruz.
-    // Bu efekt SADECE ID'ler değiştiğinde çalışacak, fonksiyon referansları değiştiğinde değil.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isEditMode, reportId, virtualTableId]); 
+    }, [isEditMode, reportId, virtualTableId]); // Kararlı bağımlılıklara güveniyoruz
 
 
-    // Kaynak Veri Yükleyici (Bu kanca, memoize edilmiş bir fonksiyona bağlı olmalı)
-    const memoizedExecuteQuery = useCallback(executeSourceQuery, [executeSourceQuery]);
-    useEffect(() => {
+    // Kaynak Veri Yükleyici
+    const memoizedExecuteQuery = useCallback(() => {
         if (currentSourceTableId) {
-            memoizedExecuteQuery(currentSourceTableId);
+            executeSourceQuery(currentSourceTableId);
         }
-    }, [currentSourceTableId, memoizedExecuteQuery]);
+    }, [currentSourceTableId, executeSourceQuery]);
+
+    useEffect(() => {
+        memoizedExecuteQuery();
+    }, [memoizedExecuteQuery]);
 
     
-    // Pivot Döngü Kırıcı (Bu düzeltme geçerliliğini koruyor)
+    // Konfigürasyon değişimlerini yönetmek için memoize edilmiş callback
     const handlePivotChange = useCallback((pivotConfig) => {
         setConfiguration(prev => ({ ...prev, pivot_config: pivotConfig }));
     }, []); 
+
+    const handleDetailConfigChange = useCallback((detailConfig) => {
+        // DetailBuilder da benzer bir optimizasyona ihtiyaç duyarsa diye (şimdi setConfiguration kullanıyor ama ileride değişebilir)
+        setConfiguration(detailConfig);
+    }, []);
 
     // 5. Akıllı Kaydetme Fonksiyonu
     const handleSave = async () => {
@@ -114,10 +117,15 @@ const ReportPlayground = () => {
         }
     };
 
-    // ... (Render bloğu aynı) ...
+
+    // Render Edilecek Verileri Hazırla
     if (sourceLoading || templateLoading) return <Spinner size="lg" />;
     if (sourceError) return <div className={styles.error}>Kaynak veri yüklenirken bir hata oluştu.</div>;
-    const sourceColumns = sourceData?.columns || [];
+    
+    // sourceData: { columns: [...], rows: [...] } tam veri nesnesi.
+    // sourceColumns: Sadece kolon isimleri dizisi.
+    const sourceColumns = sourceData?.columns || []; 
+    
 
     return (
         <div className={styles.pageContainer}>
@@ -145,9 +153,9 @@ const ReportPlayground = () => {
             <div className={styles.playgroundContainer}>
                 {reportType === 'detail' ? (
                     <DetailBuilder 
-                        sourceData={sourceData}
+                        sourceData={sourceData} // DetailBuilder veriyi alıyor
                         config={configuration}
-                        setConfig={setConfiguration}
+                        setConfig={handleDetailConfigChange} // Callback kullandık
                     />
                 ) : (
                     sourceColumns.length > 0 && (
@@ -155,6 +163,11 @@ const ReportPlayground = () => {
                             sourceColumns={sourceColumns}
                             initialConfig={configuration.pivot_config || {}}
                             onChange={handlePivotChange} 
+                            
+                            // ### YAKIT HATTI BAĞLANDI! ###
+                            // Motorun (PivotRenderer) çalışması için ham veriyi (sourceData) 
+                            // data prop'u olarak PivotBuilder'a geçirmemiz şart.
+                            data={sourceData} 
                         />
                     )
                 )}

@@ -150,3 +150,90 @@
         color: vars.$text-on-primary;
     }
 }
+
+/* EKLENECEK STİLLER: frontend/src/components/NexusCore/containers/ReportPlayground/PivotBuilder/PivotBuilder.module.scss 
+  --- Pivot Tablo Render Stilleri ---
+*/
+
+.pivotTableWrapper {
+    margin-top: vars.$spacing-4;
+    overflow: auto; /* Geniş tablolar için yatay kaydırma sağlar */
+    border: 1px solid vars.$border-color;
+    border-radius: vars.$border-radius-md;
+    max-height: 600px; /* Tablonun aşırı büyümesini engeller, dikey scroll ekler */
+
+    /* Pivot hazır olmadığında gösterilecek placeholder */
+    &.placeholder {
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: vars.$spacing-4;
+        text-align: center;
+        color: vars.$text-placeholder;
+        font-style: italic;
+        background-color: vars.$background-light;
+    }
+}
+
+.pivotTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    white-space: nowrap; /* BI tablolarında satırların kaymaması önemlidir */
+
+    th, td {
+        /* ARTIK BU ÇALIŞACAK: Yeni eklediğimiz 'design token'ı kullanıyoruz */
+        border: 1px solid vars.$border-color-light;
+        padding: vars.$spacing-2 vars.$spacing-3;
+        text-align: left;
+    }
+    thead th {
+        background-color: vars.$background-light;
+        position: sticky; /* Başlıkların kaydırırken sabit kalması için */
+        top: 0;
+        z-index: 2;
+    }
+
+    tbody th {
+        background-color: vars.$background-light;
+        position: sticky; /* Satır başlıklarının da sabit kalması için */
+        left: 0;
+        z-index: 1;
+    }
+    
+    /* Köşe hücresini her iki yönde de sabit tut */
+    thead th:first-child {
+        left: 0;
+        z-index: 3;
+    }
+
+    tfoot th {
+        /* HATALI SATIR: background-color: vars.$background-medium; 
+          DÜZELTME: İhtiyacımız olan (gray-100) tonu, az önce eklediğimiz 
+                     $border-color-light değişkeninde zaten mevcut. Onu kullanıyoruz.
+        */
+        background-color: vars.$border-color-light; 
+        font-weight: 700;
+        position: sticky;
+        bottom: 0;
+    }
+}
+
+.headerCell {
+    font-weight: 600;
+    color: vars.$text-secondary;
+}
+
+.dataCell {
+    text-align: right; /* Sayısal veriler sağa hizalı olmalı */
+    font-family: vars.$font-family-mono; /* Opsiyonel: Sayıların hizalı durması için */
+}
+
+.totalCell {
+    font-weight: 700;
+    background-color: vars.$background-light;
+    text-align: right;
+    font-family: vars.$font-family-mono;
+    color: vars.$text-primary;
+}

@@ -2,12 +2,13 @@
 
 from django.db import models
 from django.conf import settings
-from .virtual_table import VirtualTable, SharingStatus
+from .data_app import DataApp  # <-- Doğru import
+from .virtual_table import SharingStatus 
 
 class ReportTemplate(models.Model):
     """
-    Kullanıcıların 'Playground'da oluşturduğu, VirtualTable verilerini
-    görselleştiren özel rapor şablonlarını saklar.
+    Kullanıcıların 'Playground'da oluşturduğu, artık tek bir tabloyu değil,
+    bütün bir 'DataApp' veri modelini görselleştiren rapor şablonları.
     """
     title = models.CharField(
         max_length=255,
@@ -20,24 +21,38 @@ class ReportTemplate(models.Model):
     )
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL, # Sahibi silinse bile rapor kalabilir
+        on_delete=models.SET_NULL, 
         null=True,
         related_name='report_templates',
         verbose_name="Sahip"
     )
-    # Bu raporun hangi ham veri kaynağını kullandığını belirten kritik bağlantı.
-    source_virtual_table = models.ForeignKey(
-        VirtualTable,
-        on_delete=models.CASCADE, # Eğer kaynak sorgu silinirse, bu rapor da silinmeli.
+
+    # ### MİMARİ DEĞİŞİKLİK VE HATA DÜZELTMESİ BURADA ###
+    
+    source_data_app = models.ForeignKey(
+        DataApp,
+        # CASCADE yerine SET_NULL kullanmak çok daha güvenlidir.
+        # Bir Veri Uygulaması silinirse, ona bağlı raporlar silinmez,
+        # sadece bağlantıları boşa düşer (NULL olur). Bu sayede veri kaybetmeyiz.
+        on_delete=models.SET_NULL, 
         related_name='report_templates',
-        verbose_name="Kaynak Sanal Tablo"
+        verbose_name="Kaynak Veri Uygulaması",
+        help_text="Bu raporun veri çektiği ana veri modeli.",
+        
+        # HATA DÜZELTMESİ: Veritabanı geçişinin başarılı olması için 
+        # bu alanın geçici olarak NULL olmasına izin vermeliyiz.
+        null=True,
+        blank=True 
     )
-    # Kullanıcının sürükle-bırak ile oluşturduğu tüm ayarlar burada saklanacak.
+    
+    # Eski alan (source_virtual_table) model tanımından tamamen kaldırıldı.
+    # makemigrations bunu algılayacak.
+
     configuration_json = models.JSONField(
         default=dict,
         blank=True,
         verbose_name="Rapor Yapılandırması (JSON)",
-        help_text="Kolon sırası, görünürlüğü, filtreler vb. ayarları içerir."
+        help_text="Pivot ayarları, filtreler vb. ayarları içerir."
     )
     sharing_status = models.CharField(
         max_length=20,

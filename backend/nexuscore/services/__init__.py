@@ -12,6 +12,17 @@ from .template_manager import (
     execute_report_template,
 )
 
+# --- YENİ EKLENENLER ---
+from .pivot_manager import (
+    generate_pivot_data,
+)
+
+from .data_app_manager import (
+    get_data_app_query_components,
+)
+# --- YENİ EKLENENLER SONU ---
+
+
 # Adım 2: __all__ listesini tanımla.
 # Bu, `from nexuscore.services import *` komutu çalıştırıldığında
 # hangi fonksiyonların import edileceğini belirleyen "beyaz liste"dir.
@@ -24,4 +35,12 @@ __all__ = [
 
     # template_manager.py'dan gelenler
     'execute_report_template',
+
+    # --- YENİ EKLENENLER ---
+    # pivot_manager.py'dan gelenler (Artık çok daha güçlü)
+    'generate_pivot_data',
+
+    # data_app_manager.py'dan gelenler (BI Motorumuzun Beyni)
+    'get_data_app_query_components',
+    # --- YENİ EKLENENLER SONU ---
 ]

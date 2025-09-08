@@ -2,13 +2,18 @@
 
 from .dynamic_connection import DynamicDBConnection
 from .virtual_table import VirtualTable, SharingStatus
-from .report_template import ReportTemplate # <-- YENİ: Yeni modelimizi import ediyoruz
+from .data_app import DataApp  # <-- YENİ: Veri Uygulaması modelimiz
+from .app_relationship import AppRelationship, JoinType  # <-- YENİ: İlişki modelimiz ve Enum
+from .report_template import ReportTemplate
 from nexuscore.fields import EncryptedJSONField
 
 __all__ = [
     'DynamicDBConnection',
     'VirtualTable',
     'SharingStatus',
-    'ReportTemplate', # <-- YENİ: Yeni modelimizi dış dünyaya açıyoruz
+    'DataApp',          # <-- YENİ
+    'AppRelationship',  # <-- YENİ
+    'JoinType',         # <-- YENİ (JoinType Enum'u da dışarı açıyoruz)
+    'ReportTemplate',
     'EncryptedJSONField',
 ]

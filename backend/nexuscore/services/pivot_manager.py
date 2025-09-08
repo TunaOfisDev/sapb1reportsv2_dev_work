@@ -1,24 +1,24 @@
 # path: backend/nexuscore/services/pivot_manager.py
+
 import logging
 from typing import Dict, Any, List
 from decimal import Decimal
-from . import connection_manager
-from ..models import ReportTemplate, VirtualTable
+
+# Yeni servisimize ve güncellenmiş modellerimize ihtiyacımız var
+from . import connection_manager, data_app_manager
+from ..models import ReportTemplate, VirtualTable # VirtualTable hala lazım (execute için)
 
 logger = logging.getLogger(__name__)
 
-def _quote_identifier(name: str) -> str:
-    """
-    Kolon adlarını veritabanı motorları için güvenli hale getirir (örn: "Satici").
-    SQL enjeksiyonunu önlemek için temel bir kontrol yapar.
-    """
-    if not isinstance(name, str) or '"' in name or '`' in name or '[' in name or ']' in name or ';' in name:
-        raise ValueError(f"Geçersiz veya güvenli olmayan kolon adı saptandı: {name}")
-    return f'"{name}"'
+# _quote_identifier fonksiyonu artık data_app_manager içinde (veya idealde utils'da)
+# Burada DRY (Don't Repeat Yourself) ilkesi için ona güvendiğimizi varsayıyoruz 
+# veya buradan data_app_manager._quote_identifier olarak import edebiliriz.
+# Şimdilik data_app_manager'daki kopyayı kullanalım.
+from .data_app_manager import _quote_identifier 
 
 
 def _get_sortable_value(value):
-    """ (Bu yardımcı fonksiyon aynı kalıyor, sıralama için) """
+    """ (Bu yardımcı fonksiyon aynı kalıyor) """
     if value is None: return (1, float('inf')) 
     if isinstance(value, (int, float, Decimal)): return (0, value)
     return (1, str(value))
@@ -26,38 +26,54 @@ def _get_sortable_value(value):
 
 def generate_pivot_data(report_template: ReportTemplate) -> Dict[str, Any]:
     """
-    Bir Rapor Şablonu alır, pivot yapılandırmasını okur ve dinamik olarak 
-    hem SATIRLARI hem de SÜTUNLARI hesaba katan bir GROUP BY sorgusu oluşturur.
+    BİR RAPOR ŞABLONUNU ALIR (YENİ SİSTEM).
+    Raporun bağlı olduğu DataApp'i okur, data_app_manager'ı kullanarak 
+    base SQL sorgusunu (CTE'ler ve JOIN'ler dahil) oluşturur.
+    SONRA, bu base SQL'in üzerine pivot yapılandırmasını (GROUP BY) uygular.
     """
     try:
         config = report_template.configuration_json
-        source_table = report_template.source_virtual_table
         
+        # ### DEĞİŞİKLİK BAŞLANGICI ###
+        # Artık tek bir VirtualTable kaynağımız yok, bir DataApp kaynağımız var.
+        source_app = report_template.source_data_app
+        if not source_app:
+            return {"success": False, "error": "Bu rapor şablonu geçerli bir Veri Uygulamasına bağlı değil."}
+        
+        # Ana bağlantı, artık uygulama üzerinden geliyor.
+        source_connection = source_app.connection
+
+        # 1. Beyin'i (data_app_manager) çağır ve base SQL parçalarını al
+        try:
+            cte_clause, from_join_clause = data_app_manager.get_data_app_query_components(source_app)
+        except ValueError as e:
+            logger.warning(f"DataApp sorgusu oluşturulamadı (App ID: {source_app.id}): {e}")
+            return {"success": False, "error": f"Veri modeli sorgusu oluşturulamadı: {str(e)}"}
+
+        # Artık base_sql dediğimiz şey, tek bir sorgu değil, bir JOIN zinciridir.
+        # Pivot sorgumuzun FROM kısmı, bu alt sorgu olmalı.
+        base_sql = f"SELECT * FROM (\n  {from_join_clause}\n) AS nexus_data_app_base"
+        
+        # CTE'leri de sorgunun başına eklememiz gerekiyor!
+        base_query_with_cte = f"{cte_clause}\n{base_sql}"
+        
+        # ### DEĞİŞİKLİK SONU ###
+
         pivot_config = config.get('pivot_config', {})
         pivot_rows = pivot_config.get('rows', [])
         pivot_values = pivot_config.get('values', [])
+        pivot_columns = pivot_config.get('columns', []) 
         
-        # --- DÜZELTME BAŞLANGICI: Sütunları da denkleme dahil et ---
-        pivot_columns = pivot_config.get('columns', []) # 1. Sütun verisini oku
-        
-        # Tüm boyutları (hem satırlar hem sütunlar) tek bir listede topla
         all_dimensions = pivot_rows + pivot_columns 
-        # --------------------------------------------------------
-
-        # Eski kontrol: if not pivot_rows...
-        # Yeni kontrol: Eğer hiç boyut (satır VEYA sütun) seçilmemişse hata ver.
+        
         if not all_dimensions or not pivot_values:
             return {"success": False, "error": "Pivot tablo için en az bir 'boyut' (satır/sütun) ve bir 'değer' alanı gereklidir."}
 
-        base_sql = source_table.sql_query.strip()
-        if base_sql.endswith(';'):
-            base_sql = base_sql[:-1]
+        # Kalan mantık (GROUP BY ve SELECT cümlelerinin oluşturulması) aynı kalır,
+        # çünkü base_sql'imiz (base_query_with_cte) zaten birleşik bir tablo gibi davranır.
 
-        # SELECT ifadesi artık TÜM boyutları içermeli
-        # Eski kod: select_clauses = [_quote_identifier(row_config['key']) for row_config in pivot_rows]
         select_clauses = [_quote_identifier(dim_config['key']) for dim_config in all_dimensions]
         
-        # Değer (aggregate) hesaplamaları aynı kalıyor
         valid_aggregations = {"SUM", "COUNT", "AVG", "MIN", "MAX"}
         for val_config in pivot_values:
             agg_func = val_config.get('agg', 'SUM').upper()
@@ -70,21 +86,16 @@ def generate_pivot_data(report_template: ReportTemplate) -> Dict[str, Any]:
 
         select_statement = ", ".join(select_clauses)
         
-        # GROUP BY ifadesi artık TÜM boyutları içermeli
-        # Eski kod: group_by_statement = ", ".join([_quote_identifier(row_config['key']) for row_config in pivot_rows])
         group_by_statement = ", ".join([_quote_identifier(dim_config['key']) for dim_config in all_dimensions])
+        order_by_statement = group_by_statement or "1" 
 
-        # ORDER BY da tüm boyutlara göre sıralamalı
-        order_by_statement = group_by_statement # (veya group_by_statement boşsa 1)
-        if not order_by_statement:
-             order_by_statement = "1" # SQL'de 'GROUP BY' yoksa 'ORDER BY 1' genellikle geçerlidir
-
-        # Nihai SQL sorgusunu yeni, tam boyut listesine göre oluştur
-        final_sql = f"SELECT {select_statement} FROM ({base_sql}) AS nexus_base_query GROUP BY {group_by_statement} ORDER BY {order_by_statement}"
-
+        # Nihai SQL sorgusunu, CTE'leri de içerecek şekilde oluştur
+        final_sql = f"{cte_clause}\nSELECT {select_statement} FROM ({from_join_clause}) AS nexus_base_query GROUP BY {group_by_statement} ORDER BY {order_by_statement}"
+        
         # Sorguyu çalıştır
+        # Geçici Sanal Tablo oluşturup doğru bağlantıyı (App'in bağlantısı) kullanıyoruz.
         temp_virtual_table = VirtualTable(
-            connection=source_table.connection,
+            connection=source_connection, # <-- Doğru bağlantıyı kullandığımızdan emin olalım
             sql_query=final_sql
         )
         result = connection_manager.execute_virtual_table_query(temp_virtual_table)

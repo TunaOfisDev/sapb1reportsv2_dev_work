@@ -33,7 +33,9 @@ export const getReportTemplateById = async (id) => {
 
 /**
  * Yeni bir rapor şablonu oluşturur.
- * @param {object} templateData - { title, description, source_virtual_table_id, configuration_json, sharing_status }
+ * * ### MİMARİ GÜNCELLEME ###
+ * Artık 'source_virtual_table_id' DEĞİL, 'source_data_app_id' gönderiyoruz.
+ * @param {object} templateData - { title, description, source_data_app_id, configuration_json, sharing_status }
  */
 export const createReportTemplate = async (templateData) => {
   try {
@@ -71,16 +73,24 @@ export const deleteReportTemplate = async (id) => {
 };
 
 /**
- * Bir rapor şablonunu çalıştırır. Backend, kaynak sorguyu çalıştırıp
- * şablonu veriye uygulayarak nihai sonucu döndürür.
- * @param {number} id - Çalıştırılacak şablonun ID'si.
+ * ### STRATEJİK DEVİR: BU FONKSİYONUN ANLAMI DEĞİŞTİ ###
+ * * Bir rapor şablonunu "ÇALIŞTIRIR". 
+ * * ESKİ STRATEJİ: Backend'den HAM VERİ ve konfigürasyon çekerdi. Frontend pivot yapardı.
+ * YENİ STRATEJİ: Backend'deki "DAHİ" pivot motorunu tetikler. Backend, DataApp'i okur,
+ * tüm JOIN'leri ve GROUP BY'ları veritabanında çalıştırır ve frontend'e SADECE
+ * NİHAİ, HAZIR PİVOT VERİSİNİ döndürür.
+ * * @param {number} id - Çalıştırılacak şablonun ID'si.
+ * @returns {Promise<Object>} Başarılıysa: { success: true, columns: [...], rows: [...] } formatında PİVOTLANMIŞ veri.
+ * Başarısızsa: Hata fırlatır (axios interceptor halleder) veya { success: false, error: "..." } döner.
  */
 export const executeReportTemplate = async (id) => {
     try {
         const response = await axiosInstance.post(`${API_ENDPOINT}/${id}/execute/`);
-        return response.data;
+        return response.data; // Bu veri artık PİŞMİŞ veridir.
     } catch (error) {
         console.error(`ID'si ${id} olan rapor şablonu çalıştırılırken hata:`, error);
+        // Hata yönetimi (örn: 400 Bad Request) axios interceptor'ınızda
+        // veya bu fonksiyonu çağıran yerde yapılmalı.
         throw error;
     }
 };

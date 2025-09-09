@@ -1,4 +1,5 @@
 // path: frontend/src/components/NexusCore/containers/ReportViewer/index.jsx
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './ReportViewer.module.scss';
@@ -14,37 +15,70 @@ import Card from '../../components/common/Card/Card';
 import Table from '../../components/common/Table/Table';
 import Spinner from '../../components/common/Spinner/Spinner';
 import PivotRenderer from '../ReportPlayground/PivotBuilder/PivotRenderer';
-
+// YENİ: formatDynamicNumber fonksiyonunu import ediyoruz
+import { formatDynamicNumber } from '../../utils/formatters';
 
 /**
- * ### MİMARİ DÜZELTME ###
- * Bu bileşen artık "reportData" adında TEK BİR nesne alıyor.
- * Bu nesne, API'den dönen { configuration: {...}, data: {...} } paketinin tamamıdır.
- * Bu bileşen, bu paketi AÇMAKTAN sorumludur.
+ * Bu bileşen, backend'den gelen "reportData" paketini ayrıştırır
+ * ve rapor tipine göre uygun bileşeni render eder.
  */
 const ReportResultRenderer = ({ reportData, loading, error }) => {
     if (loading) return <Spinner />;
-    // Backend hatasını doğrudan göster
     if (error) return <p style={{ color: 'red' }}>Rapor sonucu çalıştırılırken hata oluştu: {error}</p>;
     
-    // API çağrısı başarılı olduysa AMA data boşsa (veya paket formatı yanlışsa)
     if (!reportData || !reportData.configuration || !reportData.data) {
-         // Eğer reportData.data'nın içinde kendi 'error'u varsa onu göster (örn: SQL hatası)
-         if (reportData?.data?.error) {
-            return <p style={{ color: 'red' }}>Veri sorgulanırken hata oluştu: {reportData.data.error}</p>;
-         }
-         // Beklenmedik bir cevap formatı
-         return <p>Rapor verisi alındı ancak formatı geçersiz.</p>;
+       if (reportData?.data?.error) {
+           return <p style={{ color: 'red' }}>Veri sorgulanırken hata oluştu: {reportData.data.error}</p>;
+       }
+       return <p>Rapor verisi alındı ancak formatı geçersiz.</p>;
     }
 
-    // ### PAKETİ AÇIYORUZ ###
     const config = reportData.configuration;
-    const data = reportData.data; // Bu bizim { columns: [...], rows: [...] } nesnemiz
-    
+    let data = reportData.data;
     const reportType = config?.report_type || 'detail';
+    
+    // ### YENİ MANTIK: SAYISAL VERİLERİ ÖNCE SAYIYA ÇEVİR, SONRA FORMATLA ###
+    if (reportType === 'detail' && data && data.rows && data.columns) {
+      // column_metadata'dan veri tipi bilgilerini al
+      const columnMetadata = reportData.metadata;
+
+      const formattedRows = data.rows.map(row => {
+          const formattedRow = {};
+          data.columns.forEach((col) => { // 'index' parametresini kaldırdık, çünkü kullanılmıyor
+              const colName = col.accessor;
+              const colMetadata = columnMetadata[colName] || {};
+              const dataType = colMetadata.dataType;
+              let value = row[col.accessor]; // col.id yerine col.accessor kullanıyoruz, çünkü Table bileşeni bu prop'u bekliyor
+
+              if (dataType === 'number' && value !== null) {
+                  const numberValue = Number(value);
+                  if (!isNaN(numberValue)) {
+                      value = formatDynamicNumber(numberValue);
+                  }
+              }
+              // Buraya diğer veri tipleri için de formatlama eklenebilir (örn: 'date' ise formatDateTime)
+              
+              formattedRow[colName] = value;
+          });
+          return formattedRow;
+      });
+
+      // Table bileşeninin beklediği formatı koruyoruz
+      const formattedData = {
+          columns: data.columns,
+          rows: formattedRows
+      };
+
+      return (
+          <Table 
+              data={formattedData} 
+              loading={false}
+              error={null}
+          />
+      );
+    }
 
     if (reportType === 'pivot') {
-        // Pivot motoruna ham veri (data) ve pivot planını (config.pivot_config) veriyoruz.
         const pivotState = config?.pivot_config || { rows: [], columns: [], values: [] };
         
         return (
@@ -55,8 +89,6 @@ const ReportResultRenderer = ({ reportData, loading, error }) => {
         );
     }
 
-    // Rapor 'detail' ise, standart düz tabloya ham datayı (veya filtrelenmiş datayı, 
-    // backend ne döndürdüyse) veriyoruz.
     return (
         <Table 
             data={data} 
@@ -71,7 +103,6 @@ const ReportViewer = () => {
     const navigate = useNavigate();
     const { templates, isLoading: listLoading, error: listError, loadTemplates, deleteTemplate } = useReportTemplates();
     
-    // 'reportData' artık bizim BÜYÜK PAKETİMİZİ ({ config, data }) tutuyor
     const { data: reportData, loading: executeLoading, error: executeError, request: executeReport } = useApi(reportTemplatesApi.executeReportTemplate);
 
     const [selectedReport, setSelectedReport] = useState(null);
@@ -86,7 +117,6 @@ const ReportViewer = () => {
     };
 
     const handleDelete = async (report) => {
-        // ... (Bu fonksiyon aynı, değişiklik yok) ...
         const { success } = await deleteTemplate(report.id);
         if (success && selectedReport && selectedReport.id === report.id) {
             setSelectedReport(null); 
@@ -113,16 +143,11 @@ const ReportViewer = () => {
             }
             {listError && <p style={{color: 'red'}}>Rapor listesi yüklenirken bir hata oluştu.</p>}
 
-            {/* Sonuç Alanı */}
             {selectedReport && (
                 <div className={styles.resultsContainer}>
                     <Card title={`Rapor Sonuçları: ${selectedReport.title}`}>
-                        {/* ### NİHAİ DÜZELTME ###
-                          Akıllı Renderer'a artık sadece API'den dönen BÜYÜK PAKETİ yolluyoruz.
-                          Artık 'selectedReport.configuration_json'a (güvenilmez olana) ihtiyacımız yok.
-                        */}
                         <ReportResultRenderer 
-                            reportData={reportData} // { config, data } paketinin tamamı
+                            reportData={reportData} 
                             loading={executeLoading}
                             error={executeError}
                         />

@@ -2,7 +2,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
-import { Database, Grid, BookOpen } from 'react-feather';
+// ### YENİ: İlişkisel modeli temsil etmesi için GitMerge ikonunu ekliyoruz ###
+import { Database, Grid, BookOpen, GitMerge } from 'react-feather';
 import styles from './Sidebar.module.scss';
 
 const Sidebar = ({ isAdmin = false }) => {
@@ -14,12 +15,21 @@ const Sidebar = ({ isAdmin = false }) => {
       <nav className={styles.nav}>
         <ul className={styles.navList}>
           <li className={styles.navItem}>
-            {/* ### DEĞİŞİKLİK: to="/workspace" -> to="workspace" ### */}
             <NavLink to="workspace" className={getNavLinkClass}>
               <Grid size={20} className={styles.navIcon} />
               <span className={styles.navText}>Çalışma Alanı</span>
             </NavLink>
           </li>
+
+          {/* ### YENİ: VERİ MODELLERİ LİNKİ EKLENDİ ### */}
+          {/* Bu, bizim yeni DataAppWorkspace konteynerimize yönlendirecek. */}
+          <li className={styles.navItem}>
+            <NavLink to="data-apps" className={getNavLinkClass}>
+              <GitMerge size={20} className={styles.navIcon} />
+              <span className={styles.navText}>Veri Modelleri</span>
+            </NavLink>
+          </li>
+          {/* ### YENİ LİNK SONU ### */}
 
           <li className={styles.navItem}>
             <NavLink to="reports" className={getNavLinkClass}>
@@ -30,7 +40,6 @@ const Sidebar = ({ isAdmin = false }) => {
                   
           {isAdmin && (
             <li className={styles.navItem}>
-              {/* ### DEĞİŞİKLİK: to="/admin/connections" -> to="admin/connections" ### */}
               <NavLink to="admin/connections" className={getNavLinkClass}>
                 <Database size={20} className={styles.navIcon} />
                 <span className={styles.navText}>Veri Kaynakları</span>

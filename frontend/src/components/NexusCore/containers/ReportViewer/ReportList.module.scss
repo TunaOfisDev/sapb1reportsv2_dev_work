@@ -42,3 +42,70 @@
 .ownerInfo {
     font-style: italic;
 }
+
+
+.emptyMessage {
+  padding: var(--spacing-xlarge);
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  background-color: var(--color-background-secondary);
+  border-radius: var(--border-radius);
+  line-height: 1.6;
+}
+
+.cardBody {
+  /* ... (muhtemelen mevcut) ... */
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-medium); /* Açıklama ve meta arasını açar */
+}
+
+.description {
+  /* .cardBody içindeki 'p' tag'i için */
+  font-size: var(--font-size-small);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* --- YENİ EKLENEN STİLLER --- */
+.cardMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-small);
+  padding: var(--spacing-small) var(--spacing-medium);
+  background-color: var(--color-background-secondary);
+  border-radius: var(--border-radius-small);
+  font-size: var(--font-size-tiny); /* Çok küçük bir font */
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  
+  strong {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+}
+
+.metaIcon {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+/* --- YENİ STİL SONU --- */
+
+
+.cardFooter {
+  /* ... (muhtemelen mevcut) ... */
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-tiny);
+  color: var(--color-text-secondary);
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--spacing-medium);
+  margin-top: var(--spacing-medium);
+}
+
+.ownerInfo {
+  /* ... (muhtemelen mevcut) ... */
+  font-weight: 500;
+}

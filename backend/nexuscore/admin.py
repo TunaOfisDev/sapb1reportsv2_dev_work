@@ -10,11 +10,11 @@ from .models import (
     VirtualTable, 
     ReportTemplate, 
     DataApp, 
-    AppRelationship
+    AppRelationship,
+    DBTypeMapping # YENİ: Dinamik eşleştirme modelimizi ekliyoruz
 )
 
 # --- 1. DynamicDBConnection Admin ---
-# (Bu sınıf değişmedi, olduğu gibi kalıyor)
 class DynamicDBConnectionResource(resources.ModelResource):
     class Meta:
         model = DynamicDBConnection
@@ -23,7 +23,7 @@ class DynamicDBConnectionResource(resources.ModelResource):
 @admin.register(DynamicDBConnection)
 class DynamicDBConnectionAdmin(ImportExportModelAdmin):
     resource_class = DynamicDBConnectionResource
-    list_display = ('title', 'db_type', 'is_active', 'owner', 'updated_at')
+    list_display = ('id','title', 'db_type', 'is_active', 'owner', 'updated_at')
     list_filter = ('db_type', 'is_active')
     search_fields = ('title', 'owner__email')
     raw_id_fields = ('owner',)
@@ -46,7 +46,6 @@ class DynamicDBConnectionAdmin(ImportExportModelAdmin):
 
 
 # --- 2. VirtualTable Admin ---
-# (Bu sınıf değişmedi, olduğu gibi kalıyor)
 class VirtualTableResource(resources.ModelResource):
     class Meta:
         model = VirtualTable
@@ -76,43 +75,29 @@ class VirtualTableAdmin(ImportExportModelAdmin):
 
 
 # --- 3. YENİ: DataApp İlişkileri için Inline Admin ---
-# Bu, DataApp oluşturma sayfasının İÇİNDE ilişkileri eklememizi sağlar.
-
 class AppRelationshipInline(admin.TabularInline):
     """
     DataApp admin paneli içinde JOIN ilişkilerini yönetmek için inline arayüz.
     """
     model = AppRelationship
     fk_name = 'app'
-    extra = 1 # Varsayılan olarak 1 yeni boş satır göster
+    extra = 1
     verbose_name = "Veri Modeli İlişkisi"
     verbose_name_plural = "Veri Modeli İlişkileri (JOINs)"
-    
-    # Binlerce sanal tablo olabileceği için dropdown yerine arama kutusu kullanalım.
-    # Bu, VirtualTableAdmin'de 'search_fields' tanımlı olduğu için çalışır.
     autocomplete_fields = ['left_table', 'right_table']
 
 
 # --- 4. YENİ: DataApp Admin ---
-# Yeni DataApp modelimizi yönetmek için admin arayüzü
-
 @admin.register(DataApp)
 class DataAppAdmin(ImportExportModelAdmin):
     """
     DataApp (Veri Uygulaması) modelinin admin arayüzü.
-    İlişkiler (Relationships) bu arayüzün içinde inline olarak yönetilir.
     """
     list_display = ('title', 'connection', 'owner', 'sharing_status', 'updated_at')
     list_filter = ('sharing_status', 'connection__db_type', 'owner')
     search_fields = ('title', 'description', 'owner__email')
-    
-    # Bağlantılar için raw_id veya autocomplete kullanalım
     raw_id_fields = ('owner', 'connection')
-    
-    # ManyToMany alanı için bu widget, 'raw_id'den çok daha kullanışlıdır
     filter_horizontal = ('virtual_tables',)
-    
-    # İlişki yöneticisini bu sayfaya dahil et
     inlines = [AppRelationshipInline]
     
     fieldsets = (
@@ -132,8 +117,6 @@ class DataAppAdmin(ImportExportModelAdmin):
 
 
 # --- 5. GÜNCELLENMİŞ: ReportTemplate Admin ---
-# CRASH HATASINI GİDEREN DEĞİŞİKLİKLER BURADA
-
 class ReportTemplateResource(resources.ModelResource):
     class Meta:
         model = ReportTemplate
@@ -142,27 +125,16 @@ class ReportTemplateResource(resources.ModelResource):
 class ReportTemplateAdmin(ImportExportModelAdmin):
     """
     ReportTemplate modelinin admin panelindeki görünümünü yönetir.
-    Artık 'source_data_app' alanına referans verecek şekilde güncellendi.
     """
     resource_class = ReportTemplateResource
-    
-    # --- DÜZELTME 1: list_display ---
     list_display = ('title', 'source_data_app', 'owner', 'sharing_status', 'updated_at')
-    
-    # --- DÜZELTME 2: list_filter ---
-    # Yeni ilişki yolu: source_data_app -> connection -> db_type
     list_filter = ('sharing_status', 'owner', 'source_data_app__connection__db_type')
-    
     search_fields = ('title', 'description', 'owner__email')
-    
-    # --- DÜZELTME 3: raw_id_fields ---
     raw_id_fields = ('owner', 'source_data_app')
-    
     list_per_page = 20
     
     fieldsets = (
         ('Rapor Bilgileri', {
-            # --- DÜZELTME 4: fieldsets ---
             'fields': ('title', 'description', 'owner', 'source_data_app', 'sharing_status')
         }),
         ('Rapor Yapılandırması', {
@@ -175,3 +147,20 @@ class ReportTemplateAdmin(ImportExportModelAdmin):
         }),
     )
     readonly_fields = ('created_at', 'updated_at')
+
+
+# --- 6. YENİ VE NİHAİ ÇÖZÜM: DBTypeMapping Admin ---
+@admin.register(DBTypeMapping)
+class DBTypeMappingAdmin(ImportExportModelAdmin):
+    """
+    Dinamik olarak keşfedilen veritabanı tiplerinin yönetim paneli.
+    Yöneticiler, eşleşmeyen 'other' tiplerini buradan düzeltebilir.
+    """
+    list_display = ('db_type', 'source_type', 'general_category')
+    list_filter = ('db_type', 'general_category')
+    search_fields = ('db_type', 'source_type')
+    list_per_page = 20
+    # general_category'nin manuel olarak güncellenebilmesini sağlıyoruz
+    list_editable = ['general_category']
+    # Sadece db_type ve source_type'ın okunabilir olmasını sağlıyoruz
+    readonly_fields = ('db_type', 'source_type')

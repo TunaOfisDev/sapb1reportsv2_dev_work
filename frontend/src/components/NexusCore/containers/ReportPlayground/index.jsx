@@ -1,23 +1,23 @@
 // path: frontend/src/components/NexusCore/containers/ReportPlayground/index.jsx
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './ReportPlayground.module.scss';
 
-// Hook'lar, API'ler ve Ortak Bileşenler
+// --- GÜNCELLENMİŞ VE YENİ IMPORTLAR ---
 import { useApi } from '../../hooks/useApi';
 import { useNotifications } from '../../hooks/useNotifications';
-import * as virtualTablesApi from '../../api/virtualTablesApi';
+// Artık virtualTablesApi.execute'ye ihtiyacımız yok, DataApp'i çekmemiz lazım.
+import * as dataAppsApi from '../../api/dataAppsApi'; 
 import * as reportTemplatesApi from '../../api/reportTemplatesApi';
+
 import Spinner from '../../components/common/Spinner/Spinner';
 import Button from '../../components/common/Button/Button';
 import Input from '../../components/common/Input/Input';
-
-// Modüler bileşenlerimiz
 import DetailBuilder from './DetailBuilder';
 import PivotBuilder from './PivotBuilder';
 
-// Boş bir konfigürasyon şablonu
+// Boş bir konfigürasyon şablonu (Bu aynı kalır)
 const EMPTY_CONFIG = {
     report_type: 'detail',
     columns: [],
@@ -25,38 +25,52 @@ const EMPTY_CONFIG = {
 };
 
 const ReportPlayground = () => {
-    // 1. Mod Tespiti ve Hook Tanımlamaları
-    const { virtualTableId, reportId } = useParams();
+    // 1. GÜNCELLENMİŞ ROTA (ROUTE) VE MOD YÖNETİMİ
+    // Artık :virtualTableId değil, :appId bekliyoruz.
+    const { appId, reportId } = useParams();
     const isEditMode = Boolean(reportId); 
 
     const navigate = useNavigate();
     const { addNotification } = useNotifications();
 
-    // 2. API Kancaları
-    // sourceData bizim ana yakıt depomuzdur. { columns: [...], rows: [...] } içerir.
-    const { data: sourceData, loading: sourceLoading, error: sourceError, request: executeSourceQuery } = useApi(virtualTablesApi.executeVirtualTable);
+    // 2. GÜNCELLENMİŞ API KANCALARI
+    // Kaynak veriyi (DataApp) meta verisini çekmek için yeni hook:
+    const { data: sourceDataApp, loading: appLoading, error: appError, request: getSourceApp } = useApi(dataAppsApi.getDataAppById);
+    
+    // Mevcut şablonu (Edit moduysa) çekmek için hook (Bu aynı):
     const { data: existingTemplate, loading: templateLoading, request: getTemplate } = useApi(reportTemplatesApi.getReportTemplateById);
+    
+    // Kaydetme/Güncelleme hook'u (Bu da aynı):
     const { loading: isSaving, request: saveReportApi } = useApi(
         isEditMode ? reportTemplatesApi.updateReportTemplate : reportTemplatesApi.createReportTemplate
     );
+    // ESKİ executeSourceQuery hook'u kaldırıldı.
 
-    // 3. State Yönetimi
+    // 3. GÜNCELLENMİŞ STATE YÖNETİMİ
     const [reportTitle, setReportTitle] = useState('');
     const [reportType, setReportType] = useState('detail');
     const [configuration, setConfiguration] = useState(EMPTY_CONFIG);
-    const [currentSourceTableId, setCurrentSourceTableId] = useState(virtualTableId || null);
+    // Ana kaynağımız artık bir App ID.
+    const [currentAppId, setCurrentAppId] = useState(appId || null);
 
-
-    // 4. Veri Yükleme Mantığı (useEffect bağımlılıkları temizlendi)
+    // 4. TAMAMEN YENİLENMİŞ VERİ YÜKLEME MANTIĞI (useEffect)
     useEffect(() => {
-        const fetchTemplateAndSetState = async (id) => {
-            const { success, data } = await getTemplate(id);
+        const fetchTemplateAndApp = async (id) => {
+            const { success, data: templateData } = await getTemplate(id);
             if (success) {
-                setReportTitle(data.title);
-                const config = data.configuration_json || EMPTY_CONFIG;
+                // Şablondan state'i doldur
+                setReportTitle(templateData.title);
+                const config = templateData.configuration_json || EMPTY_CONFIG;
                 setConfiguration(config);
                 setReportType(config.report_type || 'detail');
-                setCurrentSourceTableId(data.source_virtual_table);
+                
+                // EN ÖNEMLİSİ: Şablonun hangi DataApp'e bağlı olduğunu state'e kaydet
+                const loadedAppId = templateData.source_data_app;
+                setCurrentAppId(loadedAppId);
+                
+                // Şimdi o DataApp'in meta verisini (kolon listesi için) çek
+                getSourceApp(loadedAppId);
+
             } else {
                 addNotification('Mevcut rapor yüklenirken hata oluştu.', 'error');
                 navigate('/nexus/reports');
@@ -64,45 +78,60 @@ const ReportPlayground = () => {
         };
 
         if (isEditMode && reportId) {
-            fetchTemplateAndSetState(reportId);
-        } else if (virtualTableId) {
-            setCurrentSourceTableId(virtualTableId);
+            // DÜZENLEME MODU: Önce şablonu çek, şablon bize hangi App'i çekeceğimizi söylesin.
+            fetchTemplateAndApp(reportId);
+        } else if (appId) {
+            // YENİ KAYIT MODU: App ID'si URL'den geliyor, doğrudan App meta verisini çek.
+            setCurrentAppId(appId);
+            getSourceApp(appId);
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isEditMode, reportId, virtualTableId]); // Kararlı bağımlılıklara güveniyoruz
+    }, [isEditMode, reportId, appId, getTemplate, getSourceApp, navigate, addNotification]);
+    // Not: Eski veri çekme (executeSourceQuery) effect'i tamamen kaldırıldı.
 
 
-    // Kaynak Veri Yükleyici
-    const memoizedExecuteQuery = useCallback(() => {
-        if (currentSourceTableId) {
-            executeSourceQuery(currentSourceTableId);
+    // --- 5. YOL HARİTASI MADDE 2'NİN TAM KARŞILIĞI: KOLON BİRLEŞTİRME (MERGE) ---
+    // Gelen DataApp verisinden (tüm ilişkili tabloların metadata'sını içeren)
+    // tek, benzersiz (unique) ve düz (flat) bir kolon listesi üretiyoruz.
+    const sourceColumns = useMemo(() => {
+        const allColumns = new Set();
+        if (!sourceDataApp || !sourceDataApp.virtual_table_details) {
+            return [];
         }
-    }, [currentSourceTableId, executeSourceQuery]);
+        
+        // DataApp içindeki her bir 'VirtualTable' detayında dön
+        for (const table of sourceDataApp.virtual_table_details) {
+            if (table.column_metadata) {
+                // O tablonun metadata'sındaki her bir kolon adını (key) al
+                for (const columnKey of Object.keys(table.column_metadata)) {
+                    allColumns.add(columnKey); // Set sayesinde otomatik olarak benzersiz olur
+                }
+            }
+        }
+        
+        return Array.from(allColumns); // Set'i tekrar Array'e çevir
+    }, [sourceDataApp]); // Sadece sourceDataApp değiştiğinde yeniden hesapla.
 
-    useEffect(() => {
-        memoizedExecuteQuery();
-    }, [memoizedExecuteQuery]);
 
-    
-    // Konfigürasyon değişimlerini yönetmek için memoize edilmiş callback
+    // Konfigürasyon değişim callback'leri (Bunlar aynı kaldı)
     const handlePivotChange = useCallback((pivotConfig) => {
         setConfiguration(prev => ({ ...prev, pivot_config: pivotConfig }));
     }, []); 
 
     const handleDetailConfigChange = useCallback((detailConfig) => {
-        // DetailBuilder da benzer bir optimizasyona ihtiyaç duyarsa diye (şimdi setConfiguration kullanıyor ama ileride değişebilir)
         setConfiguration(detailConfig);
     }, []);
 
-    // 5. Akıllı Kaydetme Fonksiyonu
+    // 6. GÜNCELLENMİŞ KAYDETME FONKSİYONU
     const handleSave = async () => {
         if (!reportTitle) {
             addNotification('Lütfen rapora bir başlık verin.', 'error');
             return;
         }
+        // KRİTİK GÜNCELLEME: source_virtual_table_id YERİNE source_data_app_id gönderiyoruz.
         const payload = {
             title: reportTitle,
-            source_virtual_table_id: currentSourceTableId,
+            source_data_app_id: currentAppId, // <-- DEĞİŞTİ
             configuration_json: { ...configuration, report_type: reportType },
             sharing_status: existingTemplate?.sharing_status || 'PRIVATE',
         };
@@ -118,18 +147,17 @@ const ReportPlayground = () => {
     };
 
 
-    // Render Edilecek Verileri Hazırla
-    if (sourceLoading || templateLoading) return <Spinner size="lg" />;
-    if (sourceError) return <div className={styles.error}>Kaynak veri yüklenirken bir hata oluştu.</div>;
+    // 7. GÜNCELLENMİŞ RENDER MANTIĞI
+    // Artık sourceLoading değil, appLoading ve templateLoading bekliyoruz
+    if (appLoading || templateLoading) return <Spinner size="lg" />;
+    if (appError) return <div className={styles.error}>Veri modeli yüklenirken bir hata oluştu: {appError.message}</div>;
     
-    // sourceData: { columns: [...], rows: [...] } tam veri nesnesi.
-    // sourceColumns: Sadece kolon isimleri dizisi.
-    const sourceColumns = sourceData?.columns || []; 
+    // sourceColumns artık useMemo'dan gelen birleşik (merged) listedir.
     
-
     return (
         <div className={styles.pageContainer}>
             <header className={styles.pageHeader}>
+                {/* Başlık ve Butonlar (Aynı kaldı) */}
                 <Input 
                     id="report-title"
                     label="Rapor Başlığı"
@@ -153,21 +181,29 @@ const ReportPlayground = () => {
             <div className={styles.playgroundContainer}>
                 {reportType === 'detail' ? (
                     <DetailBuilder 
-                        sourceData={sourceData} // DetailBuilder veriyi alıyor
+                        // NOT: DetailBuilder artık canlı veri önizlemesi alamaz.
+                        // Onu da sadece kolon listesinden (sourceColumns) seçim yapacak
+                        // ve konfigürasyonu yönetecek şekilde güncellememiz gerekecek.
+                        // Şimdilik sadece kolon listesini yolluyoruz.
+                        sourceColumns={sourceColumns}
                         config={configuration}
-                        setConfig={handleDetailConfigChange} // Callback kullandık
+                        setConfig={handleDetailConfigChange} 
                     />
                 ) : (
+                    // sourceColumns'un dolu olduğundan emin ol (artık useMemo'dan geliyor)
                     sourceColumns.length > 0 && (
                         <PivotBuilder 
-                            sourceColumns={sourceColumns}
+                            sourceColumns={sourceColumns} // BİRLEŞTİRİLMİŞ KOLON LİSTESİ
                             initialConfig={configuration.pivot_config || {}}
                             onChange={handlePivotChange} 
                             
-                            // ### YAKIT HATTI BAĞLANDI! ###
-                            // Motorun (PivotRenderer) çalışması için ham veriyi (sourceData) 
-                            // data prop'u olarak PivotBuilder'a geçirmemiz şart.
-                            data={sourceData} 
+                            // ### STRATEJİK DEĞİŞİKLİK ###
+                            // Bu Playground artık CANLI VERİ ÖNİZLEMESİ yapamaz,
+                            // çünkü birden fazla tabloyu frontend'de JOIN edemeyiz.
+                            // Playground artık sadece bir "konfigürasyon aracıdır".
+                            // Bu yüzden 'data' prop'unu kaldırıyoruz veya boş yolluyoruz.
+                            // PivotBuilder'ın data olmadan da çalışabilmesi gerekir.
+                            data={{ columns: [], rows: [] }} // Boş veri yolla
                         />
                     )
                 )}

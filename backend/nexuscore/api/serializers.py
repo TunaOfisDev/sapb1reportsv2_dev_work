@@ -36,10 +36,30 @@ class DynamicDBConnectionSerializer(serializers.ModelSerializer):
         extra_kwargs = { 'config_json': {'required': True} }
     
     def validate_db_type(self, value):
+        # ... (bu metot aynı kalıyor) ...
         if value not in SUPPORTED_DB_VALUES:
             raise serializers.ValidationError(
                 f"Geçersiz veritabanı türü: '{value}'. Desteklenen türlerden biri olmalıdır."
             )
+        return value
+
+    # !!! KALICI ÖNLEM BURADA BAŞLIYOR !!!
+    def validate_config_json(self, value):
+        """
+        config_json alanının Django'nun beklediği temel anahtarları içerdiğini doğrular.
+        """
+        if not isinstance(value, dict):
+            raise serializers.ValidationError("Yapılandırma bir JSON nesnesi (sözlük) olmalıdır.")
+        
+        required_keys = ['ENGINE', 'NAME', 'USER', 'PASSWORD', 'HOST']
+        
+        missing_keys = [key for key in required_keys if key not in value]
+        
+        if missing_keys:
+            raise serializers.ValidationError(
+                f"Yapılandırma JSON içinde şu zorunlu anahtarlar eksik: {', '.join(missing_keys)}"
+            )
+            
         return value
 
 # --- 2. Sanal Tablo için Serializer ---
@@ -83,20 +103,48 @@ class VirtualTableSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        user = self.context['request'].user
-        connection = validated_data.get('connection')
-        sql_query = validated_data.get('sql_query')
-        result = connection_manager.generate_metadata_for_query(connection, sql_query)
+      # Bu kısım tam olarak istediğimiz gibi.
+      # "connection" ve "sql_query" bilgilerini alıp...
+      user = self.context['request'].user
+      connection = validated_data.get('connection')
+      sql_query = validated_data.get('sql_query')
+      
+      # ... az önce yazdığımız zeki "veri dedektifi" fonksiyonunu çağırıyor.
+      result = connection_manager.generate_metadata_for_query(connection, sql_query)
 
-        if not result.get('success'):
-            raise serializers.ValidationError({
-                "sql_query": f"Sorgu çalıştırılamadı: {result.get('error')}"
-            })
+      if not result.get('success'):
+          raise serializers.ValidationError({
+              "sql_query": f"Sorgu çalıştırılamadı: {result.get('error')}"
+          })
+      
+      # Sonucu alıp 'column_metadata' alanına kaydediyor.
+      validated_data['column_metadata'] = result.get('metadata')
+      validated_data['owner'] = user
+      
+      return super().create(validated_data)
+    
+
+    def update(self, instance, validated_data):
+        # 'sql_query' alanı gelen veride var mı diye kontrol et.
+        new_sql_query = validated_data.get('sql_query')
         
-        validated_data['column_metadata'] = result.get('metadata')
-        validated_data['owner'] = user
-        
-        return super().create(validated_data)
+        # Eğer sorgu değişmişse, meta veriyi yeniden oluştur.
+        if new_sql_query and new_sql_query != instance.sql_query:
+            connection = instance.connection # Bağlantı değişmez, mevcudu kullan.
+            
+            # Zeki dedektifimizi tekrar göreve çağırıyoruz!
+            result = connection_manager.generate_metadata_for_query(connection, new_sql_query)
+            
+            if not result.get('success'):
+                raise serializers.ValidationError({
+                    "sql_query": f"Yeni sorgu çalıştırılamadı: {result.get('error')}"
+                })
+            
+            # Yeni meta veriyi instance üzerine yaz.
+            instance.column_metadata = result.get('metadata')
+
+        # Diğer tüm alanları normal şekilde güncelle.
+        return super().update(instance, validated_data)
 
 
 # --- 3. Uygulama İlişkileri için Serializer ---

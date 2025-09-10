@@ -43,7 +43,7 @@ def _direct_hdb_connection(config: Dict[str, Any]):
     try:
         connection = hanadb_api.connect(
             address=config.get('HOST'),
-            port=int(config.get('PORT')),
+            port=int(config.get('PORT')), # <-- DİKKAT: Port'u integer'a çeviriyor
             user=config.get('USER'),
             password=config.get('PASSWORD'),
             currentSchema=config.get('OPTIONS', {}).get('schema')
@@ -146,107 +146,142 @@ def execute_virtual_table_query(virtual_table: VirtualTable) -> Dict[str, Any]:
         return {"success": False, "error": f"Sorgu çalıştırılırken hata oluştu: {str(e)}"}
 
 
+
 def generate_metadata_for_query(connection_model: DynamicDBConnection, sql_query: str) -> Dict[str, Any]:
     """
-    Verilen sorgudan, bağlantı türüne göre doğru yöntemle meta veri üretir.
-    Bu fonksiyon artık veri tiplerini veritabanına kaydeder.
+    [DEBUG VERSİYONU]
+    Verilen sorgudan meta veri üretir ve teşhis için terminale detaylı bilgi basar.
     """
     if not connection_model.is_active:
         return {"success": False, "error": "Kullanılan veri kaynağı pasif durumdadır."}
 
     db_type = connection_model.db_type
-    
     if db_type not in SUPPORTED_DB_VALUES:
-        return {"success": False, "error": f"Desteklenmeyen veritabanı türü: '{db_type}'. Lütfen yönetici ile görüşün."}
+        return {"success": False, "error": f"Desteklenmeyen veritabanı türü: '{db_type}'."}
 
     config = connection_model.config_json
-
+    
+    # --- DEBUG BAŞLANGIÇ ---
+    print("\n" + "="*20 + " META VERİ AYIKLAMA BAŞLADI " + "="*20)
+    
     try:
-        description = [] 
+        description: List[Tuple] = []
         
-        # SORGUNUN SADECE İLK 3 SATIRINI ÇEKEREK PERFORMANS KAZANIYORUZ
-        sample_rows = _get_sample_data_for_type_inference(connection_model, sql_query, limit=3)
-        if sample_rows is None:
-            return {"success": False, "error": "Veri tipi tahmini için örnek veri alınamadı."}
-        
-        # description'ı almak için sorgu optimizasyonunu kullanmaya devam edebiliriz
-        # bu, boş bir sorgu olduğu için hızlıdır
         if db_type in DIRECT_CONNECT_TYPES:
             with _direct_hdb_connection(config) as conn:
                 with conn.cursor() as cursor:
                     cursor.execute(sql_query)
                     description = cursor.description or []
-        
-        elif db_type in MSSQL_DIALECT_TYPES:
-            with _django_engine_connection(config) as conn:
-                with conn.cursor() as cursor:
-                    optimized_query = f"SELECT TOP 0 * FROM ({sql_query}) AS subquery"
-                    cursor.execute(optimized_query)
-                    description = cursor.description or []
-        
         else:
+            optimized_query = sql_query
+            if db_type in MSSQL_DIALECT_TYPES:
+                if not sql_query.strip().upper().startswith('WITH'):
+                    optimized_query = f"SELECT TOP 0 * FROM ({sql_query}) AS subquery"
+            else:
+                if not sql_query.strip().upper().startswith('WITH'):
+                    optimized_query = f"SELECT * FROM ({sql_query}) AS subquery LIMIT 0"
+            
             with _django_engine_connection(config) as conn:
                 with conn.cursor() as cursor:
-                    optimized_query = f"SELECT * FROM ({sql_query}) AS subquery LIMIT 0"
                     cursor.execute(optimized_query)
                     description = cursor.description or []
-        
+
+        if not description:
+             return {"success": False, "error": "Sorgu çalıştı ancak kolon bilgisi döndürmedi."}
+
+        # --- DEBUG ADIM 1: ÖRNEK VERİYİ GÖRSELLEŞTİR ---
+        sample_rows = _get_sample_data_for_type_inference(connection_model, sql_query, limit=5)
+        print(f"\n[DEBUG 1] _get_sample_data_for_type_inference'dan dönen örnek satırlar:")
+        print(sample_rows)
+        if sample_rows:
+            print(f"[DEBUG 1.1] İlk satırdaki ilk hücrenin tipi: {type(sample_rows[0][0])}")
+
+
         metadata = {}
         for i, col_desc in enumerate(description):
-            if not isinstance(col_desc, tuple) or len(col_desc) < 2:
-                logger.warning(f"Beklenmeyen meta veri formatı saptandı: {col_desc}")
-                continue
-                
             col_name = col_desc[0]
             type_obj = col_desc[1]
-
-            # Yeni dinamik veri tipi tespiti
-            # Eğer get_type_mapping fonksiyonu tipi veritabanından alabiliyorsa onu kullanırız
-            # Aksi halde, örnek veriden tipi tahmin ederiz.
-            data_type = get_type_mapping(db_type, type_obj)
+            source_type = _get_source_type_str(type_obj)
             
-            # Eğer tip hala 'other' ise ve elimizde örnek veri varsa, tahmin etmeye çalışırız
+            data_type = _get_type_mapping_from_db(db_type, source_type)
+            
+            # --- DEBUG ADIM 2: SAYISAL BİR KOLON İÇİN TAHMİN SÜRECİNİ İZLE ---
+            is_bakiye_column = col_name.lower() == 'bakiye' # 'Bakiye' kolonunu özel olarak izleyelim
+
             if data_type == 'other' and sample_rows:
-                # Sütun bazında örnekleri al
                 column_samples = [row[i] for row in sample_rows if len(row) > i and row[i] is not None]
-                if column_samples:
-                    inferred_type = _infer_type_from_samples(column_samples)
-                    if inferred_type != 'other':
-                        # Tahmin edilen tipi kaydetme
-                        _save_inferred_type(db_type, type_obj, inferred_type)
-                        data_type = inferred_type
+                
+                if is_bakiye_column:
+                    print(f"\n[DEBUG 2] 'Bakiye' kolonu için örnekler (None'lar hariç):")
+                    print(column_samples)
+                    if column_samples:
+                        print(f"[DEBUG 2.1] 'Bakiye' kolonundaki ilk örneğin tipi: {type(column_samples[0])}")
+
+                inferred_type = _infer_type_from_samples(column_samples)
+                
+                if is_bakiye_column:
+                     print(f"[DEBUG 2.2] 'Bakiye' kolonu için tahmin edilen tip: {inferred_type}")
+
+                _save_inferred_type(db_type, source_type, inferred_type)
+                data_type = inferred_type
             
             metadata[col_name] = {
-                "label": col_name,
-                "visible": True,
-                "dataType": data_type
+                "label": col_name.replace("_", " ").title(),
+                "visible": True, "dataType": data_type, "nativeType": source_type
             }
         
-        if not metadata:
-            return {"success": False, "error": "Sorgu başarıyla çalıştı ancak hiçbir kolon bilgisi (meta veri) döndürmedi."}
-
+        print("\n" + "="*20 + " META VERİ AYIKLAMA BİTTİ " + "="*23 + "\n")
         return {"success": True, "metadata": metadata}
 
     except Exception as e:
         logger.error(f"Sorgu meta verisi alınırken hata (Connection ID: {connection_model.id}): {e}", exc_info=True)
         return {"success": False, "error": f"Sorgu meta verisi alınırken hata oluştu: {str(e)}"}
 
+
 # Yeni yardımcı fonksiyonlar
 def _infer_type_from_samples(samples: List[Any]) -> str:
-    """Örnek veri listesinden veri tipini tahmin eder."""
-    # Sadece ilk 3 verinin tamamı sayısal veya ondalıklıysa 'number' olarak işaretle
-    is_number = all(isinstance(s, (int, float, Decimal)) for s in samples)
-    if is_number:
-        return 'number'
-    
-    # Sadece ilk 3 verinin tamamı tarih veya datetime'sa 'datetime' olarak işaretle
-    is_datetime = all(isinstance(s, (datetime.datetime, datetime.date)) for s in samples)
-    if is_datetime:
-        # Eğer hepsi tarihse ama datetime değilse 'date' olarak işaretle
-        is_date = all(isinstance(s, datetime.date) and not isinstance(s, datetime.datetime) for s in samples)
-        return 'date' if is_date else 'datetime'
+    """
+    Örnek veri listesinden veri tipini tahmin eder.
+    BU GÜNCELLENMİŞ VERSİYON, string olarak gelen sayıları da tanıyabilir.
+    """
+    if not samples:
+        return 'string'
 
-    # Diğer durumlarda string olarak kabul edebiliriz
+    # Önce orijinal tipleri kontrol edelim (iyi sürücüler için)
+    if all(isinstance(s, bool) for s in samples): return 'boolean'
+    if all(isinstance(s, int) for s in samples): return 'integer'
+    if all(isinstance(s, datetime.datetime) for s in samples): return 'datetime'
+    if all(isinstance(s, datetime.date) for s in samples): return 'date'
+    
+    # Şimdi "ambalajı açma" kısmı: Her örneğin sayıya benzip benzemediğini kontrol et.
+    # try-except bloğu, metinleri sayıya çevirmeye çalışırken oluşacak hataları yakalar.
+    is_numeric = True
+    is_integer = True
+    for sample in samples:
+        if isinstance(sample, (int, float, Decimal)):
+            if not isinstance(sample, int):
+                is_integer = False
+            continue # Zaten sayısal, sonraki örneğe geç
+            
+        # Eğer string ise, sayıya çevirmeyi dene
+        if isinstance(sample, str):
+            try:
+                float(sample.replace(',', '.')) # Ondalık için virgülü noktaya çevir
+                if '.' in sample or ',' in sample:
+                    is_integer = False
+            except (ValueError, TypeError):
+                # Bu örnek sayıya çevrilemedi, demek ki bu kolon sayısal değil.
+                is_numeric = False
+                break # Döngüyü kır, daha fazla kontrol anlamsız.
+        else:
+            # String, int, float, Decimal dışında bir tip (örn: NoneType)
+            is_numeric = False
+            break
+
+    if is_numeric:
+        return 'integer' if is_integer else 'decimal'
+        
+    # Hiçbirine uymuyorsa, bu kesinlikle bir string'dir.
     return 'string'
 
 def _save_inferred_type(db_type: str, type_obj: Any, general_category: str):
@@ -263,3 +298,19 @@ def _save_inferred_type(db_type: str, type_obj: Any, general_category: str):
         logger.info(f"Yeni veri tipi otomatik olarak kaydedildi: '{db_type}' -> '{source_type_str}' -> '{general_category}'")
     except Exception as e:
         logger.error(f"Tahmin edilen veri tipi kaydedilirken hata oluştu: {e}")
+
+def _get_source_type_str(type_obj: Any) -> str:
+    """Veritabanı sürücüsünden gelen ham tip nesnesini güvenli bir string'e çevirir."""
+    # SAP HANA hdbcli.dbapi.FIELD_TYPE nesneleri için
+    if hasattr(type_obj, 'name') and isinstance(type_obj.name, str):
+        return type_obj.name
+    # Django cursor.description'dan gelen tamsayı kodları için
+    return str(type_obj)
+
+def _get_type_mapping_from_db(db_type: str, source_type: str) -> str:
+    """Verilen ham tipi, DBTypeMapping tablosundan arar."""
+    try:
+        mapping = DBTypeMapping.objects.get(db_type=db_type, source_type=source_type)
+        return mapping.general_category
+    except DBTypeMapping.DoesNotExist:
+        return 'other'

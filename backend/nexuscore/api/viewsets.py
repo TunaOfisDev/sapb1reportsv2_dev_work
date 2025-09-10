@@ -85,8 +85,15 @@ class VirtualTableViewSet(viewsets.ModelViewSet):
     def execute(self, request, pk=None):
         virtual_table = self.get_object()
         result = connection_manager.execute_virtual_table_query(virtual_table)
+        
         if not result.get('success'):
             return Response({"error": result.get('error')}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # !!! STRATEJİK İYİLEŞTİRME BURADA BAŞLIYOR !!!
+        # Sorgu sonucuyla birlikte, bu tabloya ait olan ve zaten veritabanında
+        # sakladığımız zengin meta veriyi de yanıta ekleyelim.
+        result['metadata'] = self.get_serializer(virtual_table).data.get('column_metadata')
+        
         return Response(result)
 
 

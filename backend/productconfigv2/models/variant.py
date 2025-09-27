@@ -7,6 +7,20 @@ from .product import Product
 
 class Variant(BaseModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="variants", verbose_name="Ürün")
+    project_name = models.CharField(
+        max_length=200, 
+        null=True, 
+        blank=True, 
+        verbose_name="Proje Adı",
+        db_index=True # Bu alanda sık arama yapılacağı için index ekliyoruz.
+    )
+    reference_code = models.CharField(
+        max_length=100, 
+        null=True, 
+        blank=True, 
+        verbose_name="Referans Kodu (55'li)",
+        db_index=True # Bu alanda arama ve filtreleme yapacaksanız performansı artırır.
+    )
     new_variant_code = models.CharField(max_length=100, unique=True, verbose_name="Yeni Varyant Kodu")
     new_variant_description = models.CharField(max_length=500, verbose_name="Yeni Varyant Adı")
     image = models.ImageField(upload_to="variant_images/", null=True, blank=True, verbose_name="Görsel")

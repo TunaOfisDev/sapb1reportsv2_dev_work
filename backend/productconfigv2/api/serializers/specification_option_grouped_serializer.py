@@ -12,6 +12,7 @@ class SpecOptionNestedSerializer(serializers.ModelSerializer):
             'name',
             'variant_code',
             'variant_description',
+            'reference_code',
             'price_delta',
         ]
 

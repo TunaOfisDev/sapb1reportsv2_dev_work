@@ -7,27 +7,24 @@ from django.contrib.auth import get_user_model
 # Gerekli fonksiyonları ve modelleri içe aktarıyoruz
 from .utils.data_fetcher import fetch_raw_sales_data_from_hana
 from .models import CustomerSalesRawData
-from sapreports.jwt_utils import get_token_for_user # Sistemsel token almak için bir yol (varsayımsal)
-
+from sapreports.jwt_utils import get_access_token_for_system_user
 import logging
 
 logger = logging.getLogger(__name__)
 
 def get_system_auth_token():
     """
-    Arka plan görevleri için geçerli bir JWT token alır.
-    Bu, 'sistem kullanıcısı' gibi özel bir kullanıcı üzerinden yapılmalıdır.
+    Arka plan görevleri için geçerli bir JWT access token alır.
+    Sistem kullanıcısı e-postası settings.SYSTEM_USER_EMAIL'den gelir.
+    Kullanıcı yoksa veya token üretilemezse None döner.
     """
-    # NOT: Bu fonksiyonu kendi projenizdeki bir sistem kullanıcısına göre
-    # uyarlamanız gerekmektedir. Örnek olarak 'system_user@tunacelik.com.tr'
-    # kullanılmıştır.
     try:
-        User = get_user_model()
-        system_user = User.objects.get(email='system_user@tunacelik.com.tr')
-        token = get_token_for_user(system_user)
-        return token.get('access')
-    except User.DoesNotExist:
-        logger.error("Sistem kullanıcısı bulunamadı! Veri çekme görevi token alamadı.")
+        access = get_access_token_for_system_user()
+        if not access:
+            logger.error("Sistem kullanıcısı için access token alınamadı (email bulunamadı veya SimpleJWT hatası).")
+        return access
+    except Exception as e:
+        logger.error(f"Token alma hatası: {e}")
         return None
 
 

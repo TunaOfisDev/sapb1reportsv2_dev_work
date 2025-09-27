@@ -138,6 +138,30 @@
   background: #d4e6f4;
 }
 
+/* --------------------------------- */
+/*  Temizlik / Yeniden Dene butonu   */
+/* --------------------------------- */
+.bulk-create-form__reset-btn {
+  display: inline-block;
+  margin-top: 1rem;
+  background: #d32f2f;            /* kırmızı uyarı tonu */
+  color: #fff;
+  font-weight: 600;
+  padding: 0.55rem 1.4rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.25s, transform 0.1s;
+}
+
+.bulk-create-form__reset-btn:hover {
+  background: #b52b2b;            /* koyu kırmızı */
+}
+
+.bulk-create-form__reset-btn:active {
+  transform: scale(0.97);
+}
+
 
 /* Responsive */
 @media (max-width: 768px) {

@@ -1,0 +1,21 @@
+SAP HANA • Stok Kartı İşlem Özeti
+------------------------------------------------------------
+👤 İşlemi Yapan : {{ initiated_by }}
+📌 İşlem Tipi   : {{ action_type_verbose }}
+
+✅ Başarılı Kartlar : {{ success_count }} adet
+{% if success_count %}
+{% for c in success_cards %}
+  - {{ c.item_code }} | {{ c.item_name }} | {{ c.price }} {{ c.currency }} | Grup: {{ c.items_group_code }}-{{ c.group_label }}
+{% endfor %}
+{% endif %}
+
+❌ Hatalı Girdiler : {{ fail_count }} adet
+{% if fail_count %}
+{% for e in error_logs %}
+  - {{ e.item_code|default:"Bilinmiyor" }} ⇒ {{ e.error|default:"Hata nedeni bilinmiyor" }}
+{% endfor %}
+{% endif %}
+
+------------------------------------------------------------
+Bu mesaj, Tuna Ofis A.Ş. SAP Stok Kart Entegrasyonu tarafından otomatik olarak gönderilmiştir.

@@ -13,6 +13,13 @@ class SpecOption(BaseModel):
     variant_code = models.CharField(max_length=20, null=True, blank=True, verbose_name="Varyant Kod Parçası")
     variant_description = models.CharField(max_length=100, null=True, blank=True, verbose_name="Varyant Açıklama Parçası")
 
+    reference_code = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        verbose_name="Referans Fiyat Kodu (55'li Kod Parçası)"
+    )
+
     price_delta = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="Fiyat Etkisi")
     is_default = models.BooleanField(default=False, verbose_name="Varsayılan mı?")
     display_order = models.PositiveIntegerField(default=1, verbose_name="Görsel Sıra")

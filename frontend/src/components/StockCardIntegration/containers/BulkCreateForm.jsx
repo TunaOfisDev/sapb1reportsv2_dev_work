@@ -1,23 +1,25 @@
 // path: frontend/src/components/StockCardIntegration/containers/BulkCreateForm.jsx
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import styles from '../css/BulkCreateForm.module.css';
 import useBulkUpload from '../hooks/useBulkUpload';
 import useApiStatus from '../hooks/useApiStatus';
 import { bulkCreateStockCards } from '../api/stockCardApi';
 import PreviewTable from '../views/PreviewTable';
-import { validateBulkData } from '../utils/BulkFormValidators';     // ⬅️ validator
+import { validateBulkData, MAX_BULK_ROWS } from '../utils/BulkFormValidators';
 import sampleXlsx from '../templates/sample_stockcard_template.xlsx';
 
 const BulkCreateForm = () => {
+  const fileInputRef = useRef(null);
+
+  /* ------------------ Upload & API ------------------ */
   const { previewData, fileError, handleFileUpload, resetUpload } = useBulkUpload();
   const { loading, success, error, start, succeed, fail } = useApiStatus();
 
+  /* -------------------- Local ----------------------- */
   const [showPreview, setShowPreview] = useState(false);
-  const [validationErrors, setValidationErrors] = useState([]);     // ⬅️ yeni
+  const [validationErrors, setValidationErrors] = useState([]);
 
-  /* -----------------------------------------------
-   *  Ön-izleme butonu → önce VALIDATE
-   * --------------------------------------------- */
+  /* --------------- Ön-izleme ------------------------ */
   const handlePreviewClick = () => {
     const { isValid, errors: valErrs } = validateBulkData(previewData);
     if (!isValid) {
@@ -29,7 +31,7 @@ const BulkCreateForm = () => {
     setShowPreview(true);
   };
 
-  /* SAP’ya gönder */
+  /* --------------- SAP’ya gönder -------------------- */
   const handleSubmit = async () => {
     if (previewData.length === 0) {
       fail('Yüklenmiş veri bulunamadı.');
@@ -39,14 +41,21 @@ const BulkCreateForm = () => {
     try {
       await bulkCreateStockCards(previewData);
       succeed('Stok kartları başarıyla gönderildi!');
-      resetUpload();
-      setShowPreview(false);
+      resetAll();
     } catch (err) {
       fail(err);
     }
   };
 
-  /* ------------ Ön-izleme ekranı ------------ */
+  /* --------------- SIFIRLA -------------------------- */
+  const resetAll = () => {
+    resetUpload();
+    setShowPreview(false);
+    setValidationErrors([]);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  /* --------------- Ön-İzleme Ekranı ----------------- */
   if (showPreview) {
     return (
       <div className={styles['bulk-create-form']}>
@@ -67,7 +76,7 @@ const BulkCreateForm = () => {
             disabled={loading}
             className={styles['bulk-create-form__submit']}
           >
-            {loading ? 'Gönderiliyor…' :  'SAP ya Gönder'}
+            {loading ? 'Gönderiliyor…' : 'SAP’ya Gönder'}
           </button>
         </div>
 
@@ -77,7 +86,7 @@ const BulkCreateForm = () => {
     );
   }
 
-  /* ------------- Yükleme ekranı ------------- */
+  /* --------------- Yükleme Ekranı -------------------- */
   return (
     <div className={styles['bulk-create-form']}>
       <h2 className={styles['bulk-create-form__title']}>Çoklu Stok Kartı Yükleme</h2>
@@ -88,7 +97,8 @@ const BulkCreateForm = () => {
           📥 Örnek Excel Şablonunu İndir
         </a>
         <span className={styles['bulk-create-form__sample-hint']}>
-          Dosyayı indirip başlıkları değiştirmeden kendi verilerinizi girin.
+          Dosyayı indirip başlıkları değiştirmeden verilerinizi girin.{' '}
+          <strong>Tek seferde en fazla {MAX_BULK_ROWS} satır</strong> yüklenebilir.
         </span>
       </div>
 
@@ -98,6 +108,7 @@ const BulkCreateForm = () => {
           ? 'Yeni dosya seç (var olanı değiştir)'
           : 'Excel dosyasını buraya bırakın ya da tıklayın'}
         <input
+          ref={fileInputRef}
           id="stockcard-file"
           type="file"
           accept=".xlsx,.xls"
@@ -105,9 +116,9 @@ const BulkCreateForm = () => {
           className={styles['bulk-create-form__input']}
         />
       </label>
-      {fileError && <p className={styles['bulk-create-form__error']}>{fileError}</p>}
 
-      {/* Validator hataları */}
+      {/* ➡️ Hata veya uyarılar */}
+      {fileError && <p className={styles['bulk-create-form__error']}>{fileError}</p>}
       {validationErrors.length > 0 && (
         <div className={styles['bulk-create-form__error-list']}>
           <p><strong>Bulunan Hatalar:</strong></p>
@@ -118,6 +129,17 @@ const BulkCreateForm = () => {
           </ul>
         </div>
       )}
+      {error && <p className={styles['bulk-create-form__error']}>{error}</p>}
+
+      {/* ➡️ Yeni Eylem: “Temizle & Yeniden Dene” */}
+      {(fileError || validationErrors.length > 0 || error) && (
+        <button
+          onClick={resetAll}
+          className={styles['bulk-create-form__reset-btn']}
+        >
+          ✖ Dosyayı Temizle / Yeniden Dene
+        </button>
+      )}
 
       {/* Ön-izleme butonu */}
       {previewData.length > 0 && (
@@ -125,7 +147,7 @@ const BulkCreateForm = () => {
           <strong>{previewData.length}</strong> kayıt yüklendi.
           <button
             className={styles['bulk-create-form__preview-btn']}
-            onClick={handlePreviewClick}     
+            onClick={handlePreviewClick}
           >
             Ön-izle
           </button>
@@ -133,7 +155,6 @@ const BulkCreateForm = () => {
       )}
 
       {success && <p className={styles['bulk-create-form__success']}>{success}</p>}
-      {error && <p className={styles['bulk-create-form__error']}>{error}</p>}
     </div>
   );
 };

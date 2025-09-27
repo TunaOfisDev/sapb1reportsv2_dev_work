@@ -16,6 +16,15 @@ class Product(BaseModel):
 
     base_price = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, verbose_name="Temel Fiyat")
     currency = models.CharField(max_length=10, default="EUR", verbose_name="Para Birimi")
+
+    # YENİ ALAN: Renksiz teklif kodunun temelini burada tutacağız (örn: "55.BW")
+    reference_product_code = models.CharField(
+        max_length=30, 
+        null=True, 
+        blank=True, 
+        verbose_name="Referans Ürün Kodu (55'li)"
+    )
+
     variant_order = models.PositiveIntegerField(default=1, verbose_name="Varyant Sırası")
 
     class Meta:

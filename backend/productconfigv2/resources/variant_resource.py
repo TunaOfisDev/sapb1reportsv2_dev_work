@@ -16,9 +16,11 @@ class VariantResource(BaseResource):
     class Meta:
         model = Variant
         fields = (
-            "id", "product_code", "new_variant_code", "new_variant_description", "image",
-            "total_price", "currency", "is_generated",
-            "created_at", "updated_at", "is_active"
+            "id", "product_code",
+            "reference_code", # YENİ ALAN (55'li kod)
+            "new_variant_code", # 30'lu kod
+            "new_variant_description", "image", "total_price", "currency", 
+            "is_generated", "created_at", "updated_at", "is_active"
         )
         export_order = fields
 

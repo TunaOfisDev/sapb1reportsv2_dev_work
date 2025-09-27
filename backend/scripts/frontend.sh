@@ -39,7 +39,7 @@ npm run build
 cp build/index.html build/404.html
 
 # Build klasörünün www-data erişimine açılması
-sudo chown -R www-data:sapb1 build
+sudo chown -R userbt:userbt build
 sudo chmod -R 775 build
 success_msg "🔧 build yetkileri www-data:sapb1 olarak ayarlandı."
 

@@ -1,30 +1,43 @@
 // path: frontend/src/components/StockCardIntegration/containers/StockCardDashboard.jsx
 
 import { useState } from 'react';
-import styles from '../css/StockCardDashboard.module.css'; // ✅ module.css olarak import edildi
-import { StockCardForm, BulkCreateForm, UpdateForm, StockCardList } from '../index';
-import HelptextPanel from '../containers/HelptextPanel';
+import styles from '../css/StockCardDashboard.module.css';
+import {
+  StockCardForm,
+  BulkCreateForm,
+  UpdateForm,
+  StockCardList
+} from '../index';
+import HelptextPanel from './HelptextPanel';
+import ProductPriceListDashboard from './ProductPriceListDashboard'; // ✅ yeni bileşen eklendi
 
 const StockCardDashboard = () => {
   const [activeTab, setActiveTab] = useState('form');
 
   const renderActiveTab = () => {
-    if (activeTab === 'form') {
-      return (
-        <div className={styles['stock-dashboard__split']}>
-          <div className={styles['stock-dashboard__left']}>
-            <StockCardForm />
+    switch (activeTab) {
+      case 'form':
+        return (
+          <div className={styles['stock-dashboard__split']}>
+            <div className={styles['stock-dashboard__left']}>
+              <StockCardForm />
+            </div>
+            <div className={styles['stock-dashboard__right']}>
+              <HelptextPanel />
+            </div>
           </div>
-          <div className={styles['stock-dashboard__right']}>
-            <HelptextPanel />
-          </div>
-        </div>
-      );
+        );
+      case 'bulk':
+        return <BulkCreateForm />;
+      case 'update':
+        return <UpdateForm />;
+      case 'list':
+        return <StockCardList />;
+      case 'price':
+        return <ProductPriceListDashboard />; // ✅ yeni sekme içeriği
+      default:
+        return null;
     }
-    if (activeTab === 'bulk') return <BulkCreateForm />;
-    if (activeTab === 'update') return <UpdateForm />;
-    if (activeTab === 'list') return <StockCardList />;
-    return null;
   };
 
   return (
@@ -39,6 +52,7 @@ const StockCardDashboard = () => {
           { key: 'bulk', label: '📂 Çoklu Yükleme' },
           { key: 'update', label: '✏️ Güncelleme' },
           { key: 'list', label: '📄 SAP Listesi' },
+          { key: 'price', label: '💶 Ürün Fiyat Listesi' }, // ✅ yeni sekme
         ].map((tab) => (
           <div
             key={tab.key}

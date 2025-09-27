@@ -81,8 +81,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 1.5rem;
-  border-top: 1px solid #EAEDF2;
+  padding-top: 0; /* veya 0.5rem gibi küçük bir değer */
+  /* border-top: 1px solid #EAEDF2; */ /* Bu satır kaldırıldı */
+  margin-bottom: 1.5rem; /* Altındaki bileşenle arasına boşluk koymak için */
 }
 
 /* Sıfırla Butonu */
@@ -130,6 +131,86 @@
   border-bottom: 1px solid #ccc;
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
+}
+
+
+/* --- Proje Adı Input Alanı Stilleri --- */
+.form-group.project-name-group {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+}
+
+.project-name-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.project-name-input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  box-sizing: border-box; /* Önemli */
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project-name-input:focus {
+  border-color: #0F6BB4;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(15, 107, 180, 0.2);
+}
+
+/* --- Fiyat Sorgulama Alanı Stilleri --- */
+.price-query-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+}
+
+.price-query-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.price-query-button:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.price-query-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.price-display {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0F6BB4;
+}
+
+.price-display .price-error {
+  font-size: 0.9rem;
+  color: #dc3545;
+  font-weight: 500;
 }
 
 /* Responsive: Mobilde sütunları alt alta göster */

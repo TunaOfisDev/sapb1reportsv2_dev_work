@@ -20,6 +20,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = [
             "id", "code", "name", "image",
+            "reference_product_code",  # YENİ EKLENEN ALAN
             "variant_code", "variant_description",
             "base_price", "currency", "variant_order",
             "family", "family_id"

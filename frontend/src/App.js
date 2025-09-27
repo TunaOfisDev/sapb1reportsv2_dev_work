@@ -69,19 +69,12 @@ import { ProductConfigProvider } from './components/ProductConfigv2/contexts/Pro
 import { RuleProvider } from './components/ProductConfigv2/contexts/RuleContext';
 import ConfiguratorMain from './components/ProductConfigv2/components/Configurator/ConfiguratorMain';
 import VariantProductListPage from './components/ProductConfigv2/pages/VariantProductListPage'; 
-
+import VariantListPage from './components/ProductConfigv2/pages/VariantListPage'; 
 
 // Tuna insaat importlari
 import TunaInsTotalRiskContainer from './components/TunaInsTotalRisk/containers/TunaInsTotalRiskContainer';
 import TunaInsSupplierPaymentContainer from './components/TunaInsSupplierPayment/containers/TunaInsSupplierPaymentContainer';
 import TunaInsSupplierAdvanceBalanceContainer from './components/TunaInsSupplierAdvanceBalance/containers/TunaInsSupplierAdvanceBalanceContainer';
-
-
-// YENİ EKLENEN FORMFORGEAPI MODÜLÜ
-import FormForgeApiModule from './components/formforgeapi';
-
-// ##### NEXUS CORE ENTEGRASYONU - Adım 1: Modülü import et #####
-import NexusCore from './components/NexusCore';
 
 import CustomerSalesV2 from './components/CustomerSalesV2';
 
@@ -133,9 +126,9 @@ function App() {
             <Route path="/newcustomerform/edit/:id" element={<EditCustomerForm />} />
             <Route path="/systemnotebook" element={<SystemNotebook />} />
 
-            <Route path="/customersalesv2" element={<CustomerSalesV2 />} />
-
             <Route path="/stockcards" element={<StockCardDashboard />} />
+
+            <Route path="/customersalesv2" element={<CustomerSalesV2 />} />
 
             {/* BOM Cost Manager Rotaları */}
             <Route
@@ -182,20 +175,12 @@ function App() {
               </ProductConfigProvider>
             }
           />   
-
-            {/* YENİ EKLENEN FORMFORGEAPI ROTASI */}
-            <Route path="/formforgeapi/*" element={<FormForgeApiModule />} />
+          <Route path="/variants" element={<VariantListPage />}/>
 
             {/* Tuna Insaat rotaları */}  
             <Route path="/tunainstotalrisk" element={<TunaInsTotalRiskContainer />} />  
             <Route path="/tunainssupplierpayment" element={<TunaInsSupplierPaymentContainer />} />  
             <Route path="/tunainssupplieradvancebalance" element={<TunaInsSupplierAdvanceBalanceContainer />} />  
-
-            {/* ##### NEXUS CORE ENTEGRASYONU ##### */}
-            {/* BU DOĞRU OLAN TEK SATIRDIR. */}
-            {/* /nexus/ ile başlayan TÜM trafiği NexusCore bileşenine yönlendirir. */}
-            <Route path="/nexus/*" element={<NexusCore />} />
-            
 
             {/* Fallback (NotFound yönlendirmesi) */}
             <Route path="*" element={<NotFound />} />

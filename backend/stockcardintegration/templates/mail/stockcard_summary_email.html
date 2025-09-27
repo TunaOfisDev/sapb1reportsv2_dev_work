@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; color:#333; }
+    .wrapper { max-width:640px; margin:auto; }
+    .header { background:#00426e; color:#fff; padding:16px; text-align:center; }
+    h1      { font-size:20px; margin:0; }
+    table   { width:100%; border-collapse:collapse; margin:12px 0; }
+    th,td   { border:1px solid #e1e1e1; padding:6px 8px; font-size:14px; }
+    th      { background:#f5f5f5; text-align:left; }
+    .fail   { color:#c62828; }
+    .success{ color:#2e7d32; }
+    .footer { font-size:12px; color:#777; margin-top:24px; text-align:center; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <h1>Stok Kartı İşlem Özeti</h1>
+    </div>
+
+    <p><strong>İşlemi Yapan:</strong> {{ initiated_by }}<br/>
+       <strong>İşlem Tipi&nbsp;&nbsp;&nbsp;:</strong> {{ action_type_verbose }}</p>
+
+    <h2 class="success">Başarıyla İşlenen Kartlar — {{ success_count }}</h2>
+    {% if success_count %}
+    <table>
+      <thead>
+        <tr><th>Kod</th><th>Tanım</th><th>Fiyat</th><th>Grup</th></tr>
+      </thead>
+      <tbody>
+      {% for c in success_cards %}
+        <tr>
+          <td>{{ c.item_code }}</td>
+          <td>{{ c.item_name }}</td>
+          <td>{{ c.price }} {{ c.currency }}</td>
+          <td>{{ c.group_label }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>-</p>
+    {% endif %}
+
+    <h2 class="fail">Hatalı Kartlar — {{ fail_count }}</h2>
+    {% if fail_count %}
+    <table>
+      <thead><tr><th>Kod</th><th>Hata</th></tr></thead>
+      <tbody>
+      {% for e in error_logs %}
+        <tr>
+          <td>{{ e.item_code|default:"Bilinmiyor" }}</td>
+          <td>{{ e.error|default:"Hata nedeni bilinmiyor" }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>-</p>
+    {% endif %}
+
+    <p class="footer">
+      Bu e-posta sistem tarafından otomatik oluşturulmuştur. © Tuna Ofis A.Ş.
+    </p>
+  </div>
+</body>
+</html>

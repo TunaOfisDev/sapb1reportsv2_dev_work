@@ -3,7 +3,7 @@
 from rest_framework import serializers
 from ..models.models import StockCard, ITEMS_GROUP_DEFAULTS
 from ..models.helptext import FieldHelpText  
-
+from ..models.productpricelist_models import ProductPriceList
 
 class FieldHelpTextSerializer(serializers.ModelSerializer):
     class Meta:
@@ -123,3 +123,74 @@ class StockCardSerializer(serializers.ModelSerializer):
 
     def delete(self, instance):
         raise serializers.ValidationError("Bu veri silinemez! HANA DB üzerinde DELETE işlemi yasaktır.")
+
+# ────────────────────────────────────────────────────────────────
+#  ProductPriceList  ✦  tam CRUD + toplu upsert
+# ────────────────────────────────────────────────────────────────
+class ProductPriceListBulkSerializer(serializers.ListSerializer):
+    """
+    • Gelen her satır için item_code üzerinden UPSERT yapar  
+    • HANA çıktısını doğrudan verebilmek için tasarlandı
+    """
+
+    def create(self, validated_data):
+        instances = []
+        for row in validated_data:
+            obj, _ = ProductPriceList.objects.update_or_create(
+                item_code=row["item_code"], defaults=row
+            )
+            instances.append(obj)
+        return instances
+
+
+class ProductPriceListSerializer(serializers.ModelSerializer):
+    """
+    SAP fiyat listesi kaydı – tam CRUD.
+    HANA’dan gelen Türkçe alan adlarını da kabul eder (to_internal_value).
+    """
+
+    class Meta:
+        model = ProductPriceList
+        list_serializer_class = ProductPriceListBulkSerializer
+        fields = (
+            "id",
+            "item_code",
+            "item_name",
+            "price_list_name",
+            "price",
+            "currency",
+            "old_component_code",
+            "created_at",
+            "updated_at",
+        )
+        read_only_fields = ("id", "created_at", "updated_at")
+
+    # ─────── Field Validations ───────
+    def validate_item_code(self, value):
+        if len(value) > 50:
+            raise serializers.ValidationError("ItemCode en fazla 50 karakter olabilir.")
+        return value
+
+    def validate_price(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Fiyat negatif olamaz.")
+        return value
+
+    # ─────── HANA alias mapping ───────
+    def to_internal_value(self, data):
+        mapped = {
+            "item_code": data.get("item_code") or data.get("Ürün Kodu"),
+            "item_name": data.get("item_name") or data.get("Ürün Adı"),
+            "price_list_name": data.get("price_list_name") or data.get("Satış Fiyat Listesi"),
+            "price": data.get("price") or data.get("Satış Fiyatı"),
+            "currency": data.get("currency") or data.get("Para Birimi"),
+            "old_component_code": data.get("old_component_code") or data.get("Eski Bileşen Kodu"),
+        }
+        return super().to_internal_value(mapped)
+
+    # ─────── UPSERT (tekil) ───────
+    def create(self, validated_data):
+        obj, _ = ProductPriceList.objects.update_or_create(
+            item_code=validated_data["item_code"], defaults=validated_data
+        )
+        return obj

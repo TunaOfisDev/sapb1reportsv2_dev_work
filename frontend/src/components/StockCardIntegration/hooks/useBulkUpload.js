@@ -2,7 +2,12 @@
 import { useState } from 'react';
 import * as XLSX from 'xlsx';
 
-/* “890,99” → “890.99” */
+/* --------------------------------------------------
+ * Sabitler
+ * ------------------------------------------------ */
+export const MAX_BULK_ROWS = 20; // başlık hariç izin verilen en yüksek satır sayısı
+
+/* “890,99” → “890.99”  */
 const normalizePrice = (value) =>
   typeof value === 'string' ? value.replace(',', '.') : value;
 
@@ -18,13 +23,16 @@ const EXPECTED_HEADERS = new Set([
   'Eski Bileşen Kod',
 ]);
 
+/* --------------------------------------------------
+ * Hook
+ * ------------------------------------------------ */
 const useBulkUpload = () => {
   const [previewData, setPreviewData] = useState([]);
   const [fileError, setFileError] = useState(null);
 
-  /* --------------------------------------------------
-   * Dosya okuma
-   * ------------------------------------------------ */
+  /* ----------------------------------------------
+   * Dosya okuma & doğrulama
+   * -------------------------------------------- */
   const handleFileUpload = (event) => {
     const file = event.target.files?.[0];
     setFileError(null);
@@ -42,7 +50,7 @@ const useBulkUpload = () => {
         const worksheet = workbook.Sheets[firstSheetName];
         const rawJson = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
 
-        /* ---- Başlık doğrulama ---- */
+        /* 1) Başlık doğrulama */
         const headersInFile = new Set(Object.keys(rawJson[0] || {}));
         const missing = [...EXPECTED_HEADERS].filter((h) => !headersInFile.has(h));
 
@@ -55,16 +63,24 @@ const useBulkUpload = () => {
           return;
         }
 
-        /* ---- Satır dönüştürme ---- */
+        /* 2) Satır sayısı (başlık hariç) kontrolü */
+        const rowCount = rawJson.length; // sheet_to_json verisi başlık satırını kapsamaz
+        if (rowCount > MAX_BULK_ROWS) {
+          setFileError(
+            `Başlık hariç en fazla ${MAX_BULK_ROWS} satır yükleyebilirsiniz. (Gönderilen: ${rowCount})`,
+          );
+          setPreviewData([]);
+          return;
+        }
+
+        /* 3) Satır dönüştürme */
         const sanitized = rawJson.map((row) => {
-          /* Eğer bir şekilde “Price” kolonu geldiyse “Fiyat”a taşı */
+          /* Price → Fiyat düzeltmesi (eski şablon uyumu) */
           if ('Price' in row && !row.Fiyat) {
             row.Fiyat = row.Price;
           }
-          /* Fiyatı normalize et */
           row.Fiyat = normalizePrice(row.Fiyat);
-          /* Temizlik – Price kolonunu sil */
-          delete row.Price;
+          delete row.Price; // temizlik
           return row;
         });
 
@@ -74,6 +90,7 @@ const useBulkUpload = () => {
         setFileError(
           'Geçersiz dosya formatı. Lütfen geçerli bir Excel dosyası (.xlsx) yükleyin.',
         );
+        setPreviewData([]);
       }
     };
 

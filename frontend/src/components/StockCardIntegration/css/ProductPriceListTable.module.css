@@ -1,0 +1,136 @@
+/* path: frontend/src/components/StockCardIntegration/css/ProductPriceListTable.module.css */
+
+.product-price-list {
+  background-color: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 1.5rem;
+  font-family: 'Segoe UI', sans-serif;
+  overflow-x: auto;
+}
+
+/* Üst başlık ve sayfalama birleşimi */
+.product-price-list__header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Başlık */
+.product-price-list__title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #0b5394;
+  margin: 0;
+}
+
+/* Yenile Butonu */
+.product-price-list__refresh-btn {
+  background-color: #1d72b8;
+  color: white;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.product-price-list__refresh-btn:hover {
+  background-color: #155a96;
+}
+
+/* Tablo */
+.product-price-list__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.product-price-list__table th,
+.product-price-list__table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.95rem;
+  vertical-align: top;
+}
+
+.product-price-list__table th {
+  background-color: #f4f6f9;
+  color: #0b5394;
+  font-weight: 600;
+}
+
+.product-price-list__table tr:hover {
+  background-color: #fef5dc;
+}
+
+/* Fiyat Badge */
+.product-price-list__price--currency {
+  display: inline-block;
+  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  background-color: #e7f0ff;
+  color: #1a73e8;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+/* Eski bileşen varsa vurgula */
+.product-price-list__old-component {
+  font-style: italic;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.product-price-list__refresh-btn {
+  background-color: #1d72b8;
+  color: white;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.product-price-list__refresh-btn:hover {
+  background-color: #155a96;
+}
+
+.sort-asc {
+  color: #1d72b8;   /* mavi  🔼   –  artan sıralama */
+}
+
+.sort-desc {
+  color: #b85c1d;   /* turuncu 🔽   –  azalan sıralama */
+}
+
+/* Responsive görünüm */
+@media (max-width: 768px) {
+  .product-price-list {
+    padding: 1rem;
+  }
+
+.product-price-list__header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+  .product-price-list__title {
+    font-size: 1.2rem;
+  }
+
+  .product-price-list__table th,
+  .product-price-list__table td {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+}

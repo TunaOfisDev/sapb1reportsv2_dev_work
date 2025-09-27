@@ -11,6 +11,9 @@ import { RuleProvider } from './contexts/RuleContext';
 import useConfigurator from './hooks/useConfigurator';
 import useRuleEngine from './hooks/useRuleEngine';
 
+// Sayfalar (Pages)
+import VariantListPage from './pages/VariantListPage'; 
+
 // Konfigüratör bileşenleri
 import ConfiguratorMain from './components/Configurator/ConfiguratorMain';
 import FeatureSection from './components/Configurator/FeatureSection';
@@ -35,6 +38,7 @@ export {
   RuleProvider,
   useConfigurator,
   useRuleEngine,
+  VariantListPage,
   ConfiguratorMain,
   FeatureSection,
   OptionSelector,
@@ -54,6 +58,7 @@ export default {
   RuleProvider,
   useConfigurator,
   useRuleEngine,
+  VariantListPage,
   ConfiguratorMain,
   FeatureSection,
   OptionSelector,

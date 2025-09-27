@@ -1,57 +1,58 @@
 #!/bin/bash
-set -euo pipefail
+# Hata durumunda script'in hemen durmasını sağlar
+set -e
 
-SRC_BASE="/var/www/sapb1reportsv2"
-DEST_BASE="/home/user/Github/sapb1reportsv2_dev_work"
-GIT_META="/home/user/gitmeta/devWork.git"
-EXCLUDES="$SRC_BASE/backend/scripts/rsync-exclude.txt"
-REMOTE_REPO="git@github.com:TunaOfisDev/sapb1reportsv2_dev_work.git"
+# --- AYARLAR ---
+SRC_DIR="/var/www/sapb1reportsv2"
+DEST_DIR="/home/userbt/Github/sapb1reportsv2_dev_work"
+REMOTE_REPO="https://github.com/TunaOfisDev/sapb1reportsv2_dev_work.git"
 BRANCH="main"
+COMMIT_MSG="Dev snapshot - $(date '+%Y-%m-%d %H:%M:%S')"
 
-echo "📍 [WORK SYNC] başladı"
-echo "📂 SRC        : $SRC_BASE"
-echo "📂 DEST       : $DEST_BASE"
-echo "🗃️ GIT META   : $GIT_META"
+echo "📍 Basit Senkronizasyon Scripti Başladı"
+echo "➡️  Kaynak: $SRC_DIR"
+echo "⬅️  Hedef : $DEST_DIR"
 
-# GIT bağla
-if [[ ! -d "$GIT_META" ]]; then
-  git clone --separate-git-dir="$GIT_META" "$REMOTE_REPO" "$DEST_BASE"
+# --- ADIM 1: HEDEF KLASÖRÜ HAZIRLA ---
+# Eğer hedef klasörde bir .git deposu yoksa, depoyu klonla.
+if [ ! -d "$DEST_DIR/.git" ]; then
+    echo "📂 Hedef klasörde Git deposu bulunamadı. Depo klonlanıyor..."
+    # Klonlamadan önce olası bozuk kalıntıları temizle
+    rm -rf "$DEST_DIR"
+    git clone "$REMOTE_REPO" "$DEST_DIR"
 else
-  echo "🔗 Bağlanıyor: mevcut git meta"
-  rm -rf "$DEST_BASE/.git"
-  echo "gitdir: $GIT_META" > "$DEST_BASE/.git"
+    echo "✅ Mevcut Git deposu bulundu."
 fi
 
-# Rsync
-for d in backend frontend zNotlar .vscode; do
-  echo "📁 Senkronize: $d"
-  rsync -av --delete --exclude-from="$EXCLUDES" "$SRC_BASE/$d/" "$DEST_BASE/$d/"
-done
+# --- ADIM 2: DOSYALARI KOPYALA ---
+echo "🔄 Dosyalar kaynaktan hedefe rsync ile kopyalanıyor..."
+# rsync, sadece değişen dosyaları kopyalar.
+# --exclude ile .git klasörünün ve diğer gereksiz dosyaların üzerine yazılmasını engelliyoruz.
+rsync -av --delete \
+    --exclude '.git' \
+    --exclude '**/__pycache__' \
+    --exclude '**/node_modules' \
+    --exclude 'venv/' \
+    --exclude '.env' \
+    --exclude '*.pyc' \
+    "$SRC_DIR/" "$DEST_DIR/"
 
-# Git işlemleri
-cd "$DEST_BASE"
+# --- ADIM 3: DEĞİŞİKLİKLERİ GITHUB'A GÖNDER ---
+# Hedef klasöre git
+cd "$DEST_DIR"
 
-# YENİ: Git komutu çalıştırmadan önce reponun sağlığını kontrol et
-if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
-  echo "❌ HATA: Geçerli bir Git reposu değil veya bozuk. Lütfen manuel kontrol edin: $DEST_BASE"
-  echo "👉 Çözüm önerisi: 'rm -rf $GIT_META' komutu ile bozuk meta veriyi silip script'i yeniden çalıştırın."
-  exit 1
-fi
+echo "➕ Değişiklikler Git'e ekleniyor..."
+git add .
 
-echo "➕ Git stage başlatılıyor..."
-git add -A
-
+# Sadece commit edilecek bir değişiklik varsa commit at
 if git diff --cached --quiet; then
-  echo "⚠️ Commit yapılacak bir şey yok"
+    echo "✨ Yeni değişiklik bulunamadı. Commit atlanıyor."
 else
-  COMMIT_MSG="🧪 dev work snapshot - $(date '+%Y-%m-%d %H:%M')"
-  git commit -m "$COMMIT_MSG"
+    echo "📝 Değişiklikler commit ediliyor..."
+    git commit -m "$COMMIT_MSG"
 fi
 
-echo "⬇️ Pull yapılıyor..."
-git pull --no-rebase --autostash origin "$BRANCH"
-
-echo "⬆️ Push yapılıyor..."
+echo "⬆️ Değişiklikler GitHub'a gönderiliyor..."
 git push origin "$BRANCH"
 
-echo "✅ [WORK SYNC] başarıyla tamamlandı"
+echo "✅ İşlem başarıyla tamamlandı."

@@ -25,7 +25,7 @@ trap 'handle_error' ERR
 cd /var/www/sapb1reportsv2/
 
 # 👍 Yalnızca logs ve frontend/build için uygula:
-sudo chown -R www-data:sapb1 backend/logs frontend/build
+sudo chown -R userbt:userbt backend/logs frontend/build
 sudo chmod -R 775 backend/logs frontend/build
 
 

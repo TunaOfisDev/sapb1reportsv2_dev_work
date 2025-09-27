@@ -13,6 +13,9 @@ from mailservice.services.stockcardintegration.update_stock_card_on_hanadb impor
 from stockcardintegration.services.mail.send_stockcard_summary_email import send_stockcard_summary_email
 from stockcardintegration.services.sap.create_or_update_card import create_or_update_stock_card_by_code  # ✅ yeni servis import
 
+# 🆕  Tek noktadan sınır tanımı
+MAX_BULK_ROWS = 20   # başlık hariç “çoklu yükleme” limiti
+
 class StockCardListView(APIView):
     """
     Stok Kartlarını listeleyen ve yeni kayıt ekleyen API.
@@ -231,8 +234,23 @@ class BulkStockCardCreateView(APIView):
 
     def post(self, request):
         payload_list = request.data
+
+        # ✅ 1) Liste mi?
         if not isinstance(payload_list, list):
-            return Response({"error": "Gönderilen veri bir liste olmalıdır."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Gönderilen veri bir liste olmalıdır."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # ✅ 2) Satır limiti kontrolü
+        if len(payload_list) > MAX_BULK_ROWS:
+            return Response(
+                {
+                    "error": f"Başlık hariç en fazla {MAX_BULK_ROWS} satır yükleyebilirsiniz.",
+                    "sent_rows": len(payload_list),
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         created_cards = []
         errors = []
@@ -256,19 +274,22 @@ class BulkStockCardCreateView(APIView):
             else:
                 errors.append({"item_code": item_code, "error": serializer.errors})
 
-        # ✅ Tek özet mail gönder
+        # Tek özet mail gönder
         send_stockcard_summary_email(
             to_email=request.user.email,
             created_cards=created_cards,
-            error_logs=errors
+            error_logs=errors,
         )
 
-        return Response({
-            "message": f"{len(created_cards)} adet stok kartı oluşturuldu ve SAP'ya gönderilmek üzere kuyruğa alındı.",
-            "created_count": len(created_cards),
-            "error_count": len(errors),
-            "errors": errors
-        }, status=status.HTTP_207_MULTI_STATUS)
+        return Response(
+            {
+                "message": f"{len(created_cards)} adet stok kartı oluşturuldu ve SAP'ya gönderilmek üzere kuyruğa alındı.",
+                "created_count": len(created_cards),
+                "error_count": len(errors),
+                "errors": errors,
+            },
+            status=status.HTTP_207_MULTI_STATUS,
+        )
 
 
 

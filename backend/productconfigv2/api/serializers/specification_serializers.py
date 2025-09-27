@@ -11,8 +11,9 @@ class SpecOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = SpecOption
         fields = [
-            "id", "name", "variant_code", "variant_description", "image",
-            "price_delta", "is_default", "display_order"
+            "id", "name", "variant_code", "variant_description",
+            "reference_code",  # YENİ EKLENEN ALAN
+            "image", "price_delta", "is_default", "display_order"
         ]
 
 

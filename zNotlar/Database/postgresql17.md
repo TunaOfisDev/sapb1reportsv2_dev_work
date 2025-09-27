@@ -52,8 +52,6 @@ DROP DATABASE IF EXISTS sapb1reports_v2;
 DROP USER IF EXISTS sapb1db;
 ```
 
-
-
 ## B. Yeni Kullanıcı ve Veritabanı Oluşturma
 
 1. Kullanıcıyı oluşturun:

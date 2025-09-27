@@ -45,6 +45,8 @@ def import_product_family_with_specs(data):
             code=product_data["code"],
             defaults={
                 "name": product_data["name"],
+                # YENİ: Veri içinde varsa referans kodunu da al.
+                "reference_product_code": product_data.get("reference_product_code"),
                 "base_price": product_data.get("base_price", 0),
                 "currency": product_data.get("currency", "EUR")
             }

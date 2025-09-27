@@ -1,36 +1,29 @@
-// File: frontend/src/components/StockCardIntegration/containers/StockCardForm.jsx
-import { useForm, Controller } from 'react-hook-form';
+// path: frontend/src/components/StockCardIntegration/containers/StockCardForm.jsx
+import { Controller } from 'react-hook-form';
 import styles from '../css/StockCardForm.module.css';
 import useApiStatus from '../hooks/useApiStatus';
 import { createStockCard } from '../api/stockCardApi';
 import { getItemGroupOptions } from '../utils/itemGroupLabels';
 import CurrencyInput from './CurrencyInput';
+import useStockCardForm from '../hooks/useStockCardForm';   // ✅ Yup + RHF entegrasyonu
 
 export default function StockCardForm() {
+  /* ------------------------------------------------------------------
+   *  Yup şemalı React-Hook-Form nesnesi
+   * ---------------------------------------------------------------- */
   const {
     control,
     register,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm({
-    defaultValues: {
-      itemCode: '',
-      itemName: '',
-      SalesUnit: 'Ad',
-      ItemsGroupCode: '',
-      SalesVATGroup: 'HES0010',
-      Price: '',
-      Currency: 'EUR',
-      U_eski_bilesen_kod: '',
-    },
-  });
+  } = useStockCardForm();      // ← yupResolver burada devrede
 
   const { loading, success, error, start, succeed, fail } = useApiStatus();
 
-  /** ------------------------------------------------------------------
+  /* ------------------------------------------------------------------
    *  Submit işlemi
-   *  ------------------------------------------------------------------ */
+   * ---------------------------------------------------------------- */
   const onSubmit = async (data) => {
     start();
     try {
@@ -40,15 +33,13 @@ export default function StockCardForm() {
       };
       await createStockCard(payload);
       succeed('Stok kartı başarıyla gönderildi!');
-      reset();                     // 🔄 form alanlarını temizle
+      reset();                                  // 🔄 formu temizle
     } catch (err) {
       fail(err.message || 'Stok kartı gönderilirken hata oluştu.');
     }
   };
 
-  /* --------------------------------------------------------------
-   *  loading === true  →  form kilitli
-   * ------------------------------------------------------------ */
+  /*  Form genel kilit kontrolü  */
   const fieldDisabled = loading;
 
   return (
@@ -62,10 +53,10 @@ export default function StockCardForm() {
         <div className={styles['stock-card-form__field']} style={{ gridColumn: 'span 2' }}>
           <label className={styles['stock-card-form__label']}>Kalem Kodu</label>
           <input
-            {...register('itemCode', { required: 'Kalem kodu zorunludur.' })}
+            {...register('itemCode')}                /* Yup kontrolünde */
             maxLength={50}
             className={`${styles['stock-card-form__input']} ${styles['item-code']}`}
-            disabled={fieldDisabled}        /* 🔒 */
+            disabled={fieldDisabled}
           />
           {errors.itemCode && (
             <p className={styles['stock-card-form__error']}>{errors.itemCode.message}</p>
@@ -76,11 +67,11 @@ export default function StockCardForm() {
         <div className={styles['stock-card-form__field']} style={{ gridColumn: 'span 2' }}>
           <label className={styles['stock-card-form__label']}>Kalem Tanımı</label>
           <textarea
-            {...register('itemName', { required: 'Kalem tanımı zorunludur.' })}
+            {...register('itemName')}
             rows={3}
             maxLength={200}
             className={`${styles['stock-card-form__input']} ${styles['item-name']}`}
-            disabled={fieldDisabled}        /* 🔒 */
+            disabled={fieldDisabled}
           />
           {errors.itemName && (
             <p className={styles['stock-card-form__error']}>{errors.itemName.message}</p>
@@ -93,7 +84,7 @@ export default function StockCardForm() {
           <input
             {...register('SalesUnit')}
             value="Ad"
-            readOnly                                /* zaten kilitli */
+            readOnly
             className={styles['stock-card-form__input']}
           />
         </div>
@@ -102,9 +93,9 @@ export default function StockCardForm() {
         <div className={styles['stock-card-form__field']}>
           <label className={styles['stock-card-form__label']}>Ürün Grubu</label>
           <select
-            {...register('ItemsGroupCode', { required: 'Ürün grubu seçimi zorunludur.' })}
+            {...register('ItemsGroupCode')}
             className={styles['stock-card-form__input']}
-            disabled={fieldDisabled}      /* 🔒 */
+            disabled={fieldDisabled}
           >
             <option value="">Seçiniz</option>
             {getItemGroupOptions().map((opt) => (
@@ -122,9 +113,9 @@ export default function StockCardForm() {
         <div className={styles['stock-card-form__field']}>
           <label className={styles['stock-card-form__label']}>KDV Grubu</label>
           <select
-            {...register('SalesVATGroup', { required: 'KDV grubu seçimi zorunludur.' })}
+            {...register('SalesVATGroup')}
             className={styles['stock-card-form__input']}
-            disabled={fieldDisabled}      /* 🔒 */
+            disabled={fieldDisabled}
           >
             <option value="HES0010">KDV %10</option>
             <option value="HES0020">KDV %20</option>
@@ -141,8 +132,9 @@ export default function StockCardForm() {
             name="Price"
             control={control}
             rules={{
-              required: 'Fiyat alanı zorunludur.',
+              /* Ek ondalık /digit kontrolü – Yup’taki pozitif sayı kuralına ek */
               validate: (value) => {
+                if (value === '' || value === null) return 'Fiyat alanı zorunludur.';
                 if (isNaN(value) || value < 0) return 'Lütfen geçerli bir fiyat giriniz.';
                 if (value > 9999999999.9999)
                   return 'Maksimum 10 tam ve 4 ondalık hane olabilir.';
@@ -156,7 +148,7 @@ export default function StockCardForm() {
                 placeholder="0,0000"
                 className={styles['stock-card-form__input']}
                 style={{ textAlign: 'right' }}
-                disabled={fieldDisabled}    /* 🔒 */
+                disabled={fieldDisabled}
               />
             )}
           />
@@ -169,9 +161,9 @@ export default function StockCardForm() {
         <div className={styles['stock-card-form__field']}>
           <label className={styles['stock-card-form__label']}>Para Birimi</label>
           <select
-            {...register('Currency', { required: 'Para birimi seçimi zorunludur.' })}
+            {...register('Currency')}
             className={styles['stock-card-form__input']}
-            disabled={fieldDisabled}      /* 🔒 */
+            disabled={fieldDisabled}
           >
             <option value="EUR">EUR</option>
             <option value="USD">USD</option>
@@ -189,7 +181,7 @@ export default function StockCardForm() {
           <input
             {...register('U_eski_bilesen_kod')}
             className={styles['stock-card-form__input']}
-            disabled={fieldDisabled}      /* 🔒 */
+            disabled={fieldDisabled}
           />
         </div>
       </div>

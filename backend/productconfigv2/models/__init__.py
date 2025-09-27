@@ -1,4 +1,5 @@
 # backend/productconfigv2/models/__init__.py
+
 from .base import BaseModel
 from .product_family import ProductFamily
 from .product import Product

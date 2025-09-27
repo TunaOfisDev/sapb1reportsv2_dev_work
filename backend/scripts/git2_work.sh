@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # --- DEĞİŞKENLER ---
-DEST_BASE="/home/user/Github/sapb1reportsv2_dev_work"
-GIT_META="/home/user/gitmeta/devWork.git"
+DEST_BASE="/home/userbt/Github/sapb1reportsv2_dev_work"
+GIT_META="/home/userbt/gitmeta/devWork.git"
 BRANCH="main"
 
 # Kişisel Repo Bilgileri

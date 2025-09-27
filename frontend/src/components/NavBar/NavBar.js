@@ -81,7 +81,7 @@ function Navbar() {
             <span className="global-navbar__separator">|</span>
           </>
         )}
-        <span className="global-navbar__version">V2-170625Usrv</span>
+        <span className="global-navbar__version">V2-290825Usrv</span>
         <span className="global-navbar__separator">|</span>
         {isAuthenticated ? (
           <button className="global-navbar__button" onClick={handleLogout}>Logout</button>

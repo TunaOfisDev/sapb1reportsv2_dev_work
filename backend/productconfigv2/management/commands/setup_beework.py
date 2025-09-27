@@ -5,280 +5,186 @@ from productconfigv2.models import (
     SpecOption, ProductSpecification, SpecificationOption
 )
 from collections import defaultdict
+from decimal import Decimal, InvalidOperation
 
 # Excel verilerini temsil eden veri seti.
 # Her satır: (sıra no, özellik, özellik seçeneği, variant_code, variant_description)
 BEEWORK_DATA = [
 
-(10, "ETAJER VAR MI?", "EVET ETAJERLİ", "-", "ETAJERLİ"),
-(10, "ETAJER VAR MI?", "HAYIR ETAJER YOK", "-", "-"),
-(10, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI KAPLAMA", "K0", "MASA TABLASI KAPLAMA"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI ALPI 10.51 KAPLAMA", "K1", "MASA TABLA ALPI10.51"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI ALPI 12.12 KAPLAMA", "K2", "MASA TABLA ALPI12.12"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI ALPI 12.96 KAPLAMA", "K3", "MASA TABLA ALPI12.96"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI ALPI 10.43 KAPLAMA", "K4", "MASA TABLA ALPI10.43"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI ALPI 12.94 KAPLAMA", "K5", "MASA TABLA ALPI12.94"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI BRONCE MESE KAPLAMA", "K6", "MASA TABLA BRONCE MESE"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI LAMINAT", "L0", "MASA TABLA LAM"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI BEYAZ LAMINAT", "L1", "MASA TABLA BEYAZ LAM"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI BEJ LAMINAT", "L2", "MASA TABLA BEJ LAM"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI KUMBEJI LAMINAT", "L3", "MASA TABLA KUMBEJI LAM"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI VIZON LAMINAT", "L4", "MASA TABLA VIZON LAM"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI ANTRASIT LAMINAT", "L5", "MASA TABLA ANTRASIT LAM"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI YENI CEVIZ LAMINAT", "L6", "MASA TABLA Y.CEVIZ LAM"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI AND.CEVIZ LAMINAT", "L7", "MASA TABLA AND.CEVIZ LAM"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI SAFIR MESE LAMINAT", "L8", "MASA TABLA S.MESE LAM"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI MYL", "M0", "MASA TABLA MYL"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI BEYAZ MYL", "M1", "MASA TABLA BEYAZ MYL"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI BEJ MYL", "M2", "MASA TABLA BEJ MYL"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI KUMBEJI MYL", "M3", "MASA TABLA KUMBEJI MYL"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI VIZON MYL", "M4", "MASA TABLA VIZON MYL"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI ANTRASIT MYL", "M5", "MASA TABLA ANTRASIT MYL"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI YENI CEVIZ MYL", "M6", "MASA TABLA Y.CEVIZ MYL"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI AND.CEVIZ MYL", "M7", "MASA TABLA AND.CEVIZ MYL"),
-(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI SAFIR MESE MYL", "M8", "MASA TABLA S.MESE MYL"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP ALUMINYUM", "ALU", "FLAP ALUMINYUM"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP KAPLAMA", "K0", "FLAP"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP ALPI 10.51 KAPLAMA", "K1", "FLAP ALPI10.51"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP ALPI 12.12 KAPLAMA", "K2", "FLAP ALPI12.12"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP ALPI 12.96 KAPLAMA", "K3", "FLAP ALPI12.96"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP ALPI 10.43 KAPLAMA", "K4", "FLAP ALPI10.43"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP ALPI 12.94 KAPLAMA", "K5", "FLAP ALPI12.94"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP BRONCE MESE KAPLAMA", "K6", "FLAP BRONCE MESE"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP LAMINAT", "L0", "FLAP LAM"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP BEYAZ LAMINAT", "L1", "FLAP BEYAZ LAM"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP BEJ LAMINAT", "L2", "FLAP BEJ LAM"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP KUMBEJI LAMINAT", "L3", "FLAP KUMBEJI LAM"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP VIZON LAMINAT", "L4", "FLAP VIZON LAM"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP ANTRASIT LAMINAT", "L5", "FLAP ANTRASIT LAM"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP YENI CEVIZ LAMINAT", "L6", "FLAP Y.CEVIZ LAM"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP AND.CEVIZ LAMINAT", "L7", "FLAP AND.CEVIZ LAM"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP SAFIR MESE LAMINAT", "L8", "FLAP S.MESE LAM"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP MYL", "M0", "FLAP MYL"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP BEYAZ MYL", "M1", "FLAP BEYAZ MYL"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP BEJ MYL", "M2", "FLAP BEJ MYL"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP KUMBEJI MYL", "M3", "FLAP KUMBEJI MYL"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP VIZON MYL", "M4", "FLAP VIZON MYL"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP ANTRASIT MYL", "M5", "FLAP ANTRASIT MYL"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP YENI CEVIZ MYL", "M6", "FLAP Y.CEVIZ MYL"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP AND.CEVIZ MYL", "M7", "FLAP AND.CEVIZ MYL"),
-(30, "MASA FLAP MALZEME VE RENK", "MASA FLAP SAFIR MESE MYL", "M8", "FLAP S.MESE MYL"),
-(40, "MASA AYAK MALZEME VE RENK", "MASA AYAK E.S BOYALI", "E0", "AYAK E.S BOYA"),
-(40, "MASA AYAK MALZEME VE RENK", "MASA AYAK RAL1013 E.S BOYALI", "E1", "AYAK T1013E.S"),
-(40, "MASA AYAK MALZEME VE RENK", "MASA AYAK RAL1019 E.S BOYALI", "E2", "AYAK T1019E.S"),
-(40, "MASA AYAK MALZEME VE RENK", "MASA AYAK RAL7016 E.S BOYALI", "E3", "AYAK T7016E.S"),
-(40, "MASA AYAK MALZEME VE RENK", "MASA AYAK RAL7022 E.S BOYALI", "E4", "AYAK T7022E.S"),
-(40, "MASA AYAK MALZEME VE RENK", "MASA AYAK RAL9005 E.S BOYALI", "E5", "AYAK T9005E.S"),
-(40, "MASA AYAK MALZEME VE RENK", "MASA AYAK RAL9007 E.S BOYALI", "E6", "AYAK T9007E.S"),
-(40, "MASA AYAK MALZEME VE RENK", "MASA AYAK RAL9016 E.S BOYALI", "E7", "AYAK T9016E.S"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL KAPLAMA", "K0", "M.PANEL"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL ALPI 10.51 KAPLAMA", "K1", "M.PANEL ALPI10.51"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL ALPI 12.12 KAPLAMA", "K2", "M.PANEL ALPI12.12"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL ALPI 12.96 KAPLAMA", "K3", "M.PANEL ALPI12.96"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL ALPI 10.43 KAPLAMA", "K4", "M.PANEL ALPI10.43"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL ALPI 12.94 KAPLAMA", "K5", "M.PANEL ALPI12.94"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL BRONCE MESE KAPLAMA", "K6", "M.PANEL BRONCE MESE"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL LAMINAT", "L0", "M.PANEL LAM"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL BEYAZ LAMINAT", "L1", "M.PANEL BEYAZ LAM"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL BEJ LAMINAT", "L2", "M.PANEL BEJ LAM"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL KUMBEJI LAMINAT", "L3", "M.PANEL KUMBEJI LAM"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL VIZON LAMINAT", "L4", "M.PANEL VIZON LAM"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL ANTRASIT LAMINAT", "L5", "M.PANEL ANTRASIT LAM"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL YENI CEVIZ LAMINAT", "L6", "M.PANEL Y.CEVIZ LAM"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL AND.CEVIZ LAMINAT", "L7", "M.PANEL AND.CEVIZ LAM"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL SAFIR MESE LAMINAT", "L8", "M.PANEL S.MESE LAM"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL MYL", "M0", "M.PANEL MYL"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL BEYAZ MYL", "M1", "M.PANEL BEYAZ MYL"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL BEJ MYL", "M2", "M.PANEL BEJ MYL"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL KUMBEJI MYL", "M3", "M.PANEL KUMBEJI MYL"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL VIZON MYL", "M4", "M.PANEL VIZON MYL"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL ANTRASIT MYL", "M5", "M.PANEL ANTRASIT MYL"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL YENI CEVIZ MYL", "M6", "M.PANEL Y.CEVIZ MYL"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL AND.CEVIZ MYL", "M7", "M.PANEL AND.CEVIZ MYL"),
-(50, "MODESTY PANEL MALZEME VE RENK", "MODESTY PANEL SAFIR MESE MYL", "M8", "M.PANEL S.MESE MYL"),
-(60, "ETAJER YÖN+ÖLÇÜ", "ETAJER SOL YÖNLÜ-KISA-DAR", "L.B.D", "SOL-KISA-DAR ETJ"),
-(60, "ETAJER YÖN+ÖLÇÜ", "ETAJER SOL YÖNLÜ-KISA-GENİŞ", "L.B.G", "SOL-KISA-GENİŞ ETJ"),
-(60, "ETAJER YÖN+ÖLÇÜ", "ETAJER SOL YÖNLÜ-UZUN-DAR", "L.C.D", "SOL-UZUN-DAR ETJ"),
-(60, "ETAJER YÖN+ÖLÇÜ", "ETAJER SOL YÖNLÜ-UZUN-GENİŞ", "L.C.G", "SOL-UZUN-GENİŞ ETJ"),
-(60, "ETAJER YÖN+ÖLÇÜ", "ETAJER SAĞ YÖNLÜ-KISA-DAR", "R.B.D", "SAĞ-KISA-DAR ETJ"),
-(60, "ETAJER YÖN+ÖLÇÜ", "ETAJER SAĞ YÖNLÜ-KISA-GENİŞ", "R.B.G", "SAĞ-KISA-GENİŞ ETJ"),
-(60, "ETAJER YÖN+ÖLÇÜ", "ETAJER SAĞ YÖNLÜ-UZUN-DAR", "R.C.D", "SAĞ-UZUN-DAR ETJ"),
-(60, "ETAJER YÖN+ÖLÇÜ", "ETAJER SAĞ YÖNLÜ-UZUN-GENİŞ", "R.C.G", "SAĞ-UZUN-GENİŞ ETJ"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC KAPLAMA", "K0", "ETJ GÖVDE+ÜST TAC"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC ALPI 10.51 KAPLAMA", "K1", "ETJ GÖVDE+ÜST TAC ALPI10.51"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC ALPI 12.12 KAPLAMA", "K2", "ETJ GÖVDE+ÜST TAC ALPI12.12"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC ALPI 12.96 KAPLAMA", "K3", "ETJ GÖVDE+ÜST TAC ALPI12.96"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC ALPI 10.43 KAPLAMA", "K4", "ETJ GÖVDE+ÜST TAC ALPI10.43"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC ALPI 12.94 KAPLAMA", "K5", "ETJ GÖVDE+ÜST TAC ALPI12.94"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC BRONCE MESE KAPLAMA", "K6", "ETJ GÖVDE+ÜST TAC BRONCE MESE"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC LAMINAT", "L0", "ETJ GÖVDE+ÜST TAC LAM"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC BEYAZ LAMINAT", "L1", "ETJ GÖVDE+ÜST TAC BEYAZ LAM"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC BEJ LAMINAT", "L2", "ETJ GÖVDE+ÜST TAC BEJ LAM"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC KUMBEJI LAMINAT", "L3", "ETJ GÖVDE+ÜST TAC KUMBEJI LAM"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC VIZON LAMINAT", "L4", "ETJ GÖVDE+ÜST TAC VIZON LAM"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC ANTRASIT LAMINAT", "L5", "ETJ GÖVDE+ÜST TAC ANTRASIT LAM"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC YENI CEVIZ LAMINAT", "L6", "ETJ GÖVDE+ÜST TAC Y.CEVIZ LAM"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC AND.CEVIZ LAMINAT", "L7", "ETJ GÖVDE+ÜST TAC AND.CEVIZ LAM"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC SAFIR MESE LAMINAT", "L8", "ETJ GÖVDE+ÜST TAC S.MESE LAM"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC MYL", "M0", "ETJ GÖVDE+ÜST TAC MYL"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC BEYAZ MYL", "M1", "ETJ GÖVDE+ÜST TAC BEYAZ MYL"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC BEJ MYL", "M2", "ETJ GÖVDE+ÜST TAC BEJ MYL"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC KUMBEJI MYL", "M3", "ETJ GÖVDE+ÜST TAC KUMBEJI MYL"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC VIZON MYL", "M4", "ETJ GÖVDE+ÜST TAC VIZON MYL"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC ANTRASIT MYL", "M5", "ETJ GÖVDE+ÜST TAC ANTRASIT MYL"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC YENI CEVIZ MYL", "M6", "ETJ GÖVDE+ÜST TAC Y.CEVIZ MYL"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC AND.CEVIZ MYL", "M7", "ETJ GÖVDE+ÜST TAC AND.CEVIZ MYL"),
-(70, "ETAJER YAN+GÖVDE+ÜST TAC MALZEME VE RENK", "ETAJER GÖVDE+ÜST TAC SAFIR MESE MYL", "M8", "ETJ GÖVDE+ÜST TAC S.MESE MYL"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA KAPLAMA", "K0", "KLAPA"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA ALPI 10.51 KAPLAMA", "K1", "KLAPA ALPI10.51"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA ALPI 12.12 KAPLAMA", "K2", "KLAPA ALPI12.12"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA ALPI 12.96 KAPLAMA", "K3", "KLAPA ALPI12.96"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA ALPI 10.43 KAPLAMA", "K4", "KLAPA ALPI10.43"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA ALPI 12.94 KAPLAMA", "K5", "KLAPA ALPI12.94"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA BRONCE MESE KAPLAMA", "K6", "KLAPA BRONCE MESE"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA LAMINAT", "L0", "KLAPA LAM"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA BEYAZ LAMINAT", "L1", "KLAPA BEYAZ LAM"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA BEJ LAMINAT", "L2", "KLAPA BEJ LAM"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA KUMBEJI LAMINAT", "L3", "KLAPA KUMBEJI LAM"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA VIZON LAMINAT", "L4", "KLAPA VIZON LAM"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA ANTRASIT LAMINAT", "L5", "KLAPA ANTRASIT LAM"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA YENI CEVIZ LAMINAT", "L6", "KLAPA Y.CEVIZ LAM"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA AND.CEVIZ LAMINAT", "L7", "KLAPA AND.CEVIZ LAM"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA SAFIR MESE LAMINAT", "L8", "KLAPA S.MESE LAM"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA MYL", "M0", "KLAPA MYL"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA BEYAZ MYL", "M1", "KLAPA BEYAZ MYL"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA BEJ MYL", "M2", "KLAPA BEJ MYL"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA KUMBEJI MYL", "M3", "KLAPA KUMBEJI MYL"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA VIZON MYL", "M4", "KLAPA VIZON MYL"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA ANTRASIT MYL", "M5", "KLAPA ANTRASIT MYL"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA YENI CEVIZ MYL", "M6", "KLAPA Y.CEVIZ MYL"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA AND.CEVIZ MYL", "M7", "KLAPA AND.CEVIZ MYL"),
-(80, "ETAJER KLAPA MALZEME + RENK", "ETAJER KLAPA SAFIR MESE MYL", "M8", "KLAPA S.MESE MYL"),
-(90, "ETAJER KULP MALZEME VE RENK", "ETAJER BOY KULP E.S BOYALI", "E0", "BOY KULP E.S BOYA"),
-(90, "ETAJER KULP MALZEME VE RENK", "ETAJER BOY KULP RAL1013 E.S BOYALI", "E1", "BOY KULP T1013E.S"),
-(90, "ETAJER KULP MALZEME VE RENK", "ETAJER BOY KULP RAL1019 E.S BOYALI", "E2", "BOY KULP T1019E.S"),
-(90, "ETAJER KULP MALZEME VE RENK", "ETAJER BOY KULP RAL7016 E.S BOYALI", "E3", "BOY KULP T7016E.S"),
-(90, "ETAJER KULP MALZEME VE RENK", "ETAJER BOY KULP RAL7022 E.S BOYALI", "E4", "BOY KULP T7022E.S"),
-(90, "ETAJER KULP MALZEME VE RENK", "ETAJER BOY KULP RAL9005 E.S BOYALI", "E5", "BOY KULP T9005E.S"),
-(90, "ETAJER KULP MALZEME VE RENK", "ETAJER BOY KULP RAL9007 E.S BOYALI", "E6", "BOY KULP T9007E.S"),
-(90, "ETAJER KULP MALZEME VE RENK", "ETAJER BOY KULP RAL9016 E.S BOYALI", "E7", "BOY KULP T9016E.S"),
-(100, "ETAJER ÇEKMECE ADET", "ETAJER 2 ÇEKMECELİ", "2CK", "2ÇK"),
-(100, "ETAJER ÇEKMECE ADET", "ETAJER 3 ÇEKMECELİ", "3CK", "3ÇK"),
-(110, "ÖN KUMAS PANEL KATEGÖRİSİ", "KATEGORİ 1 ÖN KUMAŞ (ERACS)", "KT1", "KT1"),
-(110, "ÖN KUMAS PANEL KATEGÖRİSİ", "KATEGORİ 3 ÖN KUMAŞ (LDS)", "KT3", "KT3"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS ERACSE02", "KT1-1", "ÖN PANEL ERACSE02"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS ERACSE33", "KT1-10", "ÖN PANEL ERACSE33"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS ERACSE34", "KT1-11", "ÖN PANEL ERACSE34"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS ERACSE39", "KT1-12", "ÖN PANEL ERACSE39"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS ERACSE40", "KT1-13", "ÖN PANEL ERACSE40"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS ERACSE42", "KT1-14", "ÖN PANEL ERACSE42"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS ERACSE44", "KT1-15", "ÖN PANEL ERACSE44"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS ERACSE03", "KT1-2", "ÖN PANEL ERACSE03"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS ERACSE07", "KT1-3", "ÖN PANEL ERACSE07"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS ERACSE13", "KT1-4", "ÖN PANEL ERACSE13"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS ERACSE14", "KT1-5", "ÖN PANEL ERACSE14"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS ERACSE23", "KT1-6", "ÖN PANEL ERACSE23"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS ERACSE27", "KT1-7", "ÖN PANEL ERACSE27"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS ERACSE28", "KT1-8", "ÖN PANEL ERACSE28"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS ERACSE29", "KT1-9", "ÖN PANEL ERACSE29"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS LDS16", "KT3-1", "ÖN PANEL LDS16"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS LDS62", "KT3-10", "ÖN PANEL LDS62"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS LDS73", "KT3-11", "ÖN PANEL LDS73"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS LDS74", "KT3-12", "ÖN PANEL LDS74"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS LDS76", "KT3-13", "ÖN PANEL LDS76"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS LDS84", "KT3-14", "ÖN PANEL LDS84"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS LDS86", "KT3-15", "ÖN PANEL LDS86"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS LDS17", "KT3-2", "ÖN PANEL LDS17"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS LDS33", "KT3-3", "ÖN PANEL LDS33"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS LDS45", "KT3-4", "ÖN PANEL LDS45"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS LDS46", "KT3-5", "ÖN PANEL LDS46"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS LDS47", "KT3-6", "ÖN PANEL LDS47"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS LDS48", "KT3-7", "ÖN PANEL LDS48"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS LDS55", "KT3-8", "ÖN PANEL LDS55"),
-(120, "ÖN PANEL KUMAS RENK", "ÖN PANEL KUMAS LDS56", "KT3-9", "ÖN PANEL LDS56"),
-(130, "MASA ÖLÇÜSÜ", "L100 D70 H75 CM", "10070", "L100 D70 H75 CM"),
-(130, "MASA ÖLÇÜSÜ", "L100 D80 H75 CM", "10080", "L100 D80 H75 CM"),
-(130, "MASA ÖLÇÜSÜ", "L120 D70 H75 CM", "12070", "L120 D70 H75 CM"),
-(130, "MASA ÖLÇÜSÜ", "L120 D80 H75 CM", "12080", "L120 D80 H75 CM"),
-(130, "MASA ÖLÇÜSÜ", "L140 D70 H75 CM", "14070", "L140 D70 H75 CM"),
-(130, "MASA ÖLÇÜSÜ", "L140 D80 H75 CM", "14080", "L140 D80 H75 CM"),
-(130, "MASA ÖLÇÜSÜ", "L140 D90 H75 CM", "14090", "L140 D90 H75 CM"),
-(130, "MASA ÖLÇÜSÜ", "L160 D70 H75 CM", "16070", "L160 D70 H75 CM"),
-(130, "MASA ÖLÇÜSÜ", "L160 D80 H75 CM", "16080", "L160 D80 H75 CM"),
-(130, "MASA ÖLÇÜSÜ", "L160 D90 H75 CM", "16090", "L160 D90 H75 CM"),
-(130, "MASA ÖLÇÜSÜ", "L180 D70 H75 CM", "18070", "L180 D70 H75 CM"),
-(130, "MASA ÖLÇÜSÜ", "L180 D80 H75 CM", "18080", "L180 D80 H75 CM"),
-(130, "MASA ÖLÇÜSÜ", "L180 D90 H75 CM", "18090", "L180 D90 H75 CM"),
-(130, "MASA ÖLÇÜSÜ", "L200 D70 H75 CM", "20070", "L200 D70 H75 CM"),
-(130, "MASA ÖLÇÜSÜ", "L200 D80 H75 CM", "20080", "L200 D80 H75 CM"),
-(130, "MASA ÖLÇÜSÜ", "L200 D90 H75 CM", "20090", "L200 D90 H75 CM"),
+
+(10, "MASA ÖLÇÜSÜ", "L120 D70 H75 CM MYL", "12070", "L120 D70 H75 CM ", "0", "1","12070",),
+(10, "MASA ÖLÇÜSÜ", "L120 D70 H75 CM LAMİNAT ", "12070", "L120 D70 H75 CM ", "0", "1","12070",),
+(10, "MASA ÖLÇÜSÜ", "L120 D70 H75 CM KAPLAMA", "12070", "L120 D70 H75 CM ", "0", "1","12070",),
+(10, "MASA ÖLÇÜSÜ", "L120 D80 H75 CM MYL", "12080", "L120 D80 H75 CM ", "16", "1","12080",),
+(10, "MASA ÖLÇÜSÜ", "L120 D80 H75 CM LAMİNAT", "12080", "L120 D80 H75 CM ", "19", "1","12080",),
+(10, "MASA ÖLÇÜSÜ", "L120 D80 H75 CM KAPLAMA", "12080", "L120 D80 H75 CM ", "-27", "1","12080",),
+(10, "MASA ÖLÇÜSÜ", "L140 D70 H75 CM MYL", "14070", "L140 D70 H75 CM ", "17", "1","14070",),
+(10, "MASA ÖLÇÜSÜ", "L140 D70 H75 CM LAMİNAT", "14070", "L140 D70 H75 CM ", "22", "1","14070",),
+(10, "MASA ÖLÇÜSÜ", "L140 D70 H75 CM KAPLAMA", "14070", "L140 D70 H75 CM ", "34", "1","14070",),
+(10, "MASA ÖLÇÜSÜ", "L140 D80 H75 CM MYL", "14080", "L140 D80 H75 CM ", "61", "1","14080",),
+(10, "MASA ÖLÇÜSÜ", "L140 D80 H75 CM LAMİNAT", "14080", "L140 D80 H75 CM ", "86", "1","14080",),
+(10, "MASA ÖLÇÜSÜ", "L140 D80 H75 CM KAPLAMA", "14080", "L140 D80 H75 CM ", "46", "1","14080",),
+(10, "MASA ÖLÇÜSÜ", "L140 D90 H75 CM MYL", "14090", "L140 D90 H75 CM ", "57", "1","14090",),
+(10, "MASA ÖLÇÜSÜ", "L140 D90 H75 CM LAMİNAT", "14090", "L140 D90 H75 CM ", "83", "1","14090",),
+(10, "MASA ÖLÇÜSÜ", "L140 D90 H75 CM KAPLAMA", "14090", "L140 D90 H75 CM ", "75", "1","14090",),
+(10, "MASA ÖLÇÜSÜ", "L160 D70 H75 CM MYL", "16070", "L160 D70 H75 CM ", "49", "1","16070",),
+(10, "MASA ÖLÇÜSÜ", "L160 D70 H75 CM LAMİNAT", "16070", "L160 D70 H75 CM ", "81", "1","16070",),
+(10, "MASA ÖLÇÜSÜ", "L160 D70 H75 CM KAPLAMA", "16070", "L160 D70 H75 CM ", "116", "1","16070",),
+(10, "MASA ÖLÇÜSÜ", "L160 D80 H75 CM MYL", "16080", "L160 D80 H75 CM ", "66", "1","16080",),
+(10, "MASA ÖLÇÜSÜ", "L160 D80 H75 CM LAMİNAT", "16080", "L160 D80 H75 CM ", "104", "1","16080",),
+(10, "MASA ÖLÇÜSÜ", "L160 D80 H75 CM KAPLAMA", "16080", "L160 D80 H75 CM ", "116", "1","16080",),
+(10, "MASA ÖLÇÜSÜ", "L160 D90 H75 CM MYL", "16090", "L160 D90 H75 CM ", "104", "1","16090",),
+(10, "MASA ÖLÇÜSÜ", "L160 D90 H75 CM LAMİNAT", "16090", "L160 D90 H75 CM ", "155", "1","16090",),
+(10, "MASA ÖLÇÜSÜ", "L160 D90 H75 CM KAPLAMA", "16090", "L160 D90 H75 CM ", "191", "1","16090",),
+(10, "MASA ÖLÇÜSÜ", "L180 D70 H75 CM MYL", "18070", "L180 D70 H75 CM ", "73", "1","18070",),
+(10, "MASA ÖLÇÜSÜ", "L180 D70 H75 CM LAMİNAT", "18070", "L180 D70 H75 CM ", "119", "1","18070",),
+(10, "MASA ÖLÇÜSÜ", "L180 D70 H75 CM KAPLAMA", "18070", "L180 D70 H75 CM ", "193", "1","18070",),
+(10, "MASA ÖLÇÜSÜ", "L180 D80 H75 CM MYL", "18080", "L180 D80 H75 CM ", "92", "1","18080",),
+(10, "MASA ÖLÇÜSÜ", "L180 D80 H75 CM LAMİNAT", "18080", "L180 D80 H75 CM ", "144", "1","18080",),
+(10, "MASA ÖLÇÜSÜ", "L180 D80 H75 CM KAPLAMA", "18080", "L180 D80 H75 CM ", "193", "1","18080",),
+(10, "MASA ÖLÇÜSÜ", "L180 D90 H75 CM MYL", "18090", "L180 D90 H75 CM ", "110", "1","18090",),
+(10, "MASA ÖLÇÜSÜ", "L180 D90 H75 CM LAMİNAT", "18090", "L180 D90 H75 CM ", "170", "1","18090",),
+(10, "MASA ÖLÇÜSÜ", "L180 D90 H75 CM KAPLAMA", "18090", "L180 D90 H75 CM ", "230", "1","18090",),
+(10, "MASA ÖLÇÜSÜ", "L200 D70 H75 CM MYL", "20070", "L200 D70 H75 CM ", "94", "1","20070",),
+(10, "MASA ÖLÇÜSÜ", "L200 D70 H75 CM LAMİNAT", "20070", "L200 D70 H75 CM ", "159", "1","20070",),
+(10, "MASA ÖLÇÜSÜ", "L200 D70 H75 CM KAPLAMA", "20070", "L200 D70 H75 CM ", "265", "1","20070",),
+(10, "MASA ÖLÇÜSÜ", "L200 D80 H75 CM MYL", "20080", "L200 D80 H75 CM ", "114", "1","20080",),
+(10, "MASA ÖLÇÜSÜ", "L200 D80 H75 CM LAMİNAT", "20080", "L200 D80 H75 CM ", "185", "1","20080",),
+(10, "MASA ÖLÇÜSÜ", "L200 D80 H75 CM KAPLAMA", "20080", "L200 D80 H75 CM ", "265", "1","20080",),
+(10, "MASA ÖLÇÜSÜ", "L200 D90 H75 CM MYL", "20090", "L200 D90 H75 CM ", "132", "1","20090",),
+(10, "MASA ÖLÇÜSÜ", "L200 D90 H75 CM LAMİNAT", "20090", "L200 D90 H75 CM ", "209", "1","20090",),
+(10, "MASA ÖLÇÜSÜ", "L200 D90 H75 CM KAPLAMA", "20090", "L200 D90 H75 CM ", "303", "1","20090",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI KAPLAMA", "K0", "MASA TABLASI KAPLAMA", "340", "1","K0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI ALPI 10.51 KAPLAMA", "K1", "MASA TABLA ALPI10.51", "340", "1","K0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI ALPI 12.12 KAPLAMA", "K2", "MASA TABLA ALPI12.12", "340", "1","K0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI ALPI 12.96 KAPLAMA", "K3", "MASA TABLA ALPI12.96", "340", "1","K0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI ALPI 10.43 KAPLAMA", "K4", "MASA TABLA ALPI10.43", "340", "1","K0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI ALPI 12.94 KAPLAMA", "K5", "MASA TABLA ALPI12.94", "340", "1","K0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI LAMINAT", "L0", "MASA TABLA LAM", "109", "1","L0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI BEYAZ LAMINAT", "L1", "MASA TABLA BEYAZ LAM", "109", "1","L0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI BEJ LAMINAT", "L2", "MASA TABLA BEJ LAM", "109", "1","L0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI KUMBEJI LAMINAT", "L3", "MASA TABLA KUMBEJI LAM", "109", "1","L0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI VIZON LAMINAT", "L4", "MASA TABLA VIZON LAM", "109", "1","L0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI ANTRASIT LAMINAT", "L5", "MASA TABLA ANTRASIT LAM", "109", "1","L0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI AND.CEVIZ LAMINAT", "L6", "MASA TABLA AND.CEVIZ LAM", "109", "1","L0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI SAFIR MESE LAMINAT", "L7", "MASA TABLA S.MESE LAM", "109", "1","L0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI MYL", "M0", "MASA TABLA MYL", "0", "1","M0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI BEYAZ MYL", "M1", "MASA TABLA BEYAZ MYL", "0", "1","M0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI BEJ MYL", "M2", "MASA TABLA BEJ MYL", "0", "1","M0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI KUMBEJI MYL", "M3", "MASA TABLA KUMBEJI MYL", "0", "1","M0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI VIZON MYL", "M4", "MASA TABLA VIZON MYL", "0", "1","M0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI ANTRASIT MYL", "M5", "MASA TABLA ANTRASIT MYL", "0", "1","M0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI AND.CEVIZ MYL", "M6", "MASA TABLA AND.CEVIZ MYL", "0", "1","M0",),
+(20, "MASA TABLASI MALZEME VE RENK", "MASA TABLASI SAFIR MESE MYL", "M7", "MASA TABLA S.MESE MYL", "0", "1","M0",),
+(30, "MASA AYAK MALZEME VE RENK", "MASA AYAK E.S BOYALI", "E0", "AYAK E.S BOYA", "0", "1","E0",),
+(30, "MASA AYAK MALZEME VE RENK", "MASA AYAK RAL1013 E.S BOYALI", "E1", "AYAK T1013E.S", "0", "1","E0",),
+(30, "MASA AYAK MALZEME VE RENK", "MASA AYAK RAL1019 E.S BOYALI", "E2", "AYAK T1019E.S", "0", "1","E0",),
+(30, "MASA AYAK MALZEME VE RENK", "MASA AYAK RAL7016 E.S BOYALI", "E3", "AYAK T7016E.S", "0", "1","E0",),
+(30, "MASA AYAK MALZEME VE RENK", "MASA AYAK RAL7022 E.S BOYALI", "E4", "AYAK T7022E.S", "0", "1","E0",),
+(30, "MASA AYAK MALZEME VE RENK", "MASA AYAK RAL9005 E.S BOYALI", "E5", "AYAK T9005E.S", "0", "1","E0",),
+(30, "MASA AYAK MALZEME VE RENK", "MASA AYAK RAL9007 E.S BOYALI", "E6", "AYAK T9007E.S", "0", "1","E0",),
+(30, "MASA AYAK MALZEME VE RENK", "MASA AYAK RAL9016 E.S BOYALI", "E7", "AYAK T9016E.S", "0", "1","E0",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP ALUMINYUM", "ALU", "FLAP ALUMINYUM", "60", "1","ALU",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP KAPLAMA", "K0", "FLAP", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP ALPI 10.51 KAPLAMA", "K1", "FLAP ALPI10.51", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP ALPI 12.12 KAPLAMA", "K2", "FLAP ALPI12.12", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP ALPI 12.96 KAPLAMA", "K3", "FLAP ALPI12.96", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP ALPI 10.43 KAPLAMA", "K4", "FLAP ALPI10.43", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP ALPI 12.94 KAPLAMA", "K5", "FLAP ALPI12.94", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP LAMINAT", "L0", "FLAP LAM", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP BEYAZ LAMINAT", "L1", "FLAP BEYAZ LAM", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP BEJ LAMINAT", "L2", "FLAP BEJ LAM", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP KUMBEJI LAMINAT", "L3", "FLAP KUMBEJI LAM", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP VIZON LAMINAT", "L4", "FLAP VIZON LAM", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP ANTRASIT LAMINAT", "L5", "FLAP ANTRASIT LAM", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP AND.CEVIZ LAMINAT", "L6", "FLAP AND.CEVIZ LAM", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP SAFIR MESE LAMINAT", "L7", "FLAP S.MESE LAM", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP MYL", "M0", "FLAP MYL", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP BEYAZ MYL", "M1", "FLAP BEYAZ MYL", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP BEJ MYL", "M2", "FLAP BEJ MYL", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP KUMBEJI MYL", "M3", "FLAP KUMBEJI MYL", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP VIZON MYL", "M4", "FLAP VIZON MYL", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP ANTRASIT MYL", "M5", "FLAP ANTRASIT MYL", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP AND.CEVIZ MYL", "M6", "FLAP AND.CEVIZ MYL", "0", "1","AHS",),
+(60, "MASA FLAP MALZEME VE RENK", "MASA FLAP SAFIR MESE MYL", "M7", "FLAP S.MESE MYL", "0", "1","AHS",),
+
 
 
 ]
 
+
+
 class Command(BaseCommand):
-    help = "GERÇEKÇİ BEEWORK TEKİL MASA SETUP (Yeni Model Yapısına Uyumlu)"
+    help = "BEEWORK SETUP (Ürün Bazlı Referans Kod Desteğiyle)"
 
     def handle(self, *args, **options):
         # 1. Ürün ailesi ve ürün oluşturuluyor.
-        family, _ = ProductFamily.objects.get_or_create(
-            name="Operasyonel Tekil Masa"
-        )
-
-        product, created_prod = Product.objects.get_or_create(
+        family, _ = ProductFamily.objects.get_or_create(name="Operasyonel Tekil Masa")
+        
+        # GÜNCELLEME 1: Temel referans kodu ("55.BW") doğrudan ürünün kendisine kaydediliyor.
+        product, created_prod = Product.objects.update_or_create(
             name="BEEWORK TEKİL MASA",
             family=family,
             defaults={
-                "code": "30.BW",
-                "variant_code": "BW",
+                "code": "30.BW", 
+                "reference_product_code": "55.BW", # 55'li kodun temeli artık burada
+                "variant_code": "30.BW", 
                 "variant_description": "BEEWORK TEKİL MASA",
-                "base_price": 350,
-                "currency": "EUR",
+                "base_price": 338.00, 
+                "currency": "EUR", 
                 "variant_order": 1,
             }
         )
         if created_prod:
             self.stdout.write(self.style.SUCCESS(f"Yeni ürün oluşturuldu: {product.name}"))
         else:
-            self.stdout.write(f"Ürün zaten var: {product.name}")
+            self.stdout.write(f"Ürün zaten vardı ve güncellendi: {product.name}")
 
-        # 2. Verileri gruplayarak SpecificationType, SpecOption, SpecificationOption ve ProductSpecification oluşturuluyor.
-        specs_dict = defaultdict(lambda: defaultdict(list))
+        # GÜNCELLEME 2: Gereksiz "MODEL" özelliğini oluşturan blok KALDIRILDI.
+        # Script artık doğrudan BEEWORK_DATA'yı işlemeye başlıyor.
+
+        # 2. Verileri gruplama ve işleme
+        specs_dict = defaultdict(dict)
 
         for row in BEEWORK_DATA:
-            sira_no, spec_name, option_name, variant_code, variant_description = row
-            specs_dict[sira_no][spec_name].append({
+            # 8 elemanlı satırı okumaya devam ediyoruz
+            sira_no, spec_name, option_name, variant_code, variant_description, price_str, is_required_str, reference_code_part = row
+            
+            spec_group_data = specs_dict[sira_no].setdefault(spec_name, {
+                "options": [],
+                "is_required": True 
+            })
+            
+            spec_group_data["options"].append({
                 "option_name": option_name,
                 "variant_code": variant_code,
-                "variant_description": variant_description
+                "variant_description": variant_description,
+                "price_str": price_str,
+                "reference_code_part": reference_code_part
             })
+            spec_group_data["is_required"] = (is_required_str == '1')
+
 
         for sira_no in sorted(specs_dict.keys()):
-            for spec_name, option_list in specs_dict[sira_no].items():
-                spec_type, created = SpecificationType.objects.get_or_create(
+            for spec_name, spec_group_data in specs_dict[sira_no].items():
+                
+                option_list = spec_group_data["options"]
+                is_required_value = spec_group_data["is_required"]
+
+                spec_type, created = SpecificationType.objects.update_or_create(
                     name=spec_name,
                     defaults={
-                        "group": "BEEWORK",
-                        "is_required": True,
-                        "allow_multiple": False,
-                        "variant_order": sira_no,
-                        "display_order": sira_no,
-                        "multiplier": 1.00
+                        "group": "BEEWORK", "is_required": is_required_value, "allow_multiple": False,
+                        "variant_order": sira_no, "display_order": sira_no, "multiplier": 1.00
                     }
                 )
-                if created:
-                    self.stdout.write(f"[SpecType] Yeni oluşturuldu: {spec_name}")
-                else:
-                    self.stdout.write(f"[SpecType] Zaten vardı: {spec_name}")
 
-                ProductSpecification.objects.get_or_create(
+                ProductSpecification.objects.update_or_create(
                     product=product,
                     spec_type=spec_type,
                     defaults={
-                        "is_required": True,
-                        "allow_multiple": False,
-                        "variant_order": sira_no,
-                        "display_order": sira_no
+                        "is_required": is_required_value, "allow_multiple": False,
+                        "variant_order": sira_no, "display_order": sira_no
                     }
                 )
 
@@ -286,34 +192,44 @@ class Command(BaseCommand):
                     opt_name = item["option_name"]
                     var_code = item["variant_code"]
                     var_desc = item["variant_description"]
+                    price_str = item["price_str"]
+                    reference_code_part = item["reference_code_part"]
 
-                    spec_option, created_opt = SpecOption.objects.get_or_create(
+                    price_value = Decimal('0.00')
+                    if price_str:
+                        try:
+                            price_value = Decimal(price_str.replace(',', '.'))
+                        except InvalidOperation:
+                            self.stdout.write(self.style.ERROR(
+                                f"Hatalı fiyat formatı: '{price_str}' ({opt_name}). 0.00 olarak ayarlandı."
+                            ))
+                    
+                    spec_option, created_opt = SpecOption.objects.update_or_create(
                         spec_type=spec_type,
                         name=opt_name,
                         defaults={
                             "variant_code": var_code,
                             "variant_description": var_desc,
-                            "image": None,
-                            "price_delta": 0.00,
+                            "price_delta": price_value,
+                            "reference_code": reference_code_part,
                             "is_default": False,
                             "display_order": idx
                         }
                     )
+                    
                     if created_opt:
-                        self.stdout.write(f"  → [SpecOption] {opt_name} eklendi.")
+                        self.stdout.write(f"  → [SpecOption] {opt_name} (Fiyat: {price_value}) eklendi.")
                     else:
-                        self.stdout.write(f"  → [SpecOption] {opt_name} zaten vardı.")
+                        self.stdout.write(f"  → [SpecOption] {opt_name} (Fiyat: {price_value}) güncellendi.")
 
                     SpecificationOption.objects.get_or_create(
-                        product=product,
-                        spec_type=spec_type,
-                        option=spec_option,
-                        defaults={
-                            "is_default": False,
-                            "display_order": idx
-                        }
+                        product=product, spec_type=spec_type, option=spec_option,
+                        defaults={"is_default": False, "display_order": idx}
                     )
 
-                self.stdout.write(self.style.SUCCESS(f"→ {spec_name} eklendi ve eşleşmeler tamamlandı"))
+                status_text = "ZORUNLU" if is_required_value else "OPSİYONEL"
+                self.stdout.write(self.style.SUCCESS(f"→ {spec_name} ({status_text}) için tüm işlemler tamamlandı."))
 
-        self.stdout.write(self.style.SUCCESS("Tüm özellikler, seçenekler ve eşlemeler oluşturuldu."))
+        self.stdout.write(self.style.SUCCESS("BEEWORK kurulumu başarıyla tamamlandı/güncellendi."))
+
+

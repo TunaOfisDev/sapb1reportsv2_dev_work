@@ -3,13 +3,24 @@ import * as Yup from 'yup';
 
 // Özel para birimi kuralı
 const currencyOptions = ['EUR', 'USD', 'TRY', 'GBP'];
-const itemGroupCodes = [103, 105, 112];
-const defaultUom = 'Adet';
+const itemGroupCodes  = [103, 105, 112];
+const defaultUom      = 'Adet';
+
+/**
+ *  ▸ İzinli karakterler: A-Z, 0-9, ., -, _, /
+ *  ▸ BAŞ ve SON: mutlaka harf-rakam; nokta, virgül, +, -, _ vb. O-LA-MAZ
+ *      ^[A-Z0-9]...........[A-Z0-9]$
+ */
+const ITEM_CODE_REGEX = /^[A-Z0-9](?:[A-Z0-9._\/-]*[A-Z0-9])?$/;
 
 export const stockCardValidationSchema = Yup.object().shape({
   itemCode: Yup.string()
     .required('Kalem kodu zorunludur')
-    .max(50, 'En fazla 50 karakter olabilir'),
+    .max(50, 'En fazla 50 karakter olabilir')
+    .matches(
+      ITEM_CODE_REGEX,
+      'Kod, büyük harf veya rakamla başlayıp bitmeli; içeride ., -, _, / kullanılabilir'
+    ),
 
   itemName: Yup.string()
     .required('Kalem adı zorunludur')
@@ -19,7 +30,6 @@ export const stockCardValidationSchema = Yup.object().shape({
     .typeError('Lütfen bir ürün grubu seçiniz')
     .oneOf(itemGroupCodes, 'Geçersiz ürün grubu seçimi')
     .required('Ürün grubu zorunludur'),
-
 
   UoMGroupEntry: Yup.string()
     .required('Ölçü birim grubu zorunludur'),

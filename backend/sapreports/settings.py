@@ -10,10 +10,8 @@ from .spectacular_settings import SPECTACULAR_SETTINGS
 
 load_dotenv()  # .env dosyasından ayarları yükler
 
-# .env dosyasından FERNET_KEY'i okuyup Django ayarlarına ekliyoruz.
-FERNET_KEY = config('FERNET_KEY')
-
 # --- Ortam ayarları  -------------------------------------------------
+#SERVER_HOST ="10.130.212.112"
 ENVIRONMENT   = os.getenv('ENVIRONMENT', 'development')
 SERVER_HOST   = os.getenv('SERVER_HOST', '127.0.0.1')
 API_PORT      = os.getenv('INTERNAL_API_PORT', '8000')
@@ -34,7 +32,7 @@ USE_THOUSAND_SEPARATOR = True
 
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development').lower()
 
-SERVER_HOST ="192.168.2.124"
+
 
 # hana servis
 HANADB_HOST = os.getenv('HANADB_HOST')
@@ -42,6 +40,15 @@ HANADB_PORT = os.getenv('HANADB_PORT')
 HANADB_USER = os.getenv('HANADB_USER')
 HANADB_PASS = os.getenv('HANADB_PASS')
 HANADB_SCHEMA = os.getenv('HANADB_SCHEMA')
+
+# SAP B1 Service Layer Ayarları
+SAP_SERVICE_LAYER_URL = os.getenv('SAP_SERVICE_LAYER_URL')
+SAP_COMPANY_DB = os.getenv('SAP_COMPANY_DB')
+SAP_USERNAME = os.getenv('SAP_USERNAME')
+SAP_PASSWORD = os.getenv('SAP_PASSWORD')
+SAP_TIMEOUT = int(os.getenv('SAP_TIMEOUT', 30)) # Varsayılan değer 30 saniye
+# .env'deki 'true'/'false' metnini Python boolean'a çeviriyoruz
+SAP_TLS_VERIFY = str(os.getenv('SAP_TLS_VERIFY', 'false')).lower() == 'true'
 
 # logo db servis
 LOGO_DB_DSN = os.getenv('LOGO_DB_DSN')
@@ -68,16 +75,6 @@ PRIMARY_PATH = os.getenv("NETWORK_FOLDER_PRIMARY")
 FALLBACK_PATH = os.getenv("NETWORK_FOLDER_FALLBACK", "/mnt/product_picture")
 NETWORK_FOLDER_PATH = PRIMARY_PATH if os.path.exists(PRIMARY_PATH) else FALLBACK_PATH
 
-# settings.py heliosforgev2
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HELIOS_STORAGE = {
-    "BASE": os.path.join(BASE_DIR, "heliosforgev2", "storage"),
-    "PDF": os.path.join(BASE_DIR, "heliosforgev2", "storage", "pdf"),
-    "JSON": os.path.join(BASE_DIR, "heliosforgev2", "storage", "json"),
-    "IMAGES": os.path.join(BASE_DIR, "heliosforgev2", "storage", "images"),
-}
-
-
 
 # API anahtarını .env dosyasından alın
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
@@ -99,6 +96,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+SYSTEM_USER_EMAIL = os.getenv("SYSTEM_USER_EMAIL", "bg_job@tunacelik.com.tr")
+
 
 CSRF_COOKIE_SECURE = False
 SESSION_COOKIE_SECURE = False
@@ -108,6 +107,8 @@ ALLOWED_HOSTS = [
     SERVER_HOST,
     'localhost',
     '127.0.0.1',
+    '192.168.2.170', 
+    '192.168.1.108', 
 ]
 
 
@@ -191,11 +192,9 @@ INSTALLED_APPS = [
     'eduvideo',
     'filesharehub',
     'filesharehub_v2',
-    'formforgeapi',
     'girsbergerordropqt',
     'hanadbcon',
     'hanadbintegration',
-    'heliosforgev2',
     'logo_supplier_receivables_aging',
     'logocustomerbalance',
     'logocustomercollection',
@@ -203,7 +202,6 @@ INSTALLED_APPS = [
     'logosupplierbalance',
     'mailservice',
     'newcustomerform',
-    'nexuscore',
     'openorderdocsum',
     'orderarchive',
     'procure_compare',

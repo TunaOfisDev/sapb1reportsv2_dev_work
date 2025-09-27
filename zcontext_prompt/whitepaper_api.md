@@ -166,4 +166,3 @@ class <ModuleName>(models.Model):
   * **Not:** Bu API tarafından oluşturulan veriler, periyodik olarak çalışan Celery görevleri ile güncellenir. Verinin anlık değil, son senkronizasyon zamanındaki durumu yansıttığı unutulmamalıdır.
 
 <!-- end list -->
-

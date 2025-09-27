@@ -1,4 +1,4 @@
-# productconfigv2/resources/product_resource.py
+# backend/productconfigv2/resources/product_resource.py
 
 from import_export import fields
 from import_export.widgets import ForeignKeyWidget
@@ -23,9 +23,19 @@ class ProductResource(BaseResource):
     class Meta:
         model = Product
         fields = (
-            "id", "code", "name", "image",
-            "variant_code", "variant_description",
-            "base_price", "currency", "variant_order",
-            "family_name", "created_at", "updated_at", "is_active"
+            "id", 
+            "code", 
+            "name", 
+            "reference_product_code", # 55'li kod
+            "image", 
+            "variant_code", 
+            "variant_description",
+            "base_price", 
+            "currency", 
+            "variant_order",
+            "family_name", 
+            "created_at", 
+            "updated_at", 
+            "is_active"
         )
         export_order = fields

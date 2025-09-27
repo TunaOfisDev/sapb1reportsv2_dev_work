@@ -1,3 +1,4 @@
+// backend/scripts/rsync-exclude.txt
 # Python
 __pycache__/
 *.pyc
@@ -32,6 +33,8 @@ static/
 # zNotlar dönüşüm çıktıları
 zNotlar/convet_to_md/
 
+# DEĞİŞİKLİK BURADA: AI tarafından üretilen dosyaları repoya ekleme.
+zcontext_prompt/outputs/
 
 # Git meta
 .git/

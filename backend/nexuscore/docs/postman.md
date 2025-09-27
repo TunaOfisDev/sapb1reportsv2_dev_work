@@ -1,1 +1,0 @@
-http://192.168.2.124/api/v2/nexuscore/db-type-mappings/

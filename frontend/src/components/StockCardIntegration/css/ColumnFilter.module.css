@@ -1,0 +1,36 @@
+/* path: frontend/src/components/StockCardIntegration/css/ColumnFilter.module.css */
+
+.column-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f9fbfd;
+}
+
+.column-filter__input {
+  flex: 1;
+  padding: 0.4rem 0.6rem 0.4rem 2rem;
+  font-size: 0.9rem;
+  border: 1px solid #cfd8dc;
+  border-radius: 4px;
+  background-color: white;
+  background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM10 14c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 8px center;
+  background-size: 16px 16px;
+  outline: none;
+}
+
+.column-filter__input:focus {
+  border-color: #1d72b8;
+  box-shadow: 0 0 0 2px rgba(29, 114, 184, 0.15);
+}
+
+@media (max-width: 768px) {
+  .column-filter__input {
+    font-size: 0.85rem;
+    padding: 0.35rem 0.5rem 0.35rem 2rem;
+  }
+}

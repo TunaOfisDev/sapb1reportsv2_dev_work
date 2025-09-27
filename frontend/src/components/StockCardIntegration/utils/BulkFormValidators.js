@@ -12,6 +12,7 @@
  * 6️⃣ Para Birimi yalnızca EUR, USD, TRY veya GBP olabilir.
  * 7️⃣ KDV Grubu yalnızca **KDV %10** veya **KDV %20** olabilir.
  */
+import * as XLSX from 'xlsx';
 
 const ALLOWED_CURRENCIES = new Set(['EUR', 'USD', 'TRY', 'GBP']);
 const ALLOWED_VAT = new Set(['KDV %10', 'KDV %20']);
@@ -116,3 +117,24 @@ export const validateBulkData = (data = []) => {
 
   return { isValid: errors.length === 0, errors };
 };
+
+
+export const MAX_BULK_ROWS = 20;
+
+/**
+ * Excel satır sayısını (başlık hariç) kontrol eder.
+ * Limit aşılırsa { ok: false, rows: n } döner.
+ */
+export function validateRowLimit(file, maxRows = MAX_BULK_ROWS) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const wb = XLSX.read(e.target.result, { type: 'binary' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+      const rowCount = Math.max(rows.length - 1, 0); // başlık hariç
+      resolve({ ok: rowCount <= maxRows, rows: rowCount });
+    };
+    reader.readAsBinaryString(file);
+  });
+}

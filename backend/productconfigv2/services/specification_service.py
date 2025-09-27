@@ -7,9 +7,7 @@ from ..models import SpecificationType, SpecOption, SpecificationOption
 def create_specification_type_with_options(spec_type_data, option_list):
     """
     Yeni bir özellik tipi ve ona bağlı seçenekleri oluşturur.
-
-    spec_type_data: {"name": "Motor", "is_required": True, ...}
-    option_list: [{"name": "250cc", "price_delta": 0}, {"name": "500cc", "price_delta": 250}, ...]
+    option_list: [{"name": "250cc", "reference_code": "250CC", ...}, ...]
     """
     spec_type = SpecificationType.objects.create(**spec_type_data)
 
@@ -20,6 +18,8 @@ def create_specification_type_with_options(spec_type_data, option_list):
             image=option_data.get("image"),
             variant_code=option_data.get("variant_code", ""),
             variant_description=option_data.get("variant_description", ""),
+            # YENİ: reference_code'u da veri listesinden alıyoruz.
+            reference_code=option_data.get("reference_code"),
             price_delta=option_data.get("price_delta", 0),
             is_default=option_data.get("is_default", False),
             display_order=index,

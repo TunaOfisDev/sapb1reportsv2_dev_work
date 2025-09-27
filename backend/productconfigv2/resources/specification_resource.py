@@ -23,6 +23,7 @@ class SpecificationTypeResource(BaseResource):
 
 
 
+
 class SpecOptionResource(BaseResource):
     spec_type_name = fields.Field(
         column_name="spec_type_name",
@@ -33,13 +34,9 @@ class SpecOptionResource(BaseResource):
     class Meta:
         model = SpecOption
         fields = (
-            "id", "name", "variant_code", "variant_description", "image",
-            "price_delta", "is_default", "display_order",
+            "id", "name", "variant_code", "variant_description",
+            "reference_code", # YENİ ALAN
+            "image", "price_delta", "is_default", "display_order",
             "spec_type_name", "created_at", "updated_at", "is_active"
         )
-        export_order = (
-            "id", "name", "variant_code", "variant_description", "image",
-            "price_delta", "is_default", "display_order",
-            "spec_type_name", "created_at", "updated_at", "is_active"
-        )
-
+        export_order = fields # 'fields' kullanmak, export_order'ı otomatik günceller

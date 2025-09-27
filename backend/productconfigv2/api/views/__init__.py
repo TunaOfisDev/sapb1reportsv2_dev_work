@@ -14,5 +14,5 @@ __all__ = [
     "VariantViewSet",
     "RuleViewSet",
     "product_specifications_grouped",
- 
+    
 ]

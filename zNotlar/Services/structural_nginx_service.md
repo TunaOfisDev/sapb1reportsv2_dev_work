@@ -410,7 +410,7 @@ sudo systemctl daemon-reload
 sudo systemctl start nginx
 sudo systemctl stop nginx
 sudo systemctl restart nginx
-sudo systemctl reload nginx        # Konfigürasyon güncellemelerinde önerilir
+sudo systemctl reload nginx       
 sudo systemctl status nginx
 sudo systemctl enable nginx
 ```

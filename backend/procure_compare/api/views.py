@@ -27,9 +27,12 @@ from procure_compare.services import (
     sync_procure_compare_data,
     create_approval_record
 )
+
 from .serializers import ApprovalHistoryGroupedSerializer
 from mailservice.services.send_procure_compare_approval_email import ProcureCompareApprovalMailService
-from sapreports.celery import get_or_create_token
+
+# ✅ Yeni token akışı: celery.py yerine jwt_utils kullan
+from sapreports.jwt_utils import get_access_token_for_system_user
 
 
 class PurchaseOrderListView(generics.ListAPIView):
@@ -51,18 +54,19 @@ class SyncProcureCompareFromHANAView(APIView):
     """
     Kullanıcının manuel olarak HANA'dan veri çekmesini ve PostgreSQL'e kaydetmesini sağlar.
     """
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        token = get_or_create_token()
+        token = get_access_token_for_system_user()
         if not token:
-            return Response({"error": "Token alınamadı"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"error": "Sistem access token alınamadı."}, status=status.HTTP_401_UNAUTHORIZED)
 
         hana_data = fetch_hana_procure_compare_data(token)
         if not hana_data:
-            return Response({"error": "HANA'dan veri alınamadı"}, status=status.HTTP_502_BAD_GATEWAY)
+            return Response({"error": "HANA'dan veri alınamadı."}, status=status.HTTP_502_BAD_GATEWAY)
 
         sync_procure_compare_data(hana_data)
-        return Response({"status": "Veri başarıyla senkronize edildi"}, status=status.HTTP_200_OK)
+        return Response({"status": "Veri başarıyla senkronize edildi."}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -158,6 +162,7 @@ class ItemPurchaseHistoryView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        # İstek içinden forward edilen Bearer token (gerekli ise)
         token = request.headers.get('Authorization', '').replace('Bearer ', '')
         item_code = request.query_params.get('item_code')
 
@@ -173,5 +178,3 @@ class ItemPurchaseHistoryView(APIView):
             })
         else:
             return Response({'error': 'Veri çekilemedi.'}, status=500)
-
-

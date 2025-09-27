@@ -5,7 +5,7 @@ set -e
 # --- AYARLAR ---
 SRC_DIR="/var/www/sapb1reportsv2"
 DEST_DIR="/home/userbt/Github/sapb1reportsv2_dev_work"
-REMOTE_REPO="https://github.com/TunaOfisDev/sapb1reportsv2_dev_work.git"
+REMOTE_REPO="git@github.com:TunaOfisDev/sapb1reportsv2_dev_work.git"
 BRANCH="main"
 COMMIT_MSG="Dev snapshot - $(date '+%Y-%m-%d %H:%M:%S')"
 

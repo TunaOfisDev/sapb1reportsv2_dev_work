@@ -50,6 +50,7 @@
 /* --- Filtreleme Alanı (Element) --- */
 .variant-list-page__filters {
   display: flex;
+  flex-wrap: wrap; /* YENİ: Filtrelerin alt satıra kaymasını sağlar */
   gap: 1rem;
   margin-bottom: 1.5rem;
 }

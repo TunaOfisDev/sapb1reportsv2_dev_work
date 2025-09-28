@@ -61,7 +61,15 @@ const VariantListPage = () => {
 
   const columns = useMemo(
     () => [
-      { Header: 'Proje Adı', accessor: 'project_name' },
+      { 
+        Header: 'Proje Adı', 
+        accessor: 'project_name',
+        Cell: ({ value }) => {const truncatedText = value && value.length > 50 ? `${value.substring(0, 50)}...` : value;
+          return (
+            <span title={value}>{truncatedText || '---'} </span>
+          );
+        }
+      },
       { Header: 'Referans Kod (55\'li)', accessor: 'reference_code' },
       { Header: 'Üretim Kodu (30\'lu)', accessor: 'new_variant_code' },
       { Header: 'Açıklama', accessor: 'new_variant_description', width: 300 },
@@ -138,9 +146,20 @@ const VariantListPage = () => {
                   prepareRow(row);
                   return (
                     <tr {...row.getRowProps()} className="variant-list-page__table-row">
-                      {row.cells.map(cell => (
-                        <td {...cell.getCellProps()} className="variant-list-page__table-cell">{cell.render('Cell')}</td>
-                      ))}
+                      {row.cells.map(cell => {
+                        // GÜNCELLEME: Sadece 'Proje Adı' sütununa özel bir class ekliyoruz.
+                        const cellProps = cell.getCellProps();
+                        if (cell.column.id === 'project_name') {
+                          cellProps.className = `${cellProps.className} variant-list-page__table-cell variant-list-page__table-cell--truncated`;
+                        } else {
+                          cellProps.className = `${cellProps.className} variant-list-page__table-cell`;
+                        }
+                        return (
+                          <td {...cellProps}>
+                            {cell.render('Cell')}
+                          </td>
+                        );
+                      })}
                     </tr>
                   );
                 })}

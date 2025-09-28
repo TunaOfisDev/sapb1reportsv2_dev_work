@@ -144,6 +144,28 @@
   color: #6b7280;
 }
 
+/* --- Tablo Hücresi Metin Kısaltma Stilleri --- */
+.variant-list-page__table-cell {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  color: #4b5563;
+  vertical-align: top; /* Uzun açıklamalarda hizalamayı düzeltir */
+}
+
+/* Dosyanın sonuna bu YENİ kuralı ekleyin: */
+/* Sadece Proje Adı gibi kısaltmak istediğimiz hücrelere uygulanacak özel stil */
+.variant-list-page__table-cell--truncated {
+  max-width: 200px; /* Genişliği biraz ayarlayabiliriz */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Bu kural aynı kalabilir veya güncellenebilir */
+.variant-list-page__table-cell span[title] {
+  cursor: help;
+}
+
 /* --- Responsive Tasarım --- */
 @media (max-width: 768px) {
   .variant-list-page__header {

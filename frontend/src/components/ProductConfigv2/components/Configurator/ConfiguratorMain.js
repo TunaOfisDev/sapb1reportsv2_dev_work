@@ -131,7 +131,7 @@ const ConfiguratorMain = () => {
           <div className="summary-wrapper">
             {!ruleValidation.isValid && <RuleFeedback feedback={ruleValidation.feedback} />}
             <div className="form-group project-name-group">
-              <label htmlFor="projectName">Proje Adı</label>
+              <label htmlFor="projectName">Proje Adı (max karakter sayısı 200) </label>
               <input type="text" id="projectName" className="project-name-input"
                 placeholder="PROJE - MÜŞTERİ ADI GİRİNİZ!" value={projectName}
                 onChange={(e) => setProjectName(toUpperCaseTurkish(e.target.value))}

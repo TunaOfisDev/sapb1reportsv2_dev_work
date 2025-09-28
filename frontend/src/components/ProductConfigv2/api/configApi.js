@@ -1,8 +1,7 @@
 // frontend/src/components/ProductConfigv2/api/configApi.js
-
 import axiosInstance from '../../../api/axiosconfig';
 
-const BASE_URL = 'productconfigv2';
+const BASE_URL = 'productconfigv2'; // API'nin productconfigv2 bölümüne ait endpoint'ler
 
 /**
  * Ürün ailelerini getirir.
@@ -67,16 +66,17 @@ export const getRules = () => {
 };
 
 /**
- * Yeni varyant oluşturur.
+ * GÜNCELLENDİ: Yeni varyant oluşturur.
  * @param {Object} data - Oluşturulacak varyanta ait veriler.
  * Data içerisinde "product_id", "selections" ve "project_name" alanları bulunmalıdır.
  */
 export const createVariant = (data) => {
-  return axiosInstance.post(`${BASE_URL}/variants/create_from_selection`, data);
+  return axiosInstance.post(`${BASE_URL}/variants/create_from_selection/`, data);
 };
 
 /**
- * Ürün konfigürasyonu önizlemesi için seçilen verileri backend'e gönderir.
+ * GÜNCELLENDİ: Ürün konfigürasyonu önizlemesi için seçilen verileri backend'e gönderir.
+ * Artık /variants/preview/ endpoint'ini kullanır ve tek bir data objesi alır.
  * @param {Object} data - { product_id: number, selections: { featureId: optionId, ... } }
  */
 export const previewConfiguration = (data) => {
@@ -85,6 +85,7 @@ export const previewConfiguration = (data) => {
 
 /**
  * Belirli bir ürüne ait gruplanmış spesifikasyonları (özellik + opsiyonları) getirir.
+ * Bu fonksiyon sadece ürünle ilişkilendirilmiş olanları döndürür.
  * @param {number|string} productId - Ürün ID'si.
  */
 export const getGroupedProductSpecifications = (productId) => {
@@ -92,7 +93,8 @@ export const getGroupedProductSpecifications = (productId) => {
 };
 
 /**
- * Verilen bir referans kodu ile SAP'den canlı fiyat sorgusu yapar.
+ * Verilen bir referans kodu (55'li kod) ile Django backend'i üzerinden
+ * SAP'den canlı fiyat sorgusu yapar.
  * @param {string} referenceCode - Fiyatı sorgulanacak 55'li kod.
  */
 export const getSapPrice = (referenceCode) => {
@@ -101,6 +103,7 @@ export const getSapPrice = (referenceCode) => {
   });
 };
 
+
 /**
  * Veritabanında kayıtlı bir varyantın fiyatını SAP'den çekip günceller.
  * @param {number|string} variantId - Fiyatı güncellenecek varyantın ID'si.
@@ -108,6 +111,7 @@ export const getSapPrice = (referenceCode) => {
 export const updateVariantPriceFromSap = (variantId) => {
   return axiosInstance.post(`${BASE_URL}/variants/${variantId}/update-price-from-sap/`);
 };
+
 
 export default {
   getProductFamilies,

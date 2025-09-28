@@ -1,66 +1,58 @@
+
 // frontend/src/components/ProductConfigv2/pages/VariantListPage.js
 
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTable, usePagination, useSortBy } from 'react-table';
-import { Link } from 'react-router-dom'; // YENİ: Link bileşenini import ediyoruz
-import { PackagePlus } from 'lucide-react'; // YENİ: İkon için import
+import { Link } from 'react-router-dom';
+import { PackagePlus } from 'lucide-react';
 import { format } from 'date-fns';
 import configApi from '../api/configApi';
+import { normalizeForSearch } from '../utils/textUtils'; // YENİ: Arama fonksiyonumuzu import ediyoruz
 import '../styles/VariantListPage.css';
 
 const VariantListPage = () => {
-  const [variants, setVariants] = useState([]);
+  const [allVariants, setAllVariants] = useState([]); // Tüm varyantları burada tutacağız
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Filtre inputlarının anlık değerini tutar
   const [filters, setFilters] = useState({
     project_name: '',
     reference_code: '',
     new_variant_code: '',
   });
 
-  // API isteğini tetikleyecek olan, geciktirilmiş filtre değerini tutar
-  const [debouncedFilters, setDebouncedFilters] = useState(filters);
-
-  // Debouncing için useEffect: Kullanıcı yazmayı bıraktıktan 500ms sonra aramayı tetikler
+  // Veriyi sadece component ilk yüklendiğinde çek
   useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedFilters(filters);
-    }, 500);
-
-    // Kullanıcı yeni bir tuşa basarsa, önceki zamanlayıcıyı iptal et
-    return () => {
-      clearTimeout(handler);
+    const fetchAllData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await configApi.getVariants(); // Filtresiz tüm veriyi çek
+        setAllVariants(response.data.results || []);
+      } catch (err) {
+        setError('Varyantlar yüklenemedi.');
+      } finally {
+        setLoading(false);
+      }
     };
-  }, [filters]);
+    fetchAllData();
+  }, []);
 
-  // Veri çekme fonksiyonu
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      // Sadece dolu olan filtreleri API'ye gönder
-      const activeFilters = Object.fromEntries(
-        Object.entries(debouncedFilters).filter(([, value]) => value)
-      );
-      const response = await configApi.getVariants(activeFilters);
-      setVariants(response.data.results || []);
-    } catch (err) {
-      console.error('Varyantlar alınırken hata oluştu:', err);
-      setError('Varyantlar yüklenemedi.');
-    } finally {
-      setLoading(false);
-    }
-  }, [debouncedFilters]);
+  // GÜNCELLEME: Filtreleme mantığı artık React içinde
+  const filteredVariants = useMemo(() => {
+    return allVariants.filter(variant => {
+      const normalizedProjectName = normalizeForSearch(variant.project_name);
+      const normalizedSearchTerm = normalizeForSearch(filters.project_name);
 
-  // Filtreler değiştiğinde veriyi yeniden çek
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+      const projectNameMatch = filters.project_name ? normalizedProjectName.includes(normalizedSearchTerm) : true;
+      const referenceCodeMatch = filters.reference_code ? variant.reference_code.toLowerCase().includes(filters.reference_code.toLowerCase()) : true;
+      const newVariantCodeMatch = filters.new_variant_code ? variant.new_variant_code.toLowerCase().includes(filters.new_variant_code.toLowerCase()) : true;
 
-  const columns = useMemo(
-    () => [
+      return projectNameMatch && referenceCodeMatch && newVariantCodeMatch;
+    });
+  }, [allVariants, filters]);
+
+  const columns = useMemo(() => [
       { 
         Header: 'Proje Adı', 
         accessor: 'project_name',
@@ -81,27 +73,18 @@ const VariantListPage = () => {
   );
 
   const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    page,
-    prepareRow,
-    canPreviousPage,
-    canNextPage,
-    pageOptions,
-    nextPage,
-    previousPage,
+    getTableProps, getTableBodyProps, headerGroups, page, prepareRow,
+    canPreviousPage, canNextPage, pageOptions, nextPage, previousPage,
     state: { pageIndex },
-  } = useTable({
-    columns,
-    data: variants,
-    initialState: { pageSize: 15 },
-  }, useSortBy, usePagination);
+  } = useTable(
+    { columns, data: filteredVariants, initialState: { pageSize: 15 } }, 
+    useSortBy, usePagination
+  );
   
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters(prev => ({ ...prev, [name]: value }));
-  };
+  };;
 
   return (
     <div className="variant-list-page">
@@ -135,39 +118,35 @@ const VariantListPage = () => {
                     {headerGroup.headers.map(column => (
                       <th {...column.getHeaderProps(column.getSortByToggleProps())} className="variant-list-page__table-header variant-list-page__table-header--sortable">
                         {column.render('Header')}
-                        <span>{column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}</span>
+                        <span>{column.isSorted ? (column.isSortedDesc ? ' ??' : ' ??') : ''}</span>
                       </th>
                     ))}
                   </tr>
                 ))}
               </thead>
               <tbody {...getTableBodyProps()}>
-                {page.map(row => {
-                  prepareRow(row);
-                  return (
-                    <tr {...row.getRowProps()} className="variant-list-page__table-row">
-                      {row.cells.map(cell => {
-                        // GÜNCELLEME: Sadece 'Proje Adı' sütununa özel bir class ekliyoruz.
-                        const cellProps = cell.getCellProps();
-                        if (cell.column.id === 'project_name') {
-                          cellProps.className = `${cellProps.className} variant-list-page__table-cell variant-list-page__table-cell--truncated`;
-                        } else {
-                          cellProps.className = `${cellProps.className} variant-list-page__table-cell`;
-                        }
-                        return (
-                          <td {...cellProps}>
-                            {cell.render('Cell')}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
+                {page.length > 0 ? (
+                  page.map(row => {
+                    prepareRow(row);
+                    return (
+                      <tr {...row.getRowProps()} className="variant-list-page__table-row">
+                        {row.cells.map(cell => (
+                          <td {...cell.getCellProps()} className="variant-list-page__table-cell">{cell.render('Cell')}</td>
+                        ))}
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={columns.length} style={{ textAlign: 'center', padding: '20px' }}>
+                      Arama kriterlerinize uygun sonuç bulunamadı.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
-
-          <div className="variant-list-page__pagination">
+           <div className="variant-list-page__pagination">
             <button onClick={() => previousPage()} disabled={!canPreviousPage}>{'<'}</button>
             <span>Sayfa <strong>{pageIndex + 1} / {pageOptions.length}</strong></span>
             <button onClick={() => nextPage()} disabled={!canNextPage}>{'>'}</button>

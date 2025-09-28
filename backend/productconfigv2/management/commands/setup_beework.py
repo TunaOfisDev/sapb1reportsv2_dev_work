@@ -130,7 +130,7 @@ class Command(BaseCommand):
                 "reference_product_code": "55.BW", # 55'li kodun temeli artık burada
                 "variant_code": "30.BW", 
                 "variant_description": "BEEWORK TEKİL MASA",
-                "base_price": 338.00, 
+                "base_price": 0.00, 
                 "currency": "EUR", 
                 "variant_order": 1,
             }

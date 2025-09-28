@@ -1,4 +1,4 @@
-# backend/productconfigv2/filters.py
+# backend/productconfigv2/filters.py test
 
 import django_filters
 from .models import Variant

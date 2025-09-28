@@ -109,6 +109,31 @@
   color: #666666;
   padding: 2rem 0;
 }
+.product-manager__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem; /* Arama kutusuyla arasına boşluk koyar */
+}
+
+.product-manager__action-link {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: #fff;
+  background-color: #0F6BB4; /* Ana header rengiyle uyumlu */
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.product-manager__action-link:hover {
+  background-color: #0c5690; /* Hover rengi */
+}
+
 
 /* Responsive */
 @media (max-width: 768px) {

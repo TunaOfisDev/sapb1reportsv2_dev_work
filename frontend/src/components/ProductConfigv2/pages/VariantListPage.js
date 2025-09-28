@@ -2,9 +2,11 @@
 
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useTable, usePagination, useSortBy } from 'react-table';
+import { Link } from 'react-router-dom'; // YENİ: Link bileşenini import ediyoruz
+import { PackagePlus } from 'lucide-react'; // YENİ: İkon için import
 import { format } from 'date-fns';
 import configApi from '../api/configApi';
-import '../styles/ProductManager.css'; // Mevcut stil dosyasını kullanabiliriz
+import '../styles/VariantListPage.css';
 
 const VariantListPage = () => {
   const [variants, setVariants] = useState([]);
@@ -94,49 +96,38 @@ const VariantListPage = () => {
   };
 
   return (
-    <div className="product-manager">
-      <h2 className="product-manager__title">Oluşturulan Varyantlar</h2>
+    <div className="variant-list-page">
+      <div className="variant-list-page__header">
+        <h2 className="variant-list-page__title">Oluşturulan Varyantlar</h2>
+        <Link to="/configurator-v2" className="variant-list-page__action-link">
+          <PackagePlus size={18} />
+          <span>Yeni Konfigürasyon</span>
+        </Link>
+      </div>
       
-      <div className="filters-container">
-        <input
-          name="project_name"
-          value={filters.project_name}
-          onChange={handleFilterChange}
-          placeholder="Proje Adına Göre Ara..."
-          className="search-input"
-        />
-        <input
-          name="reference_code"
-          value={filters.reference_code}
-          onChange={handleFilterChange}
-          placeholder="Referans Koduna Göre Ara..."
-          className="search-input"
-        />
-        <input
-          name="new_variant_code"
-          value={filters.new_variant_code}
-          onChange={handleFilterChange}
-          placeholder="Üretim Koduna Göre Ara..."
-          className="search-input"
-        />
+      <div className="variant-list-page__filters">
+        <input name="project_name" value={filters.project_name} onChange={handleFilterChange}
+          placeholder="Proje Adına Göre Ara..." className="variant-list-page__filter-input" />
+        <input name="reference_code" value={filters.reference_code} onChange={handleFilterChange}
+          placeholder="Referans Koduna Göre Ara..." className="variant-list-page__filter-input" />
+        <input name="new_variant_code" value={filters.new_variant_code} onChange={handleFilterChange}
+          placeholder="Üretim Koduna Göre Ara..." className="variant-list-page__filter-input" />
       </div>
 
-      {loading && <div className="product-manager__loading">Yükleniyor...</div>}
-      {error && <div className="product-manager__error">{error}</div>}
+      {loading && <div className="variant-list-page__loading">Yükleniyor...</div>}
+      {error && <div className="variant-list-page__error">{error}</div>}
       
       {!loading && !error && (
         <>
-          <div className="product-table-wrapper">
-            <table {...getTableProps()} className="product-table">
+          <div className="variant-list-page__table-wrapper">
+            <table {...getTableProps()} className="variant-list-page__table">
               <thead>
                 {headerGroups.map(headerGroup => (
                   <tr {...headerGroup.getHeaderGroupProps()}>
                     {headerGroup.headers.map(column => (
-                      <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                      <th {...column.getHeaderProps(column.getSortByToggleProps())} className="variant-list-page__table-header variant-list-page__table-header--sortable">
                         {column.render('Header')}
-                        <span>
-                          {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
-                        </span>
+                        <span>{column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}</span>
                       </th>
                     ))}
                   </tr>
@@ -146,9 +137,9 @@ const VariantListPage = () => {
                 {page.map(row => {
                   prepareRow(row);
                   return (
-                    <tr {...row.getRowProps()}>
+                    <tr {...row.getRowProps()} className="variant-list-page__table-row">
                       {row.cells.map(cell => (
-                        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                        <td {...cell.getCellProps()} className="variant-list-page__table-cell">{cell.render('Cell')}</td>
                       ))}
                     </tr>
                   );
@@ -157,19 +148,10 @@ const VariantListPage = () => {
             </table>
           </div>
 
-          <div className="pagination">
-            <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-              {'<'}
-            </button>
-            <span>
-              Sayfa{' '}
-              <strong>
-                {pageIndex + 1} / {pageOptions.length}
-              </strong>
-            </span>
-            <button onClick={() => nextPage()} disabled={!canNextPage}>
-              {'>'}
-            </button>
+          <div className="variant-list-page__pagination">
+            <button onClick={() => previousPage()} disabled={!canPreviousPage}>{'<'}</button>
+            <span>Sayfa <strong>{pageIndex + 1} / {pageOptions.length}</strong></span>
+            <button onClick={() => nextPage()} disabled={!canNextPage}>{'>'}</button>
           </div>
         </>
       )}

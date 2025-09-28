@@ -2,6 +2,8 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTable, usePagination, useGlobalFilter } from 'react-table';
+import { Link } from 'react-router-dom'; // YENİ: Link bileşenini import ediyoruz
+import { List } from 'lucide-react'; // YENİ: İkon için import
 import { getProducts } from '../api/configApi';
 import '../styles/ProductManager.css';
 
@@ -25,19 +27,9 @@ const VariantProductListPage = () => {
 
   const columns = useMemo(
     () => [
-      {
-        Header: 'Ürün Kodu',
-        accessor: 'code',
-      },
-      {
-        Header: 'Açıklama',
-        accessor: 'name',
-      },
-      {
-        Header: 'Fiyat',
-        accessor: 'base_price',
-        Cell: ({ value }) => `${value} EUR`,
-      },
+      { Header: 'Ürün Kodu', accessor: 'code' },
+      { Header: 'Açıklama', accessor: 'name' },
+      { Header: 'Fiyat', accessor: 'base_price', Cell: ({ value }) => `${value} EUR` },
       {
         Header: 'Konfigüre Et',
         accessor: 'id',
@@ -56,7 +48,7 @@ const VariantProductListPage = () => {
     page,
     prepareRow,
     setGlobalFilter,
-    state: { globalFilter, pageIndex },
+    state: { globalFilter },
   } = useTable({
     columns,
     data: products,
@@ -67,7 +59,15 @@ const VariantProductListPage = () => {
 
   return (
     <div className="product-manager">
-      <h2 className="product-manager__title"> Konfigüre Edilebilir Ürünler</h2>
+      {/* GÜNCELLEME: Başlık ve butonu içeren yeni bir header alanı */}
+      <div className="product-manager__header">
+        <h2 className="product-manager__title">Konfigüre Edilebilir Ürünler</h2>
+        <Link to="/variants" className="product-manager__action-link">
+          <List size={18} />
+          <span>Varyant Listesi</span>
+        </Link>
+      </div>
+
       <input
         value={globalFilter || ''}
         onChange={(e) => setGlobalFilter(e.target.value)}
@@ -104,4 +104,3 @@ const VariantProductListPage = () => {
 };
 
 export default VariantProductListPage;
-
